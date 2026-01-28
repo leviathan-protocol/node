@@ -1,0 +1,20 @@
+# Fork Configuration - Your Voting Values
+# This defines the principles that guide automated voting decisions
+
+name: "Security-First Validator"
+
+# Core principles that guide voting decisions
+# The LLM will reference these when evaluating proposals
+principles:
+  - "Prioritize network security over feature velocity"
+  - "Support decentralization and resist centralization of power"
+  - "Favor backwards compatibility to protect existing users"
+  - "Require clear documentation and audit for code changes"
+  - "Support sustainable tokenomics and resist inflation"
+
+# Overall voting approach: cautious, balanced, progressive
+voting_style: "cautious"
+
+# Confidence threshold below which to abstain
+# If LLM confidence is below this, vote ABSTAIN instead
+abstain_threshold: 0.6

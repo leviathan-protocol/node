@@ -1,0 +1,13 @@
+[project]
+name = "leviathan"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "cosmpy>=0.11.2",
+    "httpx>=0.28.1",
+    "ollama>=0.6.1",
+    "pydantic-settings>=2.12.0",
+    "pyyaml>=6.0.3",
+]

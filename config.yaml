@@ -1,0 +1,21 @@
+# DAHAO Sidecar Configuration
+# See config/settings.py for all available options
+
+chain:
+  chain_id: "dahao"
+  grpc_url: "grpc+http://localhost:9090"
+  fee_denom: "stake"  # Default Ignite token
+  address_prefix: "cosmos"
+  gas_limit: 200000
+  fee_amount: 1000
+
+llm:
+  model_name: "qwen3:14b"
+  ollama_host: "http://localhost:11434"
+  n_ctx: 8192
+
+sidecar:
+  poll_interval_seconds: 60
+  max_retries: 3
+  state_file: "sidecar_state.json"
+  decisions_log: "decisions.log"

@@ -1,0 +1,21 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Sensitive files
+.env
+*.mnemonic
+
+# Runtime files
+sidecar_state.json
+decisions.log
+
+# Large model files
+*.gguf
