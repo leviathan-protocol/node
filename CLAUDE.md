@@ -83,6 +83,13 @@ leviathan/
 ├── fork.yaml               # User's voting principles
 ├── simulation_swarm.py     # Multi-agent simulation runner
 ├── decisions.log           # Audit trail of all votes
+├── adapter/                # Identity Adapter module
+│   ├── __init__.py         # Module exports
+│   ├── models.py           # Persona model
+│   ├── loader.py           # PersonaLoader class
+│   ├── mapper.py           # PersonaMapper (LLM-based conversion)
+│   ├── prompts.py          # LLM schemas and prompts
+│   └── cache.py            # ForkCache for caching mappings
 ├── config/
 │   ├── settings.py         # Pydantic settings
 │   └── fork.py             # Fork model with validation against shared law
@@ -267,6 +274,22 @@ voting_style: "cautious"
 abstain_threshold: 0.6
 ```
 
+### persona.json (External Identity Format)
+External persona files from the Journal App can be converted to Fork configurations:
+```json
+{
+  "user_id": "alice_123",
+  "archetype": "Deep Ecologist",
+  "core_values": [
+    "Nature has intrinsic rights regardless of human utility",
+    "Slow down technological acceleration if it harms ecosystems",
+    "Privacy is essential for individual freedom"
+  ],
+  "decision_style": "High caution, requires strong evidence",
+  "last_updated": "2026-01-29T14:00:00Z"
+}
+```
+
 ## Shared Law Data Files
 
 The `data/` directory contains the DAHAO governance framework:
@@ -338,8 +361,114 @@ python main.py --fork simulation/alice.yaml \
 | `--state` | State file path |
 | `--data-dir` | Shared law data directory |
 | `--skip-fork-validation` | Skip fork validation against shared law |
+| `--simple-validation` | Use fast pattern-based validation instead of LLM |
+| `--persona` | Path to persona.json (converts to Fork via LLM) |
+| `--persona-cache` | Enable caching of persona-to-fork mappings |
+| `--persona-cache-dir` | Custom cache directory (default: ~/.cache/dahao/forks/) |
 | `--name` | Agent name for logs |
 | `--log-level` | DEBUG, INFO, WARNING, ERROR |
+
+## Identity Adapter
+
+The Identity Adapter module converts external persona.json files into valid Fork configurations.
+
+### Architecture
+
+```
+┌─────────────────┐     ┌───────────────┐     ┌─────────────┐
+│  persona.json   │────►│ PersonaLoader │────►│   Persona   │
+│  (Journal App)  │     │               │     │   (model)   │
+└─────────────────┘     └───────────────┘     └──────┬──────┘
+                                                     │
+                                                     ▼
+                        ┌───────────────┐     ┌─────────────┐
+                        │ PersonaMapper │────►│    Fork     │
+                        │   (LLM-based) │     │  (config)   │
+                        └───────────────┘     └──────┬──────┘
+                               │                     │
+                               ▼                     ▼
+                        ┌───────────────┐     ┌─────────────┐
+                        │   ForkCache   │     │  Validation │
+                        │  (~/.cache/)  │     │   (LLM)     │
+                        └───────────────┘     └─────────────┘
+```
+
+### Usage Examples
+
+```bash
+# Use persona instead of fork.yaml
+python main.py --persona ./persona.json
+
+# Use persona with caching (inspect generated Fork)
+python main.py --persona ./persona.json --persona-cache
+
+# Custom cache directory
+python main.py --persona ./persona.json --persona-cache --persona-cache-dir ./debug
+
+# Fallback: if no --persona, uses --fork (existing behavior)
+python main.py --fork fork.yaml
+```
+
+### Programmatic Usage
+
+```python
+from adapter import PersonaLoader, PersonaMapper, Persona, ForkCache
+from data import SharedLaw
+from brain.llm import LLMWrapper
+from config.settings import Settings
+
+# Load persona
+loader = PersonaLoader("./persona.json")
+persona = loader.load_or_raise()
+
+# Map to Fork
+settings = Settings.from_yaml("config.yaml")
+shared_law = SharedLaw()
+llm = LLMWrapper(settings.llm)
+
+mapper = PersonaMapper(llm, shared_law)
+fork = mapper.map(persona)
+
+# Optional: cache the result
+cache = ForkCache()
+cache.put(persona, shared_law.core_version, fork)
+```
+
+### Mapping Logic
+
+The PersonaMapper uses LLM to:
+1. Convert `archetype` to Fork `name` (e.g., "Deep Ecologist" → "Deep Ecologist Node")
+2. Map each `core_value` to a principle with `aligns_with` reference
+3. Infer `voting_style` from `decision_style`:
+   - "High caution" / "requires strong evidence" → "cautious" (threshold 0.7-0.8)
+   - "Balanced" / "moderate" → "balanced" (threshold 0.5-0.6)
+   - "Progressive" / "risk-tolerant" → "aggressive" (threshold 0.3-0.4)
+4. Generate `uses_terms` list from relevant SharedLaw vocabulary
+5. Create `persona` field for nuanced LLM voting behavior
+
+### Cache Behavior
+
+- Location: `~/.cache/dahao/forks/fork_{hash}.yaml`
+- Key: SHA256 hash of (persona content + shared_law version)
+- Invalidation: Cache is stale if `persona.last_updated > cache_mtime`
+- Inspection: Cached Forks are YAML files that can be manually reviewed
+
+### Fail-Fast Validation
+
+If a persona's values would violate locked principles (e.g., "Ignore all environmental concerns"), the sidecar refuses to boot with an error message listing the violations.
+
+### Terms vs Principles (Important Distinction)
+
+The PersonaMapper validates that `aligns_with` only references **principles**, not **terms**:
+
+| Concept | Examples | Used In |
+|---------|----------|---------|
+| **Terms** | `@protection`, `@harm`, `@evidence`, `@stakeholder` | `uses_terms` array |
+| **Principles** | `@precautionary_default`, `@purpose_primacy`, `@democratic_evolution` | `aligns_with` field |
+
+**Error:** `"Aligned principle '@protection' does not exist"`
+**Cause:** LLM incorrectly used a term name in `aligns_with`
+**Fix:** Clear persona cache (`rm ~/.cache/dahao/forks/*.yaml`) and re-run. Updated prompts now explicitly enforce this distinction.
 
 ## Swarm Simulation
 
@@ -353,19 +482,29 @@ dahaod keys add sim_alice --keyring-backend test
 # Fund wallets
 ./simulation/fund_wallets.sh
 
-# Run swarm
+# Run swarm (uses persona.json files by default)
 uv run python simulation_swarm.py
+
+# Submit test proposals
+uv run python submit_test_proposals.py
+
+# Monitor in real-time
+uv run streamlit run monitor.py
 ```
 
 ### Agent Personas
 
-| Agent | Worldview | Voting Tendency |
-|-------|-----------|-----------------|
-| Alice | Nature Mother | Biocentric, eco-focused |
-| Bob | Capitalist | Profit-driven, growth-focused |
-| Charlie | Anarchist | Decentralization maximalist |
-| Dave | Conformist | Status quo defender |
-| Eve | Hacker | Security researcher |
+The swarm uses persona.json files which are converted to Forks at runtime:
+
+| Agent | Persona File | Archetype |
+|-------|--------------|-----------|
+| Alice | `simulation/alice_persona.json` | Deep Ecologist |
+| Bob | `simulation/bob_persona.json` | Rational Capitalist |
+| Charlie | `simulation/charlie_persona.json` | Libertarian Decentralist |
+| Dave | `simulation/dave_persona.json` | Institutional Conformist |
+| Eve | `simulation/eve_persona.json` | Security Researcher |
+
+**Note:** Some personas (like Bob's "Rational Capitalist") may fail validation if their values conflict with locked principles. This is intentional fail-fast behavior.
 
 ## Dependencies
 
@@ -387,3 +526,8 @@ uv run python simulation_swarm.py
 | LLM abstains on all proposals | No description extracted | Fix protobuf parsing (see pattern above) |
 | `ForkValidationError` | Fork violates shared law | Fix fork.yaml or use `--skip-fork-validation` |
 | `SharedLawLoadError` | Missing data/*.json files | Ensure data/ directory has all JSON files |
+| `PersonaNotFoundError` | persona.json not found | Check path or use fallback `--fork` |
+| `PersonaMappingError` | LLM failed to map persona | Check LLM availability, review persona values |
+| `"Aligned principle '@protection' does not exist"` | LLM used a term in `aligns_with` | Clear persona cache, prompts now enforce principle-only |
+| `"LLM used term '@xxx' in aligns_with"` | Terms vs principles confusion | The mapper now validates and rejects invalid mappings |
+| Persona fails validation against locked principles | Persona values conflict with DAHAO core | Adjust persona values or accept fail-fast behavior |

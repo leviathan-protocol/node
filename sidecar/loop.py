@@ -35,6 +35,7 @@ class SidecarLoop:
         config: SidecarConfig,
         state: SidecarState | None = None,
         shared_law: "SharedLaw | None" = None,
+        agent_name: str | None = None,
     ):
         self.governance = governance
         self.wallet = wallet
@@ -43,6 +44,7 @@ class SidecarLoop:
         self.config = config
         self.state = state or SidecarState.load(config.state_file)
         self.shared_law = shared_law
+        self.agent_name = agent_name
 
         self._running = False
         self._retry_counts: dict[int, int] = {}
@@ -115,6 +117,7 @@ class SidecarLoop:
                 self.fork,
                 self.config.decisions_log,
                 self.shared_law,
+                self.agent_name,
             )
 
             # Submit vote to chain

@@ -347,3 +347,49 @@ class Fork(BaseModel):
 
         # Mark as validated
         self._validated_against = shared_law.core_version
+
+    def to_yaml(self, path: str | Path) -> None:
+        """Serialize this Fork to a YAML file.
+
+        Useful for caching generated Fork configurations or exporting
+        for manual inspection.
+
+        Args:
+            path: Path to write the YAML file.
+        """
+        path = Path(path)
+
+        # Convert to serializable dict
+        data = {
+            "name": self.name,
+            "inherits": self.inherits,
+            "voting_style": self.voting_style,
+            "abstain_threshold": self.abstain_threshold,
+        }
+
+        # Add uses_terms if present
+        if self.uses_terms:
+            data["uses_terms"] = self.uses_terms
+
+        # Convert principles to serializable format
+        principles_data = []
+        for p in self.principles:
+            if isinstance(p, str):
+                principles_data.append(p)
+            elif isinstance(p, ForkPrinciple):
+                p_dict = {"statement": p.statement}
+                if p.aligns_with:
+                    p_dict["aligns_with"] = p.aligns_with
+                if p.applies_to:
+                    p_dict["applies_to"] = p.applies_to
+                principles_data.append(p_dict)
+
+        data["principles"] = principles_data
+
+        # Add persona if present
+        if self.persona:
+            data["persona"] = self.persona
+
+        # Write YAML with nice formatting
+        with open(path, "w") as f:
+            yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)

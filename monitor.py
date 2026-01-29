@@ -78,9 +78,25 @@ def load_decisions(log_file: str = "decisions.log") -> list[dict]:
     return data
 
 
-def extract_agent_name(fork_name: str) -> str:
-    """Extract the base agent name from fork_name."""
-    # fork_name might be "Alice" or "Alice - Nature Mother" or "Security-First Validator"
+def extract_agent_name(decision: dict | str) -> str:
+    """Extract the agent name from a decision entry or fork_name string.
+
+    Args:
+        decision: Either a decision dict (with agent_name/fork_name) or a string.
+
+    Returns:
+        The agent name for display.
+    """
+    # If it's a dict, check for agent_name first (from --name CLI arg)
+    if isinstance(decision, dict):
+        agent_name = decision.get('agent_name')
+        if agent_name:
+            return agent_name
+        fork_name = decision.get('fork_name', '')
+    else:
+        fork_name = decision
+
+    # fork_name might be "Alice" or "Alice - Nature Mother" or "Deep Ecologist Node"
     if not fork_name:
         return "Unknown"
 
@@ -132,7 +148,7 @@ def analyze_conflict(decisions: list[dict]) -> dict:
 
     votes = {}
     for d in decisions:
-        agent = extract_agent_name(d.get('fork_name', 'Unknown'))
+        agent = extract_agent_name(d)
         vote = d.get('vote', 'ABSTAIN')
         votes[agent] = {
             "vote": vote,
@@ -282,7 +298,7 @@ def main():
     # Apply filters
     filtered = decisions.copy()
     if selected_agent != "All Agents":
-        filtered = [d for d in filtered if extract_agent_name(d.get('fork_name', '')) == selected_agent]
+        filtered = [d for d in filtered if extract_agent_name(d) == selected_agent]
     if selected_vote != "All Votes":
         filtered = [d for d in filtered if d.get('vote') == selected_vote]
     filtered = [d for d in filtered if d.get('confidence', 0) >= min_confidence]
@@ -325,7 +341,7 @@ def main():
         else:
             # Show most recent first
             for d in reversed(filtered[-20:]):
-                agent_name = extract_agent_name(d.get('fork_name', 'Unknown'))
+                agent_name = extract_agent_name(d)
                 agent_info = get_agent_info(agent_name)
                 vote = d.get('vote', 'UNKNOWN')
                 confidence = d.get('confidence', 0.0)
@@ -417,7 +433,7 @@ def main():
                     cols = st.columns(min(num_agents, 5))
 
                     for idx, d in enumerate(prop_decisions):
-                        agent_name = extract_agent_name(d.get('fork_name', 'Unknown'))
+                        agent_name = extract_agent_name(d)
                         agent_info = get_agent_info(agent_name)
                         vote = d.get('vote', 'UNKNOWN')
                         confidence = d.get('confidence', 0)
@@ -552,7 +568,7 @@ def main():
 
             agent_votes = defaultdict(lambda: {"YES": 0, "NO": 0, "ABSTAIN": 0, "NO_WITH_VETO": 0})
             for d in decisions:
-                agent = extract_agent_name(d.get('fork_name', 'Unknown'))
+                agent = extract_agent_name(d)
                 vote = d.get('vote', 'ABSTAIN')
                 agent_votes[agent][vote] += 1
 
@@ -565,7 +581,7 @@ def main():
 
             agent_conf = defaultdict(list)
             for d in decisions:
-                agent = extract_agent_name(d.get('fork_name', 'Unknown'))
+                agent = extract_agent_name(d)
                 agent_conf[agent].append(d.get('confidence', 0))
 
             avg_conf_data = {agent: sum(confs)/len(confs)*100 for agent, confs in agent_conf.items() if confs}
@@ -582,7 +598,7 @@ def main():
             total_comparisons = defaultdict(lambda: defaultdict(int))
 
             for pid, prop_decisions in grouped.items():
-                votes_by_agent = {extract_agent_name(d.get('fork_name')): d.get('vote') for d in prop_decisions}
+                votes_by_agent = {extract_agent_name(d): d.get('vote') for d in prop_decisions}
                 agents = list(votes_by_agent.keys())
 
                 for i, a1 in enumerate(agents):
@@ -630,7 +646,7 @@ def main():
             for d in decisions[-30:]:
                 timeline_data.append({
                     "Time": format_time_ago(d.get('timestamp', '')),
-                    "Agent": extract_agent_name(d.get('fork_name', 'Unknown')),
+                    "Agent": extract_agent_name(d),
                     "Proposal": f"#{d.get('proposal_id', 0)}",
                     "Vote": d.get('vote', 'UNKNOWN'),
                     "Confidence": f"{d.get('confidence', 0)*100:.0f}%"
@@ -638,7 +654,7 @@ def main():
 
             if timeline_data:
                 df_timeline = pd.DataFrame(reversed(timeline_data))
-                st.dataframe(df_timeline, use_container_width=True, hide_index=True)
+                st.dataframe(df_timeline, width="stretch", hide_index=True)
 
     # Auto-refresh
     if auto_refresh:

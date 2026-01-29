@@ -137,7 +137,41 @@ ollama pull qwen3:14b
 - 8-16GB VRAM depending on model
 - CPU-only possible but slow
 
-### 4. Shared Law Data (data/)
+### 4. Identity Adapter (adapter/)
+
+**Purpose:** Convert external persona.json files to valid Fork configurations
+
+**Components:**
+
+| Module | Purpose |
+|--------|---------|
+| `models.py` | Persona Pydantic model |
+| `loader.py` | PersonaLoader with search paths |
+| `mapper.py` | LLM-based PersonaMapper |
+| `prompts.py` | LLM schemas and prompt templates |
+| `cache.py` | ForkCache for caching compiled Forks |
+
+**Mapping Flow:**
+```
+persona.json → PersonaLoader → Persona → PersonaMapper → Fork → Validation
+                                              │
+                                              ▼
+                                        LLM (Ollama)
+                                              │
+                                              ▼
+                                        ForkCache (~/.cache/dahao/forks/)
+```
+
+**Key Validation:**
+- `aligns_with` MUST reference principles (`@precautionary_default`), NOT terms (`@protection`)
+- Generated Fork is validated against locked principles before use
+- Invalid personas fail-fast with descriptive error messages
+
+**Cache Location:** `~/.cache/dahao/forks/fork_{hash}.yaml`
+
+**Cache Invalidation:** Hash includes persona content + shared_law version
+
+### 5. Shared Law Data (data/)
 
 **Purpose:** DAHAO governance framework files
 
@@ -377,15 +411,27 @@ dahaod keys add sim_eve --keyring-backend test
 uv run python simulation_swarm.py
 ```
 
-**Agent Configuration:**
+**Agent Configuration (Persona-based):**
 
-| Agent | Fork File | Wallet | State File |
-|-------|-----------|--------|------------|
-| Alice | `simulation/alice.yaml` | sim_alice | `simulation/state_alice.json` |
-| Bob | `simulation/bob.yaml` | sim_bob | `simulation/state_bob.json` |
-| Charlie | `simulation/charlie.yaml` | sim_charlie | `simulation/state_charlie.json` |
-| Dave | `simulation/dave.yaml` | sim_dave | `simulation/state_dave.json` |
-| Eve | `simulation/eve.yaml` | sim_eve | `simulation/state_eve.json` |
+The swarm now uses persona.json files by default, which are converted to Forks at runtime via LLM mapping:
+
+| Agent | Persona File | Archetype | Wallet |
+|-------|--------------|-----------|--------|
+| Alice | `simulation/alice_persona.json` | Deep Ecologist | sim_alice |
+| Bob | `simulation/bob_persona.json` | Rational Capitalist | sim_bob |
+| Charlie | `simulation/charlie_persona.json` | Libertarian Decentralist | sim_charlie |
+| Dave | `simulation/dave_persona.json` | Institutional Conformist | sim_dave |
+| Eve | `simulation/eve_persona.json` | Security Researcher | sim_eve |
+
+**Persona to Fork Mapping:**
+
+At startup, each agent's persona is converted to a Fork:
+1. LLM maps `core_values` → `principles` with `aligns_with` references
+2. `decision_style` → `voting_style` and `abstain_threshold`
+3. Validation ensures Fork respects locked principles
+4. Agents with violating personas fail-fast and don't start
+
+**Note:** Bob's "Rational Capitalist" persona may fail validation if values conflict with locked principles like `@protection_asymmetry`.
 
 **Simulation Results (Actual Test):**
 
@@ -479,9 +525,11 @@ cat decisions.log | jq 'select(.governance_version == "1.0.0")'
 |------|---------|---------|
 | `sidecar_state.json` | Processed proposals | Optional (regenerates) |
 | `decisions.log` | Audit trail | Yes |
-| `fork.yaml` | Voting principles | Yes |
+| `fork.yaml` | Voting principles | Yes (if using fork mode) |
+| `*_persona.json` | External personas | Yes (if using persona mode) |
 | `config.yaml` | Configuration | Yes |
 | `data/*.json` | Shared law | Yes (version controlled) |
+| `~/.cache/dahao/forks/*.yaml` | Cached persona-to-fork mappings | Optional (regenerates) |
 
 ### Recovery Procedure
 

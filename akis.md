@@ -40,7 +40,17 @@ leviathan/
 ├── config.yaml             # Zincir, LLM, sidecar ayarlari
 ├── fork.yaml               # Kullanicinin oylama ilkeleri
 ├── simulation_swarm.py     # Coklu ajan simulasyon sistemi
+├── submit_test_proposals.py # Test teklif gonderme
+├── monitor.py              # Streamlit karar izleme panosu
 ├── decisions.log           # Oylama denetim kayitlari
+│
+├── adapter/                # Kimlik Adaptoru modulu
+│   ├── __init__.py         # Modul ihraclari
+│   ├── models.py           # Persona modeli
+│   ├── loader.py           # PersonaLoader sinifi
+│   ├── mapper.py           # PersonaMapper (LLM donusumu)
+│   ├── prompts.py          # LLM semalari ve promptlar
+│   └── cache.py            # ForkCache onbellekleme
 │
 ├── config/                 # Yapilandirma modulleri
 │   ├── settings.py         # Pydantic ayarlar
@@ -73,11 +83,8 @@ leviathan/
 │   └── domains.json        # Alan kayit defteri
 │
 └── simulation/             # Coklu ajan simulasyonu
-    ├── alice.yaml          # Doga Ana personasi
-    ├── bob.yaml            # Kapitalist persona
-    ├── charlie.yaml        # Anarsist persona
-    ├── dave.yaml           # Uyumcu persona
-    ├── eve.yaml            # Hacker persona
+    ├── *_persona.json      # Ajan persona dosyalari
+    ├── proposals/          # Test teklifleri
     └── wallets.yaml        # Test cuzdan bilgileri
 ```
 
@@ -88,13 +95,16 @@ leviathan/
 ### 2.1 Baslangic Akisi (main.py)
 
 ```
-python main.py --fork fork.yaml --wallet "24 kelimelik mnemonic" --name Alice
+python main.py --persona persona.json --wallet "24 kelimelik mnemonic" --name Alice
+# veya: python main.py --fork fork.yaml --wallet "..." --name Alice
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │ 1. YAPILANDIRMA YUKLEME                                         │
 │    ├─ config.yaml → ChainConfig + LLMConfig + SidecarConfig     │
-│    ├─ fork.yaml → Fork (kullanicinin oylama ilkeleri)           │
+│    ├─ --persona verilmisse: persona.json → Kimlik Adaptoru      │
+│    │     └─ LLM ile Fork'a donusturulur (asagida detayli)      │
+│    ├─ --persona verilmemisse: fork.yaml → Fork                  │
 │    └─ data/*.json → SharedLaw (kilit ilkeler, terimler)         │
 └─────────────────────────────────────────────────────────────────┘
                                     │
@@ -125,7 +135,87 @@ python main.py --fork fork.yaml --wallet "24 kelimelik mnemonic" --name Alice
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Ana Dongu Akisi (sidecar/loop.py)
+### 2.2 Kimlik Adaptoru Akisi (adapter/)
+
+Harici persona.json dosyalarini (Journal App'ten) gecerli Fork yapilandirmalarina donusturur.
+
+**Persona Formati (persona.json):**
+```json
+{
+  "user_id": "alice_123",
+  "archetype": "Deep Ecologist",
+  "core_values": [
+    "Doga, insan faydasindan bagimsiz olarak haklara sahiptir",
+    "Ekosistemlere zarar veriyorsa teknoloji yavaslatilmali",
+    "Mahremiyet bireysel ozgurluk icin gereklidir"
+  ],
+  "decision_style": "Yuksek dikkat, guclu kanit gerektirir",
+  "last_updated": "2026-01-29T14:00:00Z"
+}
+```
+
+**Donusum Akisi:**
+```
+persona.json
+      │
+      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ PersonaLoader                                                    │
+│   ├─ CLI arg → ./persona.json → ~/.config/dahao/persona.json    │
+│   └─ load_or_raise() → Persona objesi                           │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ PersonaMapper (LLM tabanli)                                      │
+│   ├─ SharedLaw'dan terimler ve ilkeleri al                       │
+│   ├─ System prompt olustur (gecerli aligns_with degerleri)       │
+│   ├─ LLM'e persona detaylarini gonder                            │
+│   └─ JSON cikti al:                                              │
+│       {                                                          │
+│         "name": "Deep Ecologist Node",                          │
+│         "inherits": "dahao-core v1.0.0",                        │
+│         "uses_terms": ["@protection", "@harm"],                 │
+│         "principles": [                                         │
+│           {                                                      │
+│             "statement": "Ekosistemlere zarar veren...",        │
+│             "aligns_with": "@precautionary_default"             │
+│           }                                                      │
+│         ],                                                       │
+│         "voting_style": "cautious",                             │
+│         "abstain_threshold": 0.7                                │
+│       }                                                          │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Dogrulama                                                        │
+│   ├─ aligns_with sadece ILKE adlari olmali (terim degil!)       │
+│   │     ✓ Gecerli: @precautionary_default, @purpose_primacy     │
+│   │     ✗ Gecersiz: @protection, @harm (bunlar TERİM)           │
+│   ├─ Kilit ilkelere karsi kontrol                                │
+│   └─ Hata varsa → fail-fast (ajan baslamaz)                     │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ ForkCache (opsiyonel)                                            │
+│   ├─ Konum: ~/.cache/dahao/forks/fork_{hash}.yaml               │
+│   ├─ Anahtar: SHA256(persona_content + shared_law_version)       │
+│   └─ Inceleme icin YAML olarak kaydedilir                       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Terim vs Ilke (Onemli Ayrım):**
+
+| Kavram | Ornekler | Kullanildigi Yer |
+|--------|----------|------------------|
+| **Terim** | `@protection`, `@harm`, `@evidence` | `uses_terms` dizisi |
+| **Ilke** | `@precautionary_default`, `@purpose_primacy` | `aligns_with` alani |
+
+`aligns_with` alaninda terim kullanilirsa dogrulama hatasi verir.
+
+### 2.3 Ana Dongu Akisi (sidecar/loop.py)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -169,7 +259,7 @@ python main.py --fork fork.yaml --wallet "24 kelimelik mnemonic" --name Alice
                                └───────────────────────────┘
 ```
 
-### 2.3 Teklif Isleme Akisi
+### 2.4 Teklif Isleme Akisi
 
 ```
 _process_proposal(proposal)
@@ -516,15 +606,19 @@ submit_vote(proposal_id, choice, wallet)
 
 ## 7. Simulasyon Sistemi (simulation_swarm.py)
 
-### 7.1 Ajan Personalari
+### 7.1 Ajan Personalari (Persona Tabanli)
 
-| Ajan | Persona | Oylama Egilimi |
-|------|---------|----------------|
-| Alice | Doga Ana | Biyosentrik, eko-odakli |
-| Bob | Kapitalist | Kar odakli, buyume odakli |
-| Charlie | Anarsist | Merkeziyetsizlik maksimalisti |
-| Dave | Uyumcu | Mevcut durum savunucusu |
-| Eve | Hacker | Guvenlik arastirmacisi |
+Suru artik varsayilan olarak persona.json dosyalarini kullaniyor:
+
+| Ajan | Persona Dosyasi | Arketip |
+|------|-----------------|---------|
+| Alice | `simulation/alice_persona.json` | Deep Ecologist |
+| Bob | `simulation/bob_persona.json` | Rational Capitalist |
+| Charlie | `simulation/charlie_persona.json` | Libertarian Decentralist |
+| Dave | `simulation/dave_persona.json` | Institutional Conformist |
+| Eve | `simulation/eve_persona.json` | Security Researcher |
+
+**Not:** Kilit ilkeleri ihlal eden personalar (ornegin Bob'un "cevre pahasina kar") dogrulama basarisiz olur ve ajan baslamaz. Bu beklenen fail-fast davranisidir.
 
 ### 7.2 Suru Calistirma Akisi
 
@@ -549,10 +643,13 @@ python simulation_swarm.py
 ┌─────────────────────────────────────────┐
 │ 3. Ajanlari Baslat                       │
 │    Her ajan icin (3 sn arayla):          │
-│    ├─ Benzersiz fork (alice.yaml, ...)  │
+│    ├─ Persona dosyasi (alice_persona.json)│
+│    │   └─ LLM ile Fork'a donusturulur   │
 │    ├─ Benzersiz cuzdan                   │
 │    ├─ Benzersiz durum dosyasi            │
-│    └─ subprocess.Popen(main.py ...)      │
+│    └─ subprocess.Popen(main.py           │
+│         --persona simulation/X_persona.json│
+│         --name X ...)                    │
 └────────────────────┬────────────────────┘
                      │
                      ▼
@@ -562,6 +659,12 @@ python simulation_swarm.py
 │    engelsiz okuma + renkli cikti         │
 │    (Yesil=Alice, Sari=Bob, ...)         │
 └─────────────────────────────────────────┘
+
+# Test tekliflerini gonder
+python submit_test_proposals.py
+
+# Gercek zamanli izleme
+streamlit run monitor.py
 ```
 
 ---
@@ -627,10 +730,23 @@ sidecar:
 ### 10.1 Temel Kullanim
 
 ```bash
-# Varsayilan ayarlarla calistir
+# Varsayilan ayarlarla calistir (fork.yaml kullanir)
 python main.py
 
-# Tum parametrelerle calistir
+# Persona ile calistir (onerilen)
+python main.py \
+  --persona persona.json \
+  --wallet "24 kelimelik mnemonic buraya" \
+  --name Alice \
+  --log-level DEBUG
+
+# Persona ile onbellekleme (inceleme icin YAML kaydet)
+python main.py \
+  --persona persona.json \
+  --persona-cache \
+  --persona-cache-dir ./debug
+
+# Fork dosyasi ile calistir (eski yontem)
 python main.py \
   --fork simulation/alice.yaml \
   --wallet "24 kelimelik mnemonic buraya" \
@@ -646,7 +762,23 @@ python main.py --skip-fork-validation
 python main.py --simple-validation
 ```
 
-### 10.2 Simulasyon Komutlari
+### 10.2 CLI Argumanlar Tablosu
+
+| Arguman | Aciklama |
+|---------|----------|
+| `--persona` | persona.json dosya yolu (LLM ile Fork'a donusturulur) |
+| `--persona-cache` | Persona-Fork eslemelerini onbelleklemeyi etkinlestir |
+| `--persona-cache-dir` | Ozel onbellek dizini (varsayilan: ~/.cache/dahao/forks/) |
+| `--fork` | fork.yaml dosya yolu (persona verilmezse kullanilir) |
+| `--wallet` | 24 kelimelik mnemonic |
+| `--state` | Durum dosyasi yolu |
+| `--data-dir` | SharedLaw veri dizini |
+| `--skip-fork-validation` | Fork dogrulamasini atla |
+| `--simple-validation` | LLM yerine desen tabanli dogrulama |
+| `--name` | Gunlukler icin ajan adi |
+| `--log-level` | DEBUG, INFO, WARNING, ERROR |
+
+### 10.3 Simulasyon Komutlari
 
 ```bash
 # Tum ajanlari calistir
@@ -675,6 +807,11 @@ python simulation_swarm.py --skip-checks
 | "Insufficient funds" | Cuzdan bakiyesi yetersiz | Cuzdan fonla |
 | "Fork validation failed" | Fork kilit ilkeleri ihlal ediyor | fork.yaml'i duzelt veya `--skip-fork-validation` |
 | "SharedLawLoadError" | data/*.json dosyalari eksik | data/ klasorunu kontrol et |
+| "PersonaNotFoundError" | persona.json bulunamadi | Dosya yolunu kontrol et veya `--fork` kullan |
+| "PersonaMappingError" | LLM persona esleme hatasi | LLM erisimini kontrol et, persona degerlerini incele |
+| "Aligned principle '@protection' does not exist" | LLM terim kullanmis (ilke yerine) | Persona onbellegini temizle: `rm ~/.cache/dahao/forks/*.yaml` |
+| "LLM used term '@xxx' in aligns_with" | Terim vs Ilke karisikligi | Mapper artik dogrulama yapiyor ve reddediyor |
+| Persona kilit ilke dogrulamasini gecemiyor | Persona degerleri DAHAO cekirdegi ile catisiyor | Persona degerlerini ayarla veya fail-fast davranisini kabul et |
 
 ---
 
@@ -688,20 +825,32 @@ python simulation_swarm.py --skip-checks
 │   [BASLANGIC]                                                           │
 │        │                                                                │
 │        ▼                                                                │
-│   ┌─────────┐     ┌─────────┐     ┌─────────┐                          │
-│   │ config  │────►│  fork   │────►│SharedLaw│                          │
-│   │  .yaml  │     │  .yaml  │     │  data/  │                          │
-│   └─────────┘     └─────────┘     └─────────┘                          │
-│        │               │               │                                │
-│        └───────────────┴───────────────┘                                │
-│                        │                                                │
-│                        ▼                                                │
-│              ┌─────────────────┐                                        │
-│              │  Fork Dogrulama │                                        │
-│              │  (LLM/Pattern)  │                                        │
-│              └────────┬────────┘                                        │
-│                       │                                                 │
-│                       ▼                                                 │
+│   ┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐          │
+│   │ config  │     │ persona │     │  fork   │     │SharedLaw│          │
+│   │  .yaml  │     │  .json  │     │  .yaml  │     │  data/  │          │
+│   └────┬────┘     └────┬────┘     └────┬────┘     └────┬────┘          │
+│        │               │               │               │                │
+│        │               ▼               │               │                │
+│        │    ┌─────────────────┐        │               │                │
+│        │    │ Kimlik Adaptoru │        │               │                │
+│        │    │ (LLM Donusumu)  │────────┼───────────────┤                │
+│        │    └────────┬────────┘        │               │                │
+│        │             │                 │               │                │
+│        │             ▼                 │               │                │
+│        │    ┌─────────────────┐        │               │                │
+│        │    │      Fork       │◄───────┘               │                │
+│        │    │   (oluşturulan) │                        │                │
+│        │    └────────┬────────┘                        │                │
+│        │             │                                 │                │
+│        └─────────────┴─────────────────────────────────┘                │
+│                      │                                                  │
+│                      ▼                                                  │
+│            ┌─────────────────┐                                          │
+│            │  Fork Dogrulama │                                          │
+│            │  (LLM/Pattern)  │                                          │
+│            └────────┬────────┘                                          │
+│                     │                                                   │
+│                     ▼                                                   │
 │   ┌─────────────────────────────────────────────────┐                  │
 │   │              SIDECAR DONGUSU                     │                  │
 │   │  ┌─────────────────────────────────────────┐    │                  │
@@ -721,6 +870,7 @@ python simulation_swarm.py --skip-checks
 │   │                  CIKTILAR                        │                  │
 │   │  ├─ decisions.log: Denetim kayitlari            │                  │
 │   │  ├─ sidecar_state.json: Islenmis teklifler      │                  │
+│   │  ├─ ~/.cache/dahao/forks/: Onbellekli Fork'lar  │                  │
 │   │  └─ Zincir: MsgVote islemleri                   │                  │
 │   └─────────────────────────────────────────────────┘                  │
 │                                                                         │
@@ -729,12 +879,19 @@ python simulation_swarm.py --skip-checks
 
 ---
 
-## 13. Gelecek Gelistirmeler
+## 13. Tamamlanan Ozellikler
+
+- **Kimlik Adaptoru**: Harici persona.json dosyalarini Fork'a donusturme (LLM tabanli)
+- **Persona Onbellekleme**: Derlenmis Fork'lari YAML olarak kaydetme
+- **Gercek Zamanli Izleme**: Streamlit tabanli karar izleme panosu (monitor.py)
+- **Test Teklif Sistemi**: Otomatik test teklifi gonderme (submit_test_proposals.py)
+- **Terim vs Ilke Dogrulamasi**: aligns_with alaninda terim kullanimi engellendi
+
+## 14. Gelecek Gelistirmeler
 
 - **IPFS Sync**: SharedLaw guncellemelerini IPFS uzerinden cekme
 - **Proof of Alignment**: Oylama gerekceleri zincir uzerinde kanitlanabilir
 - **Multi-chain Support**: Birden fazla Cosmos zincirine baglanti
-- **Web Dashboard**: Gercek zamanli oylama izleme arayuzu
 - **Plugin System**: Ozel karar mekanizmalari ekleme
 
 ---

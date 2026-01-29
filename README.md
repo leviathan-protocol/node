@@ -161,11 +161,64 @@ python main.py \
 | Argument | Description |
 |----------|-------------|
 | `--fork` | Path to fork.yaml (default: fork.yaml) |
+| `--persona` | Path to persona.json (converts to Fork via LLM) |
+| `--persona-cache` | Enable caching of persona-to-fork mappings |
+| `--persona-cache-dir` | Custom cache directory (default: ~/.cache/dahao/forks/) |
 | `--wallet` | 24-word mnemonic (overrides env var) |
 | `--data-dir` | Shared law data directory (default: data/) |
 | `--skip-fork-validation` | Skip validation against shared law |
+| `--simple-validation` | Use fast pattern-based validation instead of LLM |
 | `--name` | Agent name for logs |
 | `--log-level` | DEBUG, INFO, WARNING, ERROR |
+
+## Identity Adapter (Persona to Fork)
+
+The Identity Adapter converts external `persona.json` files (e.g., from a Journal App) into valid Fork configurations using LLM semantic mapping.
+
+### Usage
+
+```bash
+# Use persona instead of fork.yaml
+python main.py --persona ./persona.json
+
+# Use persona with caching (inspect generated Fork)
+python main.py --persona ./persona.json --persona-cache
+
+# Fallback to fork.yaml if no persona
+python main.py --fork fork.yaml
+```
+
+### Persona Format
+
+```json
+{
+  "user_id": "alice_123",
+  "archetype": "Deep Ecologist",
+  "core_values": [
+    "Nature has intrinsic rights regardless of human utility",
+    "Slow down technological acceleration if it harms ecosystems",
+    "Privacy is essential for individual freedom"
+  ],
+  "decision_style": "High caution, requires strong evidence",
+  "last_updated": "2026-01-29T14:00:00Z"
+}
+```
+
+### Mapping Process
+
+1. **Load persona** from JSON file
+2. **LLM maps** persona values to Fork principles with `aligns_with` references
+3. **Validation** ensures generated Fork respects locked principles
+4. **Fail-fast** if persona violates locked principles (e.g., "Ignore all environmental concerns")
+
+### Key Concepts
+
+| Concept | Description | Used In |
+|---------|-------------|---------|
+| **Terms** | Vocabulary (`@protection`, `@harm`) | `uses_terms` array |
+| **Principles** | Governance rules (`@precautionary_default`) | `aligns_with` field |
+
+The mapper validates that `aligns_with` only references actual principles, not terms.
 
 ## Decision Logging
 
@@ -199,17 +252,30 @@ leviathan/
 ├── config.yaml          # Chain/LLM settings
 ├── fork.yaml            # Voting principles
 ├── decisions.log        # Audit trail
+├── simulation_swarm.py  # Multi-agent simulation
+├── submit_test_proposals.py  # Test proposal submission
+├── monitor.py           # Streamlit decision monitor
+├── adapter/             # Identity Adapter module
+│   ├── models.py        # Persona model
+│   ├── loader.py        # PersonaLoader class
+│   ├── mapper.py        # PersonaMapper (LLM conversion)
+│   ├── prompts.py       # LLM schemas and prompts
+│   └── cache.py         # ForkCache for caching
 ├── config/              # Configuration models
 ├── chain/               # CosmPy blockchain interaction
 ├── brain/               # Ollama LLM integration
 ├── sidecar/             # Polling loop and state
 ├── models/              # Data models
-└── data/                # DAHAO shared law
-    ├── terms.json       # Universal vocabulary
-    ├── principles.json  # Core principles
-    ├── rules.json       # Governance rules
-    ├── governance.json  # Meta-configuration
-    └── domains.json     # Domain registry
+├── data/                # DAHAO shared law
+│   ├── terms.json       # Universal vocabulary
+│   ├── principles.json  # Core principles
+│   ├── rules.json       # Governance rules
+│   ├── governance.json  # Meta-configuration
+│   └── domains.json     # Domain registry
+└── simulation/          # Swarm simulation files
+    ├── *_persona.json   # Agent persona files
+    ├── proposals/       # Test proposals
+    └── wallets.yaml     # Test wallet config
 ```
 
 ## Swarm Simulation - AI Democracy
@@ -268,12 +334,31 @@ dahaod keys add sim_alice --keyring-backend test
 # 2. Fund wallets
 ./simulation/fund_wallets.sh
 
-# 3. Run swarm
+# 3. Run swarm (uses persona.json files by default)
 uv run python simulation_swarm.py
 
-# 4. Submit proposals and watch votes
-dahaod tx gov submit-proposal /tmp/proposal.json --from alice --yes
+# 4. Submit test proposals
+uv run python submit_test_proposals.py
+
+# 5. Monitor decisions in real-time
+uv run streamlit run monitor.py
 ```
+
+### Persona Files
+
+The swarm now uses persona.json files (Identity Adapter) by default:
+
+| Agent | Persona File | Archetype |
+|-------|--------------|-----------|
+| Alice | `simulation/alice_persona.json` | Deep Ecologist |
+| Bob | `simulation/bob_persona.json` | Rational Capitalist |
+| Charlie | `simulation/charlie_persona.json` | Libertarian Decentralist |
+| Dave | `simulation/dave_persona.json` | Institutional Conformist |
+| Eve | `simulation/eve_persona.json` | Security Researcher |
+
+Each persona is converted to a Fork at runtime via LLM mapping, ensuring principles align with SharedLaw.
+
+**Note:** Personas that violate locked principles (e.g., Bob's "profit at environmental cost") will fail validation and the agent won't start. This is intentional fail-fast behavior.
 
 Each agent evaluates the same proposal through their unique value lens and votes accordingly.
 

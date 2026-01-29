@@ -128,6 +128,7 @@ def log_decision(
     fork: Fork,
     log_file: str | Path = "decisions.log",
     shared_law: "SharedLaw | None" = None,
+    agent_name: str | None = None,
 ):
     """Log a voting decision for transparency and future Proof of Alignment.
 
@@ -161,6 +162,7 @@ def log_decision(
         "proposal_id": proposal.id,
         "proposal_title": proposal.title,
         "proposal_type": proposal.proposal_type,
+        "agent_name": agent_name,  # CLI --name for monitor matching
         "fork_name": fork.name,
         "fork_voting_style": fork.voting_style,
         "fork_inherits": fork.inherits,

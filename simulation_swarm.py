@@ -2,11 +2,14 @@
 """
 DAHAO Swarm Simulation - "The Swarm Test"
 
-Runs multiple sidecar agents with different personalities (Forks) to simulate
+Runs multiple sidecar agents with different personalities (Personas) to simulate
 a diverse validator set voting on governance proposals.
 
 Architecture:
-  1 Chain (DAHAO) + 1 LLM (Ollama) + N Sidecars (each with unique Fork + Wallet)
+  1 Chain (DAHAO) + 1 LLM (Ollama) + N Sidecars (each with unique Persona + Wallet)
+
+The LLM converts each persona.json into a valid Fork configuration that respects
+the SharedLaw governance framework.
 
 Usage:
   1. Start the chain: cd dahao && ignite chain serve
@@ -15,11 +18,11 @@ Usage:
   4. Run: python simulation_swarm.py
 
 The script will launch 5 agents in parallel:
-  - Alice (Nature Mother) - Biocentric, votes NO on environmental risks
-  - Bob (Capitalist) - Profit-focused, votes YES on growth opportunities
-  - Charlie (Anarchist) - Decentralization maximalist
-  - Dave (Conformist) - Status quo defender
-  - Eve (Hacker) - Security researcher
+  - Alice (Deep Ecologist) - Biocentric, votes NO on environmental risks
+  - Bob (Rational Capitalist) - Profit-focused, votes YES on growth opportunities
+  - Charlie (Decentralization Maximalist) - Opposes centralization
+  - Dave (Pragmatic Traditionalist) - Status quo defender
+  - Eve (Security Researcher) - Requires security audits
 """
 
 import argparse
@@ -32,13 +35,13 @@ from pathlib import Path
 
 import yaml
 
-# Default agent configurations
+# Agent configurations with persona files
 DEFAULT_AGENTS = [
-    {"name": "Alice", "fork": "simulation/alice.yaml", "color": "\033[92m"},  # Green
-    {"name": "Bob", "fork": "simulation/bob.yaml", "color": "\033[93m"},      # Yellow
-    {"name": "Charlie", "fork": "simulation/charlie.yaml", "color": "\033[94m"},  # Blue
-    {"name": "Dave", "fork": "simulation/dave.yaml", "color": "\033[95m"},    # Magenta
-    {"name": "Eve", "fork": "simulation/eve.yaml", "color": "\033[96m"},      # Cyan
+    {"name": "Alice", "persona": "simulation/alice_persona.json", "color": "\033[92m"},  # Green
+    {"name": "Bob", "persona": "simulation/bob_persona.json", "color": "\033[93m"},      # Yellow
+    {"name": "Charlie", "persona": "simulation/charlie_persona.json", "color": "\033[94m"},  # Blue
+    {"name": "Dave", "persona": "simulation/dave_persona.json", "color": "\033[95m"},    # Magenta
+    {"name": "Eve", "persona": "simulation/eve_persona.json", "color": "\033[96m"},      # Cyan
 ]
 
 RESET_COLOR = "\033[0m"
@@ -100,7 +103,7 @@ def verify_prerequisites():
     return errors
 
 
-def run_swarm(agents: list, wallets: dict, startup_delay: float = 3.0):
+def run_swarm(agents: list, wallets: dict, persona_cache: bool = False, startup_delay: float = 3.0):
     """Launch all agent sidecars."""
     processes = []
 
@@ -116,9 +119,16 @@ def run_swarm(agents: list, wallets: dict, startup_delay: float = 3.0):
         print(f"Please edit simulation/wallets.yaml and add mnemonics.")
         sys.exit(1)
 
+    # Verify persona files exist
+    for agent in agents:
+        persona_path = Path(agent["persona"])
+        if not persona_path.exists():
+            print(f"ERROR: Persona file not found: {persona_path}")
+            sys.exit(1)
+
     for agent in agents:
         name = agent["name"]
-        fork = agent["fork"]
+        persona = agent["persona"]
         color = agent["color"]
         mnemonic = wallets[name.lower()]
 
@@ -127,14 +137,18 @@ def run_swarm(agents: list, wallets: dict, startup_delay: float = 3.0):
 
         print(f"{color}Starting {name}...{RESET_COLOR}")
 
-        # Build command
+        # Build command with persona
         cmd = [
             sys.executable, "main.py",
-            "--fork", fork,
+            "--persona", persona,
             "--wallet", mnemonic,
             "--state", state_file,
             "--name", name,
         ]
+
+        # Add caching if enabled
+        if persona_cache:
+            cmd.append("--persona-cache")
 
         # Start process
         proc = subprocess.Popen(
@@ -211,9 +225,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python simulation_swarm.py              # Run all 5 agents
-  python simulation_swarm.py --init       # Create wallet template
-  python simulation_swarm.py --agents 3   # Run first 3 agents only
+  python simulation_swarm.py                    # Run all 5 agents
+  python simulation_swarm.py --init             # Create wallet template
+  python simulation_swarm.py --agents 3         # Run first 3 agents only
+  python simulation_swarm.py --persona-cache    # Cache persona-to-fork mappings
         """,
     )
     parser.add_argument(
@@ -232,6 +247,11 @@ Examples:
         type=float,
         default=3.0,
         help="Startup delay between agents in seconds (default: 3.0)",
+    )
+    parser.add_argument(
+        "--persona-cache",
+        action="store_true",
+        help="Enable caching of persona-to-fork mappings (faster after first run)",
     )
     parser.add_argument(
         "--skip-checks",
@@ -267,7 +287,7 @@ Examples:
     agents = DEFAULT_AGENTS[:args.agents]
 
     # Run swarm
-    processes = run_swarm(agents, wallets, args.delay)
+    processes = run_swarm(agents, wallets, args.persona_cache, args.delay)
 
     # Handle Ctrl+C
     def signal_handler(sig, frame):

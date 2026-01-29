@@ -1,0 +1,17 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.gov.v1.MsgExecLegacyContent",
+      "content": {
+        "@type": "/cosmos.gov.v1beta1.TextProposal",
+        "title": "Routine Parameter Adjustment - Voting Period Extension",
+        "description": "This proposal makes a minor adjustment to governance parameters as recommended by the core development team. Change: Extend voting period from 5 days to 7 days. Rationale: Allows more validators to participate in voting, especially across different timezones. This change has been tested on testnet and approved by the technical committee. No breaking changes expected. Follows the established upgrade path documented in GIP-42."
+      },
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
+    }
+  ],
+  "metadata": "ipfs://parameter-update-proposal",
+  "deposit": "10000000stake",
+  "title": "Routine Parameter Adjustment - Voting Period Extension",
+  "summary": "Core team recommended voting period extension from 5 to 7 days"
+}

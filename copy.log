@@ -1,4 +1,4 @@
-uv run  python simulation_swarm.py     
+(base) aigent@Mac leviathan %   uv run  python simulation_swarm.py   
 Prerequisites OK
 
 ============================================================
@@ -8,7 +8,7 @@ Prerequisites OK
 
 Starting Alice...
 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-I0000 00:00:1769637291.000903 1188328 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+I0000 00:00:1769696896.354016 3725167 fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
 Starting Bob...
 Starting Charlie...
 Starting Dave...
@@ -18,453 +18,170 @@ Starting Eve...
   ALL AGENTS RUNNING - Press Ctrl+C to stop
 ============================================================
 
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] __main__: Starting DAHAO Alice
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] __main__: Starting DAHAO Bob
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] __main__: Starting DAHAO Charlie
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] __main__: Starting DAHAO Dave
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] __main__: Starting DAHAO Eve
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] __main__: Loaded settings for chain: dahao
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] __main__: Loaded fork: Alice - Nature Mother
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] __main__: Voting style: cautious
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] __main__: Principles: 5
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] chain.wallet: Wallet initialized: cosmos1an6syc50wstcualuexqfkungaw6jswm5vsl4dj
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] __main__: Wallet address: cosmos1an6syc50wstcualuexqfkungaw6jswm5vsl4dj
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] chain.wallet: Wallet balance: 10000000 stake
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] brain.llm: Ollama model verified: qwen3:14b
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] __main__: LLM loaded successfully
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] __main__: Starting sidecar loop...
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] sidecar.loop: Starting sidecar loop (poll interval: 60s)
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] sidecar.loop: Processing proposal #1: Test Proposal - Increase Block Size
-[Alice] 2026-01-28 16:54:51 [Alice] [INFO] brain.decision: Evaluating proposal #1: Test Proposal - Increase Block Size
-[Alice] 2026-01-28 16:58:28 [Alice] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Alice] 2026-01-28 16:58:28 [Alice] [INFO] brain.decision: Decision for #1: NO (confidence: 0.70)
-[Alice] 2026-01-28 16:58:28 [Alice] [INFO] sidecar.logger: Logged decision for proposal #1 to decisions.log
-[Alice] 2026-01-28 16:58:28 [Alice] [INFO] sidecar.logger: DECISION: Proposal #1 (Test Proposal - Increase Block Size) -> NO (confidence: 0.70)
-[Alice] 2026-01-28 16:58:28 [Alice] [INFO] sidecar.loop: Submitting vote NO for proposal #1
-[Alice] 2026-01-28 16:58:28 [Alice] [INFO] chain.governance: Submitting vote NO for proposal #1
-[Alice] 2026-01-28 16:58:30 [Alice] [INFO] chain.governance: Vote submitted successfully. TX hash: C55F8E0D4F1E5327099641252F0833DC3A4D65AA46866230905D5B6736676A8F
-[Alice] 2026-01-28 16:58:30 [Alice] [INFO] sidecar.loop: Vote submitted for proposal #1
-[Alice] 2026-01-28 16:58:30 [Alice] [INFO] sidecar.loop: Processing proposal #2: Enable IBC Transfers with Untested Chain
-[Alice] 2026-01-28 16:58:30 [Alice] [INFO] brain.decision: Evaluating proposal #2: Enable IBC Transfers with Untested Chain
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] __main__: Loaded settings for chain: dahao
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] __main__: Loaded fork: Bob - The Capitalist
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] __main__: Voting style: aggressive
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] __main__: Principles: 5
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] chain.wallet: Wallet initialized: cosmos14c9muh09vexe947nuwyv5xy5tmnwez68he2z9f
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] __main__: Wallet address: cosmos14c9muh09vexe947nuwyv5xy5tmnwez68he2z9f
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] chain.wallet: Wallet balance: 10000000 stake
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] brain.llm: Ollama model verified: qwen3:14b
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] __main__: LLM loaded successfully
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] __main__: Starting sidecar loop...
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] sidecar.loop: Starting sidecar loop (poll interval: 60s)
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] sidecar.loop: Processing proposal #1: Test Proposal - Increase Block Size
-[Bob] 2026-01-28 16:54:54 [Bob] [INFO] brain.decision: Evaluating proposal #1: Test Proposal - Increase Block Size
-[Bob] 2026-01-28 16:58:40 [Bob] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Bob] 2026-01-28 16:58:40 [Bob] [INFO] brain.decision: Decision for #1: YES (confidence: 0.90)
-[Bob] 2026-01-28 16:58:40 [Bob] [INFO] sidecar.logger: Logged decision for proposal #1 to decisions.log
-[Bob] 2026-01-28 16:58:40 [Bob] [INFO] sidecar.logger: DECISION: Proposal #1 (Test Proposal - Increase Block Size) -> YES (confidence: 0.90)
-[Bob] 2026-01-28 16:58:40 [Bob] [INFO] sidecar.loop: Submitting vote YES for proposal #1
-[Bob] 2026-01-28 16:58:40 [Bob] [INFO] chain.governance: Submitting vote YES for proposal #1
-[Bob] 2026-01-28 16:58:42 [Bob] [INFO] chain.governance: Vote submitted successfully. TX hash: BA32711E88A92065EEB9750118E632A10871730E0D3DB81625111D4E3E5F2EB7
-[Bob] 2026-01-28 16:58:42 [Bob] [INFO] sidecar.loop: Vote submitted for proposal #1
-[Bob] 2026-01-28 16:58:42 [Bob] [INFO] sidecar.loop: Processing proposal #2: Enable IBC Transfers with Untested Chain
-[Bob] 2026-01-28 16:58:42 [Bob] [INFO] brain.decision: Evaluating proposal #2: Enable IBC Transfers with Untested Chain
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] __main__: Loaded settings for chain: dahao
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] __main__: Loaded fork: Charlie - The Anarchist
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] __main__: Voting style: moderate
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] __main__: Principles: 5
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] chain.wallet: Wallet initialized: cosmos1skvg6qkkg6x0uuc8e9zld47j2umjx0uz92s6nv
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] __main__: Wallet address: cosmos1skvg6qkkg6x0uuc8e9zld47j2umjx0uz92s6nv
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] chain.wallet: Wallet balance: 10000000 stake
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] brain.llm: Ollama model verified: qwen3:14b
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] __main__: LLM loaded successfully
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] __main__: Starting sidecar loop...
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] sidecar.loop: Starting sidecar loop (poll interval: 60s)
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] sidecar.loop: Processing proposal #1: Test Proposal - Increase Block Size
-[Charlie] 2026-01-28 16:54:57 [Charlie] [INFO] brain.decision: Evaluating proposal #1: Test Proposal - Increase Block Size
-[Charlie] 2026-01-28 16:58:53 [Charlie] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Charlie] 2026-01-28 16:58:53 [Charlie] [INFO] brain.decision: Decision for #1: NO (confidence: 0.75)
-[Charlie] 2026-01-28 16:58:53 [Charlie] [INFO] sidecar.logger: Logged decision for proposal #1 to decisions.log
-[Charlie] 2026-01-28 16:58:53 [Charlie] [INFO] sidecar.logger: DECISION: Proposal #1 (Test Proposal - Increase Block Size) -> NO (confidence: 0.75)
-[Charlie] 2026-01-28 16:58:53 [Charlie] [INFO] sidecar.loop: Submitting vote NO for proposal #1
-[Charlie] 2026-01-28 16:58:53 [Charlie] [INFO] chain.governance: Submitting vote NO for proposal #1
-[Charlie] 2026-01-28 16:58:55 [Charlie] [INFO] chain.governance: Vote submitted successfully. TX hash: 94712C62B27A5C957A4EF3A6654B5C5DA2E3B4671D3D6AD5BAB0804D45E7C470
-[Charlie] 2026-01-28 16:58:55 [Charlie] [INFO] sidecar.loop: Vote submitted for proposal #1
-[Charlie] 2026-01-28 16:58:55 [Charlie] [INFO] sidecar.loop: Processing proposal #2: Enable IBC Transfers with Untested Chain
-[Charlie] 2026-01-28 16:58:55 [Charlie] [INFO] brain.decision: Evaluating proposal #2: Enable IBC Transfers with Untested Chain
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] __main__: Loaded settings for chain: dahao
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] __main__: Loaded fork: Dave - The Conformist
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] __main__: Voting style: cautious
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] __main__: Principles: 5
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] chain.wallet: Wallet initialized: cosmos1tkyts2q8ne56w7lhfvvn4g4g00g50gt7cqcuep
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] __main__: Wallet address: cosmos1tkyts2q8ne56w7lhfvvn4g4g00g50gt7cqcuep
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] chain.wallet: Wallet balance: 10000000 stake
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] brain.llm: Ollama model verified: qwen3:14b
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] __main__: LLM loaded successfully
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] __main__: Starting sidecar loop...
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] sidecar.loop: Starting sidecar loop (poll interval: 60s)
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] sidecar.loop: Processing proposal #1: Test Proposal - Increase Block Size
-[Dave] 2026-01-28 16:55:00 [Dave] [INFO] brain.decision: Evaluating proposal #1: Test Proposal - Increase Block Size
-[Dave] 2026-01-28 16:59:04 [Dave] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Dave] 2026-01-28 16:59:04 [Dave] [INFO] brain.decision: Decision for #1: NO (confidence: 0.60)
-[Dave] 2026-01-28 16:59:04 [Dave] [INFO] sidecar.logger: Logged decision for proposal #1 to decisions.log
-[Dave] 2026-01-28 16:59:04 [Dave] [INFO] sidecar.logger: DECISION: Proposal #1 (Test Proposal - Increase Block Size) -> NO (confidence: 0.60)
-[Dave] 2026-01-28 16:59:04 [Dave] [INFO] sidecar.loop: Submitting vote NO for proposal #1
-[Dave] 2026-01-28 16:59:04 [Dave] [INFO] chain.governance: Submitting vote NO for proposal #1
-[Dave] 2026-01-28 16:59:06 [Dave] [INFO] chain.governance: Vote submitted successfully. TX hash: 787455716CDB3A2B82013DB5AECD4F10A1C4B8CDD9790AFDECC22EEBF1E87BB4
-[Dave] 2026-01-28 16:59:06 [Dave] [INFO] sidecar.loop: Vote submitted for proposal #1
-[Dave] 2026-01-28 16:59:06 [Dave] [INFO] sidecar.loop: Processing proposal #2: Enable IBC Transfers with Untested Chain
-[Dave] 2026-01-28 16:59:06 [Dave] [INFO] brain.decision: Evaluating proposal #2: Enable IBC Transfers with Untested Chain
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] __main__: Loaded settings for chain: dahao
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] __main__: Loaded fork: Eve - The Hacker
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] __main__: Voting style: cautious
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] __main__: Principles: 5
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] chain.wallet: Wallet initialized: cosmos18q6z7dsguuu3qndqjcm3fju33vzfuh33vu52n8
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] __main__: Wallet address: cosmos18q6z7dsguuu3qndqjcm3fju33vzfuh33vu52n8
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] chain.wallet: Wallet balance: 10000000 stake
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] brain.llm: Ollama model verified: qwen3:14b
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] __main__: LLM loaded successfully
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] __main__: Starting sidecar loop...
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] sidecar.loop: Starting sidecar loop (poll interval: 60s)
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] sidecar.loop: Processing proposal #1: Test Proposal - Increase Block Size
-[Eve] 2026-01-28 16:55:03 [Eve] [INFO] brain.decision: Evaluating proposal #1: Test Proposal - Increase Block Size
-[Eve] 2026-01-28 16:59:18 [Eve] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Eve] 2026-01-28 16:59:18 [Eve] [INFO] brain.decision: Confidence 0.30 below threshold 0.8, changing to ABSTAIN
-[Eve] 2026-01-28 16:59:18 [Eve] [INFO] brain.decision: Decision for #1: ABSTAIN (confidence: 0.30)
-[Eve] 2026-01-28 16:59:18 [Eve] [INFO] sidecar.logger: Logged decision for proposal #1 to decisions.log
-[Eve] 2026-01-28 16:59:18 [Eve] [INFO] sidecar.logger: DECISION: Proposal #1 (Test Proposal - Increase Block Size) -> ABSTAIN (confidence: 0.30)
-[Eve] 2026-01-28 16:59:18 [Eve] [INFO] sidecar.loop: Submitting vote ABSTAIN for proposal #1
-[Eve] 2026-01-28 16:59:18 [Eve] [INFO] chain.governance: Submitting vote ABSTAIN for proposal #1
-[Eve] 2026-01-28 16:59:20 [Eve] [INFO] chain.governance: Vote submitted successfully. TX hash: 60CEA5CD7A579B621AA747861355F216E42D2F39728E7145B36D3F716CE0BB9B
-[Eve] 2026-01-28 16:59:20 [Eve] [INFO] sidecar.loop: Vote submitted for proposal #1
-[Eve] 2026-01-28 16:59:20 [Eve] [INFO] sidecar.loop: Processing proposal #2: Enable IBC Transfers with Untested Chain
-[Eve] 2026-01-28 16:59:20 [Eve] [INFO] brain.decision: Evaluating proposal #2: Enable IBC Transfers with Untested Chain
-[Alice] 2026-01-28 17:03:14 [Alice] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Alice] 2026-01-28 17:03:14 [Alice] [INFO] brain.decision: Decision for #2: NO (confidence: 0.85)
-[Alice] 2026-01-28 17:03:14 [Alice] [INFO] sidecar.logger: Logged decision for proposal #2 to decisions.log
-[Alice] 2026-01-28 17:03:14 [Alice] [INFO] sidecar.logger: DECISION: Proposal #2 (Enable IBC Transfers with Untested Chain) -> NO (confidence: 0.85)
-[Alice] 2026-01-28 17:03:14 [Alice] [INFO] sidecar.loop: Submitting vote NO for proposal #2
-[Alice] 2026-01-28 17:03:14 [Alice] [INFO] chain.governance: Submitting vote NO for proposal #2
-[Alice] 2026-01-28 17:03:16 [Alice] [INFO] chain.governance: Vote submitted successfully. TX hash: A1AA4F313436BC9C0C2192823EB8E743BC5C28A3A52E9C94279861A350E5361A
-[Alice] 2026-01-28 17:03:16 [Alice] [INFO] sidecar.loop: Vote submitted for proposal #2
-[Alice] 2026-01-28 17:03:16 [Alice] [INFO] sidecar.loop: Processing proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Alice] 2026-01-28 17:03:16 [Alice] [INFO] brain.decision: Evaluating proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Bob] 2026-01-28 17:03:28 [Bob] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Bob] 2026-01-28 17:03:28 [Bob] [INFO] brain.decision: Decision for #2: YES (confidence: 0.70)
-[Bob] 2026-01-28 17:03:28 [Bob] [INFO] sidecar.logger: Logged decision for proposal #2 to decisions.log
-[Bob] 2026-01-28 17:03:28 [Bob] [INFO] sidecar.logger: DECISION: Proposal #2 (Enable IBC Transfers with Untested Chain) -> YES (confidence: 0.70)
-[Bob] 2026-01-28 17:03:28 [Bob] [INFO] sidecar.loop: Submitting vote YES for proposal #2
-[Bob] 2026-01-28 17:03:28 [Bob] [INFO] chain.governance: Submitting vote YES for proposal #2
-[Bob] 2026-01-28 17:03:30 [Bob] [INFO] chain.governance: Vote submitted successfully. TX hash: 81B19CF834C269C290D2930537F3C32C2D8BEA1880AA949935FFD2550E195B86
-[Bob] 2026-01-28 17:03:30 [Bob] [INFO] sidecar.loop: Vote submitted for proposal #2
-[Bob] 2026-01-28 17:03:30 [Bob] [INFO] sidecar.loop: Processing proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Bob] 2026-01-28 17:03:30 [Bob] [INFO] brain.decision: Evaluating proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Charlie] 2026-01-28 17:03:44 [Charlie] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Charlie] 2026-01-28 17:03:44 [Charlie] [INFO] brain.decision: Decision for #2: NO (confidence: 0.85)
-[Charlie] 2026-01-28 17:03:44 [Charlie] [INFO] sidecar.logger: Logged decision for proposal #2 to decisions.log
-[Charlie] 2026-01-28 17:03:44 [Charlie] [INFO] sidecar.logger: DECISION: Proposal #2 (Enable IBC Transfers with Untested Chain) -> NO (confidence: 0.85)
-[Charlie] 2026-01-28 17:03:44 [Charlie] [INFO] sidecar.loop: Submitting vote NO for proposal #2
-[Charlie] 2026-01-28 17:03:44 [Charlie] [INFO] chain.governance: Submitting vote NO for proposal #2
-[Charlie] 2026-01-28 17:03:46 [Charlie] [INFO] chain.governance: Vote submitted successfully. TX hash: 7C1B16A75A4298961D90367785F06F108636FEC7F8EBB1DFB7812A4A07765D04
-[Charlie] 2026-01-28 17:03:46 [Charlie] [INFO] sidecar.loop: Vote submitted for proposal #2
-[Charlie] 2026-01-28 17:03:46 [Charlie] [INFO] sidecar.loop: Processing proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Charlie] 2026-01-28 17:03:46 [Charlie] [INFO] brain.decision: Evaluating proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Dave] 2026-01-28 17:03:56 [Dave] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Dave] 2026-01-28 17:03:56 [Dave] [INFO] brain.decision: Decision for #2: NO (confidence: 0.90)
-[Dave] 2026-01-28 17:03:56 [Dave] [INFO] sidecar.logger: Logged decision for proposal #2 to decisions.log
-[Dave] 2026-01-28 17:03:56 [Dave] [INFO] sidecar.logger: DECISION: Proposal #2 (Enable IBC Transfers with Untested Chain) -> NO (confidence: 0.90)
-[Dave] 2026-01-28 17:03:56 [Dave] [INFO] sidecar.loop: Submitting vote NO for proposal #2
-[Dave] 2026-01-28 17:03:56 [Dave] [INFO] chain.governance: Submitting vote NO for proposal #2
-[Dave] 2026-01-28 17:03:58 [Dave] [INFO] chain.governance: Vote submitted successfully. TX hash: 9A3E199D6B529C5FAFB578C90306326970F0BD1D3A0F4A562561C605C141977F
-[Dave] 2026-01-28 17:03:58 [Dave] [INFO] sidecar.loop: Vote submitted for proposal #2
-[Dave] 2026-01-28 17:03:58 [Dave] [INFO] sidecar.loop: Processing proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Dave] 2026-01-28 17:03:58 [Dave] [INFO] brain.decision: Evaluating proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Eve] 2026-01-28 17:04:10 [Eve] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Eve] 2026-01-28 17:04:10 [Eve] [INFO] brain.decision: Decision for #2: NO_WITH_VETO (confidence: 0.95)
-[Eve] 2026-01-28 17:04:10 [Eve] [INFO] sidecar.logger: Logged decision for proposal #2 to decisions.log
-[Eve] 2026-01-28 17:04:10 [Eve] [INFO] sidecar.logger: DECISION: Proposal #2 (Enable IBC Transfers with Untested Chain) -> NO_WITH_VETO (confidence: 0.95)
-[Eve] 2026-01-28 17:04:10 [Eve] [INFO] sidecar.loop: Submitting vote NO_WITH_VETO for proposal #2
-[Eve] 2026-01-28 17:04:10 [Eve] [INFO] chain.governance: Submitting vote NO_WITH_VETO for proposal #2
-[Eve] 2026-01-28 17:04:12 [Eve] [INFO] chain.governance: Vote submitted successfully. TX hash: 74BD7375F763C57FE249F105AA17CA2413529D655C0B4351A95E780EF3532BC1
-[Eve] 2026-01-28 17:04:12 [Eve] [INFO] sidecar.loop: Vote submitted for proposal #2
-[Eve] 2026-01-28 17:04:12 [Eve] [INFO] sidecar.loop: Processing proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Eve] 2026-01-28 17:04:12 [Eve] [INFO] brain.decision: Evaluating proposal #3: Implement Mandatory Security Audits for All Protocol Upgrades
-[Alice] 2026-01-28 17:08:42 [Alice] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Alice] 2026-01-28 17:08:42 [Alice] [INFO] brain.decision: Decision for #3: YES (confidence: 0.75)
-[Alice] 2026-01-28 17:08:42 [Alice] [INFO] sidecar.logger: Logged decision for proposal #3 to decisions.log
-[Alice] 2026-01-28 17:08:42 [Alice] [INFO] sidecar.logger: DECISION: Proposal #3 (Implement Mandatory Security Audits for All Protocol Upgrades) -> YES (confidence: 0.75)
-[Alice] 2026-01-28 17:08:42 [Alice] [INFO] sidecar.loop: Submitting vote YES for proposal #3
-[Alice] 2026-01-28 17:08:42 [Alice] [INFO] chain.governance: Submitting vote YES for proposal #3
-[Alice] 2026-01-28 17:08:44 [Alice] [INFO] chain.governance: Vote submitted successfully. TX hash: B5D488DED0B5E004F8F6339EAC2A7DA577D34128A1C942C486FC6F6803DE0909
-[Alice] 2026-01-28 17:08:44 [Alice] [INFO] sidecar.loop: Vote submitted for proposal #3
-[Bob] 2026-01-28 17:08:58 [Bob] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Bob] 2026-01-28 17:08:58 [Bob] [INFO] brain.decision: Decision for #3: NO (confidence: 0.75)
-[Bob] 2026-01-28 17:08:58 [Bob] [INFO] sidecar.logger: Logged decision for proposal #3 to decisions.log
-[Bob] 2026-01-28 17:08:58 [Bob] [INFO] sidecar.logger: DECISION: Proposal #3 (Implement Mandatory Security Audits for All Protocol Upgrades) -> NO (confidence: 0.75)
-[Bob] 2026-01-28 17:08:58 [Bob] [INFO] sidecar.loop: Submitting vote NO for proposal #3
-[Bob] 2026-01-28 17:08:58 [Bob] [INFO] chain.governance: Submitting vote NO for proposal #3
-[Bob] 2026-01-28 17:09:00 [Bob] [INFO] chain.governance: Vote submitted successfully. TX hash: FF6B8A94CE7C3E407BD74D6BAB35EC1FC94E50E9BA09E3DFE7CBD04C23E8BF65
-[Bob] 2026-01-28 17:09:00 [Bob] [INFO] sidecar.loop: Vote submitted for proposal #3
-[Charlie] 2026-01-28 17:09:12 [Charlie] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Charlie] 2026-01-28 17:09:12 [Charlie] [INFO] brain.decision: Decision for #3: NO (confidence: 0.95)
-[Charlie] 2026-01-28 17:09:12 [Charlie] [INFO] sidecar.logger: Logged decision for proposal #3 to decisions.log
-[Charlie] 2026-01-28 17:09:12 [Charlie] [INFO] sidecar.logger: DECISION: Proposal #3 (Implement Mandatory Security Audits for All Protocol Upgrades) -> NO (confidence: 0.95)
-[Charlie] 2026-01-28 17:09:12 [Charlie] [INFO] sidecar.loop: Submitting vote NO for proposal #3
-[Charlie] 2026-01-28 17:09:12 [Charlie] [INFO] chain.governance: Submitting vote NO for proposal #3
-[Charlie] 2026-01-28 17:09:14 [Charlie] [INFO] chain.governance: Vote submitted successfully. TX hash: A55EE34E00C494E6B6E813FA06B65F7C7BE8CE350D78B1B35CEBE12E4B95316B
-[Charlie] 2026-01-28 17:09:14 [Charlie] [INFO] sidecar.loop: Vote submitted for proposal #3
-[Dave] 2026-01-28 17:09:26 [Dave] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Dave] 2026-01-28 17:09:26 [Dave] [INFO] brain.decision: Decision for #3: YES (confidence: 0.85)
-[Dave] 2026-01-28 17:09:26 [Dave] [INFO] sidecar.logger: Logged decision for proposal #3 to decisions.log
-[Dave] 2026-01-28 17:09:26 [Dave] [INFO] sidecar.logger: DECISION: Proposal #3 (Implement Mandatory Security Audits for All Protocol Upgrades) -> YES (confidence: 0.85)
-[Dave] 2026-01-28 17:09:26 [Dave] [INFO] sidecar.loop: Submitting vote YES for proposal #3
-[Dave] 2026-01-28 17:09:26 [Dave] [INFO] chain.governance: Submitting vote YES for proposal #3
-[Dave] 2026-01-28 17:09:28 [Dave] [INFO] chain.governance: Vote submitted successfully. TX hash: BB39E3CB1AFDED3081B48E3DD07102EBCE73B6C438D56209E7679773386683D1
-[Dave] 2026-01-28 17:09:28 [Dave] [INFO] sidecar.loop: Vote submitted for proposal #3
-[Eve] 2026-01-28 17:09:40 [Eve] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-[Eve] 2026-01-28 17:09:40 [Eve] [INFO] brain.decision: Decision for #3: YES (confidence: 0.95)
-[Eve] 2026-01-28 17:09:40 [Eve] [INFO] sidecar.logger: Logged decision for proposal #3 to decisions.log
-[Eve] 2026-01-28 17:09:40 [Eve] [INFO] sidecar.logger: DECISION: Proposal #3 (Implement Mandatory Security Audits for All Protocol Upgrades) -> YES (confidence: 0.95)
-[Eve] 2026-01-28 17:09:40 [Eve] [INFO] sidecar.loop: Submitting vote YES for proposal #3
-[Eve] 2026-01-28 17:09:40 [Eve] [INFO] chain.governance: Submitting vote YES for proposal #3
-[Eve] 2026-01-28 17:09:42 [Eve] [INFO] chain.governance: Vote submitted successfully. TX hash: 832A665399D4C6780A8F665CF3BFF3601528B7322649D2FD14BE466BA0E1692F
-[Eve] 2026-01-28 17:09:42 [Eve] [INFO] sidecar.loop: Vote submitted for proposal #3
-[Alice] 2026-01-28 17:09:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:10:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:10:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:10:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:10:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:10:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:11:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:11:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:11:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:11:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:11:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:12:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:12:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:12:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:12:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:12:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:13:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:13:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:13:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:13:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:13:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:14:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:14:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:14:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:14:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:14:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:15:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:15:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:15:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:15:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:15:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:16:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:16:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:16:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:16:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:16:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:17:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:17:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:17:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:17:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:17:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:18:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:18:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:18:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:18:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:18:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:19:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:19:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:19:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:19:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:19:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:20:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:20:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:20:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:20:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:20:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:21:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:21:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:21:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:21:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:21:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:22:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:22:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:22:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:22:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:22:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:23:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:23:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:23:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:23:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:23:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:24:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:24:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:24:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:24:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:24:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:25:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:25:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:25:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:25:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:25:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:26:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:26:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:26:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:26:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:26:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:27:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:27:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:27:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:27:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:27:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:28:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:28:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:28:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:28:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:28:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:29:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:29:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:29:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:29:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:29:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:30:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:30:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:30:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:30:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:30:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:31:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:31:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:31:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:31:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:31:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:32:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:32:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:32:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:32:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:32:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:33:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:33:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:33:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:33:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:33:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:34:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:34:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:34:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:34:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:34:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:35:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:35:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:35:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:35:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:35:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:36:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:36:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:36:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:36:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:36:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:37:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:37:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:37:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:37:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:37:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:38:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:38:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:38:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:38:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:38:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:39:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:39:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:39:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:39:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:39:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:40:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:40:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:40:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:40:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:40:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:41:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:41:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:41:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:41:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:41:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:42:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:42:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:42:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:42:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:42:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:43:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:43:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:43:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:43:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:43:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:44:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:44:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:44:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:44:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:44:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:45:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:45:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:45:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:45:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:45:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:46:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:46:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:46:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:46:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:46:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:47:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:47:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:47:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:47:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:47:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:48:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:48:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:48:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:48:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:48:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:49:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:49:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:49:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:49:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:49:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:50:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:50:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:50:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:50:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:50:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:51:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:51:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:51:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
-[Eve] 2026-01-28 17:51:42 [Eve] [INFO] chain.governance: Found 3 proposals in voting period
-[Alice] 2026-01-28 17:51:44 [Alice] [INFO] chain.governance: Found 3 proposals in voting period
-[Bob] 2026-01-28 17:52:00 [Bob] [INFO] chain.governance: Found 3 proposals in voting period
-[Charlie] 2026-01-28 17:52:14 [Charlie] [INFO] chain.governance: Found 3 proposals in voting period
-[Dave] 2026-01-28 17:52:28 [Dave] [INFO] chain.governance: Found 3 proposals in voting period
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] __main__: Starting DAHAO Alice
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] __main__: Starting DAHAO Bob
+[Charlie] 2026-01-29 09:28:23 [Charlie] [INFO] __main__: Starting DAHAO Charlie
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] __main__: Starting DAHAO Dave
+[Eve] 2026-01-29 09:28:28 [Eve] [INFO] __main__: Starting DAHAO Eve
+[Charlie] 2026-01-29 09:28:23 [Charlie] [INFO] __main__: Loaded settings for chain: dahao
+[Charlie] 2026-01-29 09:28:23 [Charlie] [INFO] __main__: Loaded shared law: dahao-core v1.0.0
+[Charlie] 2026-01-29 09:28:23 [Charlie] [INFO] __main__:   Terms: 15, Principles: 9 (6 locked), Rules: 13
+[Charlie] 2026-01-29 09:28:23 [Charlie] [INFO] adapter.loader: Loaded persona 'Decentralization Maximalist' from simulation/charlie_persona.json
+[Charlie] 2026-01-29 09:28:23 [Charlie] [INFO] __main__: Loaded persona: Decentralization Maximalist (user: charlie_anarchy)
+[Charlie] 2026-01-29 09:28:23 [Charlie] [INFO] __main__: Initializing LLM for persona mapping...
+[Charlie] 2026-01-29 09:28:23 [Charlie] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
+[Charlie] 2026-01-29 09:28:24 [Charlie] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
+[Charlie] 2026-01-29 09:28:24 [Charlie] [INFO] brain.llm: Ollama model verified: qwen3:14b
+[Charlie] 2026-01-29 09:28:24 [Charlie] [INFO] __main__: LLM loaded successfully
+[Charlie] 2026-01-29 09:28:24 [Charlie] [INFO] adapter.mapper: Mapping persona 'Decentralization Maximalist' to Fork configuration
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] adapter.mapper: Successfully mapped persona to Fork: Decentralization Maximalist Node
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] __main__: Generated Fork from persona: Decentralization Maximalist Node
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] __main__:   Principles: 5
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] __main__:   Voting style: balanced
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] chain.wallet: Wallet initialized: cosmos1skvg6qkkg6x0uuc8e9zld47j2umjx0uz92s6nv
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] __main__: Wallet address: cosmos1skvg6qkkg6x0uuc8e9zld47j2umjx0uz92s6nv
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] chain.wallet: Wallet balance: 9996000 stake
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] __main__: Validating fork with LLM (semantic analysis)...
+[Charlie] 2026-01-29 09:37:20 [Charlie] [INFO] brain.llm: Validating fork principles with LLM...
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] __main__: Loaded settings for chain: dahao
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] __main__: Loaded shared law: dahao-core v1.0.0
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] __main__:   Terms: 15, Principles: 9 (6 locked), Rules: 13
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] adapter.loader: Loaded persona 'Deep Ecologist' from simulation/alice_persona.json
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] __main__: Loaded persona: Deep Ecologist (user: alice_nature)
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] __main__: Initializing LLM for persona mapping...
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] brain.llm: Ollama model verified: qwen3:14b
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] __main__: LLM loaded successfully
+[Alice] 2026-01-29 09:28:16 [Alice] [INFO] adapter.mapper: Mapping persona 'Deep Ecologist' to Fork configuration
+[Alice] 2026-01-29 09:37:58 [Alice] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+[Alice] 2026-01-29 09:37:58 [Alice] [INFO] adapter.mapper: Successfully mapped persona to Fork: Deep Ecologist Node
+[Alice] 2026-01-29 09:37:58 [Alice] [INFO] __main__: Generated Fork from persona: Deep Ecologist Node
+[Alice] 2026-01-29 09:37:58 [Alice] [INFO] __main__:   Principles: 5
+[Alice] 2026-01-29 09:37:58 [Alice] [INFO] __main__:   Voting style: cautious
+[Alice] 2026-01-29 09:37:58 [Alice] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
+[Alice] 2026-01-29 09:37:58 [Alice] [INFO] chain.wallet: Wallet initialized: cosmos1an6syc50wstcualuexqfkungaw6jswm5vsl4dj
+[Alice] 2026-01-29 09:37:58 [Alice] [INFO] __main__: Wallet address: cosmos1an6syc50wstcualuexqfkungaw6jswm5vsl4dj
+[Alice] 2026-01-29 09:37:58 [Alice] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
+[Alice] 2026-01-29 09:37:59 [Alice] [INFO] chain.wallet: Wallet balance: 9996000 stake
+[Alice] 2026-01-29 09:37:59 [Alice] [INFO] __main__: Validating fork with LLM (semantic analysis)...
+[Alice] 2026-01-29 09:37:59 [Alice] [ERROR] __main__: Fork validation failed: Fork validation failed: Aligned principle '@protection' does not exist
+[Alice] 2026-01-29 09:37:59 [Alice] [ERROR] __main__: Violations:
+[Alice] 2026-01-29 09:37:59 [Alice] [ERROR] __main__:   - Aligned principle '@protection' does not exist
+[Alice] 2026-01-29 09:37:59 [Alice] [ERROR] __main__: Use --skip-fork-validation to bypass or --simple-validation for pattern-based check
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] __main__: Loaded settings for chain: dahao
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] __main__: Loaded shared law: dahao-core v1.0.0
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] __main__:   Terms: 15, Principles: 9 (6 locked), Rules: 13
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] adapter.loader: Loaded persona 'Pragmatic Traditionalist' from simulation/dave_persona.json
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] __main__: Loaded persona: Pragmatic Traditionalist (user: dave_conformist)
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] __main__: Initializing LLM for persona mapping...
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] brain.llm: Ollama model verified: qwen3:14b
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] __main__: LLM loaded successfully
+[Dave] 2026-01-29 09:28:26 [Dave] [INFO] adapter.mapper: Mapping persona 'Pragmatic Traditionalist' to Fork configuration
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] adapter.mapper: Successfully mapped persona to Fork: Pragmatic Traditionalist Node
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] __main__: Generated Fork from persona: Pragmatic Traditionalist Node
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] __main__:   Principles: 4
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] __main__:   Voting style: cautious
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] chain.wallet: Wallet initialized: cosmos1tkyts2q8ne56w7lhfvvn4g4g00g50gt7cqcuep
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] __main__: Wallet address: cosmos1tkyts2q8ne56w7lhfvvn4g4g00g50gt7cqcuep
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] chain.wallet: Wallet balance: 9996000 stake
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] __main__: Validating fork with LLM (semantic analysis)...
+[Dave] 2026-01-29 09:38:47 [Dave] [INFO] brain.llm: Validating fork principles with LLM...
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] __main__: Loaded settings for chain: dahao
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] __main__: Loaded shared law: dahao-core v1.0.0
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] __main__:   Terms: 15, Principles: 9 (6 locked), Rules: 13
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] adapter.loader: Loaded persona 'Rational Capitalist' from simulation/bob_persona.json
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] __main__: Loaded persona: Rational Capitalist (user: bob_capital)
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] __main__: Initializing LLM for persona mapping...
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] brain.llm: Ollama model verified: qwen3:14b
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] __main__: LLM loaded successfully
+[Bob] 2026-01-29 09:28:19 [Bob] [INFO] adapter.mapper: Mapping persona 'Rational Capitalist' to Fork configuration
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] adapter.mapper: Successfully mapped persona to Fork: Rational Capitalist Node
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] __main__: Generated Fork from persona: Rational Capitalist Node
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] __main__:   Principles: 4
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] __main__:   Voting style: aggressive
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] chain.wallet: Wallet initialized: cosmos14c9muh09vexe947nuwyv5xy5tmnwez68he2z9f
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] __main__: Wallet address: cosmos14c9muh09vexe947nuwyv5xy5tmnwez68he2z9f
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] chain.wallet: Wallet balance: 9997000 stake
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] __main__: Validating fork with LLM (semantic analysis)...
+[Bob] 2026-01-29 09:39:31 [Bob] [INFO] brain.llm: Validating fork principles with LLM...
+[Eve] 2026-01-29 09:28:28 [Eve] [INFO] __main__: Loaded settings for chain: dahao
+[Eve] 2026-01-29 09:28:28 [Eve] [INFO] __main__: Loaded shared law: dahao-core v1.0.0
+[Eve] 2026-01-29 09:28:28 [Eve] [INFO] __main__:   Terms: 15, Principles: 9 (6 locked), Rules: 13
+[Eve] 2026-01-29 09:28:28 [Eve] [INFO] adapter.loader: Loaded persona 'Security Researcher' from simulation/eve_persona.json
+[Eve] 2026-01-29 09:28:28 [Eve] [INFO] __main__: Loaded persona: Security Researcher (user: eve_hacker)
+[Eve] 2026-01-29 09:28:28 [Eve] [INFO] __main__: Initializing LLM for persona mapping...
+[Eve] 2026-01-29 09:28:28 [Eve] [INFO] brain.llm: Verifying Ollama model: qwen3:14b
+[Eve] 2026-01-29 09:28:29 [Eve] [INFO] httpx: HTTP Request: GET http://localhost:11434/api/tags "HTTP/1.1 200 OK"
+[Eve] 2026-01-29 09:28:29 [Eve] [INFO] brain.llm: Ollama model verified: qwen3:14b
+[Eve] 2026-01-29 09:28:29 [Eve] [INFO] __main__: LLM loaded successfully
+[Eve] 2026-01-29 09:28:29 [Eve] [INFO] adapter.mapper: Mapping persona 'Security Researcher' to Fork configuration
+[Eve] 2026-01-29 09:40:14 [Eve] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+[Eve] 2026-01-29 09:40:14 [Eve] [INFO] adapter.mapper: Successfully mapped persona to Fork: Security Researcher Node
+[Eve] 2026-01-29 09:40:14 [Eve] [INFO] __main__: Generated Fork from persona: Security Researcher Node
+[Eve] 2026-01-29 09:40:14 [Eve] [INFO] __main__:   Principles: 5
+[Eve] 2026-01-29 09:40:14 [Eve] [INFO] __main__:   Voting style: cautious
+[Eve] 2026-01-29 09:40:14 [Eve] [INFO] __main__: Connected to chain at grpc+http://localhost:9090
+[Eve] 2026-01-29 09:40:15 [Eve] [INFO] chain.wallet: Wallet initialized: cosmos18q6z7dsguuu3qndqjcm3fju33vzfuh33vu52n8
+[Eve] 2026-01-29 09:40:15 [Eve] [INFO] __main__: Wallet address: cosmos18q6z7dsguuu3qndqjcm3fju33vzfuh33vu52n8
+[Eve] 2026-01-29 09:40:15 [Eve] [INFO] chain.client: Connecting to chain dahao at grpc+http://localhost:9090
+[Eve] 2026-01-29 09:40:15 [Eve] [INFO] chain.wallet: Wallet balance: 9996000 stake
+[Eve] 2026-01-29 09:40:15 [Eve] [INFO] __main__: Validating fork with LLM (semantic analysis)...
+[Eve] 2026-01-29 09:40:15 [Eve] [ERROR] __main__: Fork validation failed: Fork validation failed: Aligned principle '@protection' does not exist
+[Eve] 2026-01-29 09:40:15 [Eve] [ERROR] __main__: Violations:
+[Eve] 2026-01-29 09:40:15 [Eve] [ERROR] __main__:   - Aligned principle '@protection' does not exist
+[Eve] 2026-01-29 09:40:15 [Eve] [ERROR] __main__: Use --skip-fork-validation to bypass or --simple-validation for pattern-based check
+[Charlie] 2026-01-29 09:43:28 [Charlie] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+[Charlie] 2026-01-29 09:43:28 [Charlie] [INFO] brain.llm: Fork validation result: valid=True
+[Charlie] 2026-01-29 09:43:28 [Charlie] [INFO] __main__: Fork validated against shared law (LLM mode)
+[Charlie] 2026-01-29 09:43:28 [Charlie] [INFO] sidecar.state: Loaded state: 4 processed proposals
+[Charlie] 2026-01-29 09:43:28 [Charlie] [INFO] __main__: Starting sidecar loop...
+[Charlie] 2026-01-29 09:43:28 [Charlie] [INFO] sidecar.loop: Starting sidecar loop (poll interval: 60s)
+[Charlie] 2026-01-29 09:43:28 [Charlie] [INFO] sidecar.loop: Shared law loaded: dahao-core v1.0.0 (15 terms, 6 locked principles)
+[Charlie] 2026-01-29 09:43:28 [Charlie] [INFO] chain.governance: Found 4 proposals in voting period
+[Dave] 2026-01-29 09:43:37 [Dave] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+[Dave] 2026-01-29 09:43:37 [Dave] [INFO] brain.llm: Fork validation result: valid=True
+[Dave] 2026-01-29 09:43:37 [Dave] [INFO] __main__: Fork validated against shared law (LLM mode)
+[Dave] 2026-01-29 09:43:37 [Dave] [INFO] sidecar.state: Loaded state: 4 processed proposals
+[Dave] 2026-01-29 09:43:37 [Dave] [INFO] __main__: Starting sidecar loop...
+[Dave] 2026-01-29 09:43:37 [Dave] [INFO] sidecar.loop: Starting sidecar loop (poll interval: 60s)
+[Dave] 2026-01-29 09:43:37 [Dave] [INFO] sidecar.loop: Shared law loaded: dahao-core v1.0.0 (15 terms, 6 locked principles)
+[Dave] 2026-01-29 09:43:37 [Dave] [INFO] chain.governance: Found 4 proposals in voting period
+[Bob] 2026-01-29 09:44:19 [Bob] [INFO] httpx: HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+[Bob] 2026-01-29 09:44:19 [Bob] [INFO] brain.llm: Fork validation result: valid=False
+[Bob] 2026-01-29 09:44:19 [Bob] [ERROR] __main__: Fork validation failed: Fork validation failed: 'Minimize governance overhead to enable rapid execu...' violates @democratic_evolution: Minimizing governance overhead risks undermining collective deliberation required by democratic evolution. Rapid execution without sufficient deliberation could violate the principle that DAHAO evolves through collective decision-making, not unilateral action., 'Token value and liquidity are prioritized through ...' violates @precautionary_default: Prioritizing token value and liquidity may lead to decisions that overlook potential harms to stakeholders. This could violate the precautionary default principle, which requires erring toward protection when uncertain about harm., 'Free markets are the preferred mechanism for solvi...' violates @precautionary_default: Preferring free markets as a default mechanism may ignore potential harms that require protective measures. This could conflict with the precautionary default principle, which mandates prioritizing protection over risk when uncertainty exists., 'Free markets are the preferred mechanism for solvi...' violates @protection_asymmetry: Preferring free markets may implicitly prioritize market mechanisms over adding protections for stakeholders, which could conflict with the principle that adding protections is easier than removing them.
+[Bob] 2026-01-29 09:44:19 [Bob] [ERROR] __main__: Violations:
+[Bob] 2026-01-29 09:44:19 [Bob] [ERROR] __main__:   - 'Minimize governance overhead to enable rapid execu...' violates @democratic_evolution: Minimizing governance overhead risks undermining collective deliberation required by democratic evolution. Rapid execution without sufficient deliberation could violate the principle that DAHAO evolves through collective decision-making, not unilateral action.
+[Bob] 2026-01-29 09:44:19 [Bob] [ERROR] __main__:   - 'Token value and liquidity are prioritized through ...' violates @precautionary_default: Prioritizing token value and liquidity may lead to decisions that overlook potential harms to stakeholders. This could violate the precautionary default principle, which requires erring toward protection when uncertain about harm.
+[Bob] 2026-01-29 09:44:19 [Bob] [ERROR] __main__:   - 'Free markets are the preferred mechanism for solvi...' violates @precautionary_default: Preferring free markets as a default mechanism may ignore potential harms that require protective measures. This could conflict with the precautionary default principle, which mandates prioritizing protection over risk when uncertainty exists.
+[Bob] 2026-01-29 09:44:19 [Bob] [ERROR] __main__:   - 'Free markets are the preferred mechanism for solvi...' violates @protection_asymmetry: Preferring free markets may implicitly prioritize market mechanisms over adding protections for stakeholders, which could conflict with the principle that adding protections is easier than removing them.
+[Bob] 2026-01-29 09:44:19 [Bob] [ERROR] __main__: Use --skip-fork-validation to bypass or --simple-validation for pattern-based check
+[Charlie] 2026-01-29 09:44:28 [Charlie] [INFO] chain.governance: Found 4 proposals in voting period
+[Dave] 2026-01-29 09:44:37 [Dave] [INFO] chain.governance: Found 4 proposals in voting period
+[Charlie] 2026-01-29 09:45:28 [Charlie] [INFO] chain.governance: Found 4 proposals in voting period
+[Dave] 2026-01-29 09:45:37 [Dave] [INFO] chain.governance: Found 4 proposals in voting period
+[Charlie] 2026-01-29 09:46:28 [Charlie] [INFO] chain.governance: Found 4 proposals in voting period
+[Dave] 2026-01-29 09:46:37 [Dave] [INFO] chain.governance: Found 4 proposals in voting period
+[Charlie] 2026-01-29 09:47:28 [Charlie] [INFO] chain.governance: Found 4 proposals in voting period
+[Dave] 2026-01-29 09:47:37 [Dave] [INFO] chain.governance: Found 4 proposals in voting period
+[Charlie] 2026-01-29 09:48:28 [Charlie] [INFO] chain.governance: Found 4 proposals in voting period
+[Dave] 2026-01-29 09:48:37 [Dave] [INFO] chain.governance: Found 4 proposals in voting period
+[Charlie] 2026-01-29 09:49:28 [Charlie] [INFO] chain.governance: Found 4 proposals in voting period
+[Dave] 2026-01-29 09:49:37 [Dave] [INFO] chain.governance: Found 4 proposals in voting period
+[Charlie] 2026-01-29 09:50:28 [Charlie] [INFO] chain.governance: Found 4 proposals in voting period
+[Dave] 2026-01-29 09:50:37 [Dave] [INFO] chain.governance: Found 4 proposals in voting period
+[Charlie] 2026-01-29 09:51:28 [Charlie] [INFO] chain.governance: Found 4 proposals in voting period
+[Dave] 2026-01-29 09:51:37 [Dave] [INFO] chain.governance: Found 4 proposals in voting period

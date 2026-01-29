@@ -19,6 +19,14 @@ from brain.llm import LLMWrapper
 from chain.client import ChainClient
 from chain.governance import GovernanceClient
 from chain.wallet import InsufficientFundsError, WalletManager
+from adapter import (
+    ForkCache,
+    Persona,
+    PersonaLoader,
+    PersonaMapper,
+    PersonaMappingError,
+    PersonaNotFoundError,
+)
 from config.fork import Fork, ForkValidationError
 from config.settings import Settings
 from data import SharedLaw, SharedLawLoadError
@@ -67,6 +75,19 @@ def parse_args():
         "--simple-validation",
         action="store_true",
         help="Use simple pattern-based validation instead of LLM (faster but less accurate)",
+    )
+    parser.add_argument(
+        "--persona",
+        help="Path to persona.json file (converts external persona to Fork)",
+    )
+    parser.add_argument(
+        "--persona-cache",
+        action="store_true",
+        help="Enable caching of persona-to-fork mappings",
+    )
+    parser.add_argument(
+        "--persona-cache-dir",
+        help="Custom cache directory for persona-to-fork mappings",
     )
     parser.add_argument(
         "--log-level",
@@ -126,21 +147,72 @@ def main():
         logger.warning(f"Error loading shared law: {e}")
         logger.warning("Continuing without shared law context")
 
-    # Load fork (user values)
-    try:
-        fork = Fork.from_yaml(args.fork)
-        logger.info(f"Loaded fork: {fork.name}")
-        logger.info(f"  Inherits: {fork.inherits}")
-        logger.info(f"  Voting style: {fork.voting_style}")
-        logger.info(f"  Principles: {len(fork.principles)}")
-        if fork.uses_terms:
-            logger.info(f"  Uses terms: {fork.uses_terms}")
-    except FileNotFoundError:
-        logger.error(f"Fork file '{args.fork}' not found. Please create it with your voting values.")
-        sys.exit(1)
-    except Exception as e:
-        logger.error(f"Failed to load fork: {e}")
-        sys.exit(1)
+    # Initialize fork variable - will be set by persona mapping or fork.yaml
+    fork = None
+    llm = None
+
+    # Handle persona-based fork generation
+    if args.persona:
+        try:
+            # Load persona
+            persona_loader = PersonaLoader(args.persona)
+            persona = persona_loader.load_or_raise()
+            logger.info(f"Loaded persona: {persona.archetype} (user: {persona.user_id})")
+
+            # Check cache (if enabled)
+            if args.persona_cache and shared_law:
+                cache = ForkCache(args.persona_cache_dir)
+                fork = cache.get(persona, shared_law.core_version)
+                if fork:
+                    logger.info(f"Loaded Fork from cache: {fork.name}")
+
+            # Map to Fork if not cached
+            if fork is None:
+                if not shared_law:
+                    logger.error("Persona mapping requires shared law data. Ensure data/ directory exists.")
+                    sys.exit(1)
+
+                # Initialize LLM early for mapping
+                logger.info("Initializing LLM for persona mapping...")
+                llm = LLMWrapper(settings.llm)
+                _ = llm.model  # Verify model is available
+                logger.info("LLM loaded successfully")
+
+                mapper = PersonaMapper(llm, shared_law)
+                fork = mapper.map(persona)
+                logger.info(f"Generated Fork from persona: {fork.name}")
+                logger.info(f"  Principles: {len(fork.principles)}")
+                logger.info(f"  Voting style: {fork.voting_style}")
+
+                # Cache the generated fork
+                if args.persona_cache:
+                    cache = ForkCache(args.persona_cache_dir)
+                    cache_path = cache.put(persona, shared_law.core_version, fork)
+                    logger.info(f"Cached Fork to: {cache_path}")
+
+        except PersonaNotFoundError as e:
+            logger.warning(f"Persona not found: {e}")
+            logger.warning("Falling back to fork.yaml")
+        except PersonaMappingError as e:
+            logger.error(f"Persona mapping failed: {e}")
+            sys.exit(1)
+
+    # Load fork from YAML (fallback or default)
+    if fork is None:
+        try:
+            fork = Fork.from_yaml(args.fork)
+            logger.info(f"Loaded fork: {fork.name}")
+            logger.info(f"  Inherits: {fork.inherits}")
+            logger.info(f"  Voting style: {fork.voting_style}")
+            logger.info(f"  Principles: {len(fork.principles)}")
+            if fork.uses_terms:
+                logger.info(f"  Uses terms: {fork.uses_terms}")
+        except FileNotFoundError:
+            logger.error(f"Fork file '{args.fork}' not found. Please create it with your voting values.")
+            sys.exit(1)
+        except Exception as e:
+            logger.error(f"Failed to load fork: {e}")
+            sys.exit(1)
 
     # Simple validation (if requested) - fast pattern-based check
     if shared_law and not args.skip_fork_validation and args.simple_validation:
@@ -190,18 +262,19 @@ def main():
         logger.error(f"Failed to check wallet balance: {e}")
         sys.exit(1)
 
-    # Initialize LLM
-    try:
-        llm = LLMWrapper(settings.llm)
-        # Trigger model load now to fail fast
-        _ = llm.model
-        logger.info("LLM loaded successfully")
-    except FileNotFoundError as e:
-        logger.error(f"LLM model not found: {e}")
-        sys.exit(1)
-    except Exception as e:
-        logger.error(f"Failed to load LLM: {e}")
-        sys.exit(1)
+    # Initialize LLM (if not already done during persona mapping)
+    if llm is None:
+        try:
+            llm = LLMWrapper(settings.llm)
+            # Trigger model load now to fail fast
+            _ = llm.model
+            logger.info("LLM loaded successfully")
+        except FileNotFoundError as e:
+            logger.error(f"LLM model not found: {e}")
+            sys.exit(1)
+        except Exception as e:
+            logger.error(f"Failed to load LLM: {e}")
+            sys.exit(1)
 
     # LLM-based fork validation (default, more accurate)
     if shared_law and not args.skip_fork_validation and not args.simple_validation:
@@ -236,6 +309,7 @@ def main():
         config=settings.sidecar,
         state=state,
         shared_law=shared_law,
+        agent_name=agent_name,
     )
 
     logger.info("Starting sidecar loop...")

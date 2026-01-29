@@ -1,0 +1,17 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.gov.v1.MsgExecLegacyContent",
+      "content": {
+        "@type": "/cosmos.gov.v1beta1.TextProposal",
+        "title": "Launch Aggressive DeFi Expansion Program",
+        "description": "This proposal seeks to rapidly expand our DeFi ecosystem to capture market share. Key initiatives: 1) Partner with 10 major DeFi protocols within 30 days, 2) Allocate 5M tokens for liquidity mining incentives, 3) Reduce governance overhead to enable faster protocol deployments, 4) Remove certain safety checks to speed up transaction processing. Expected ROI: 300% increase in TVL within 6 months."
+      },
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
+    }
+  ],
+  "metadata": "ipfs://defi-expansion-proposal",
+  "deposit": "10000000stake",
+  "title": "Launch Aggressive DeFi Expansion Program",
+  "summary": "Rapid DeFi expansion with liquidity incentives and reduced oversight"
+}
