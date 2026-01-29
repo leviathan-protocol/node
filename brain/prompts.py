@@ -222,3 +222,183 @@ def _get_relevant_term_definitions(
             terms_to_include.add(term_name)
 
     return shared_law.get_term_definitions(list(terms_to_include))
+
+
+# =============================================================================
+# Semantic Validation Prompts (Observer Mode)
+# =============================================================================
+
+SEMANTIC_VALIDATION_SYSTEM = """You are a Constitutional Consistency Auditor for the DAHAO governance framework. Your task is to verify that a user's voting reasoning is logically consistent with their stated vote choice.
+
+You must detect:
+1. **Contradictions**: Vote says NO but reasoning supports YES (or vice versa)
+2. **Hallucinations**: Reasoning mentions facts, features, or claims not present in the proposal
+3. **Constitutional Violations**: Reasoning explicitly violates locked principles
+
+You must respond with a JSON object containing:
+- "consistent": boolean - true if reasoning logically supports the vote choice
+- "issues": array of strings - list of detected problems (empty if consistent)
+- "recommendation": "accept" or "reject" - whether to accept this vote
+
+Be strict but fair. Minor stylistic issues are acceptable. Focus on logical consistency."""
+
+
+SEMANTIC_VALIDATION_USER_TEMPLATE = """# Constitutional Consistency Audit
+
+## Locked Principles (Constitutional - MUST NOT be violated)
+{locked_principles}
+
+## Proposal Being Voted On
+Title: {proposal_title}
+Description:
+{proposal_description}
+
+## User's Vote
+Vote Choice: {vote_option}
+Confidence: {confidence_score}
+
+## User's Public Reasoning
+"{public_reasoning}"
+
+---
+
+## Your Task
+
+Analyze whether the user's reasoning is consistent with their vote choice.
+
+Check for:
+1. **Contradictions**: Does the reasoning actually support the opposite vote?
+   - Example: Vote=NO but reasoning says "this is a great improvement"
+   - Example: Vote=YES but reasoning lists only problems
+
+2. **Hallucinations**: Does the reasoning mention things NOT in the proposal?
+   - Example: Proposal is about fees, but reasoning discusses staking rewards
+   - Example: Reasoning claims the proposal does X when it actually does Y
+
+3. **Constitutional Violations**: Does the reasoning violate locked principles?
+   - Example: Reasoning promotes centralization (violates @democratic_evolution)
+   - Example: Reasoning advocates hiding governance (violates @transparency)
+
+Respond with JSON:
+```json
+{{
+  "consistent": true/false,
+  "issues": ["issue 1", "issue 2", ...],
+  "recommendation": "accept" or "reject"
+}}
+```
+
+If no issues found, respond with:
+```json
+{{
+  "consistent": true,
+  "issues": [],
+  "recommendation": "accept"
+}}
+```"""
+
+
+SEMANTIC_VALIDATION_USER_TEMPLATE_SIMPLE = """# Reasoning Consistency Check
+
+## Proposal
+Title: {proposal_title}
+Description:
+{proposal_description}
+
+## User's Vote
+Vote Choice: {vote_option}
+
+## User's Reasoning
+"{public_reasoning}"
+
+---
+
+Check if the reasoning logically supports the vote choice.
+
+Detect:
+1. Contradictions (reasoning supports opposite vote)
+2. Hallucinations (reasoning mentions things not in proposal)
+
+Respond with JSON:
+```json
+{{
+  "consistent": true/false,
+  "issues": ["issue 1", ...],
+  "recommendation": "accept" or "reject"
+}}
+```"""
+
+
+# JSON Schema for semantic validation response
+SEMANTIC_VALIDATION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "consistent": {
+            "type": "boolean",
+            "description": "Whether reasoning is logically consistent with vote",
+        },
+        "issues": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of detected issues (empty if consistent)",
+        },
+        "recommendation": {
+            "type": "string",
+            "enum": ["accept", "reject"],
+            "description": "Whether to accept or reject this vote",
+        },
+    },
+    "required": ["consistent", "issues", "recommendation"],
+}
+
+
+def build_semantic_validation_prompt(
+    proposal_title: str,
+    proposal_description: str,
+    vote_option: str,
+    public_reasoning: str,
+    confidence_score: float | None = None,
+    shared_law: "SharedLaw | None" = None,
+) -> list[dict]:
+    """Build chat messages for semantic validation of vote reasoning.
+
+    Args:
+        proposal_title: Title of the proposal.
+        proposal_description: Full description of the proposal.
+        vote_option: User's vote (YES/NO/ABSTAIN/NO_WITH_VETO).
+        public_reasoning: User's explanation for their vote.
+        confidence_score: Optional confidence score (0.0-1.0).
+        shared_law: Optional SharedLaw for constitutional context.
+
+    Returns:
+        List of chat messages for LLM.
+    """
+    if shared_law is not None:
+        # Enhanced prompt with locked principles
+        locked_statements = shared_law.get_locked_principle_statements()
+        locked_text = "\n".join(
+            f"- {name}: {statement}"
+            for name, statement in locked_statements.items()
+        )
+
+        user_content = SEMANTIC_VALIDATION_USER_TEMPLATE.format(
+            locked_principles=locked_text,
+            proposal_title=proposal_title,
+            proposal_description=proposal_description[:2000],  # Truncate long descriptions
+            vote_option=vote_option,
+            confidence_score=confidence_score or "N/A",
+            public_reasoning=public_reasoning,
+        )
+    else:
+        # Simple prompt without constitutional context
+        user_content = SEMANTIC_VALIDATION_USER_TEMPLATE_SIMPLE.format(
+            proposal_title=proposal_title,
+            proposal_description=proposal_description[:2000],
+            vote_option=vote_option,
+            public_reasoning=public_reasoning,
+        )
+
+    return [
+        {"role": "system", "content": SEMANTIC_VALIDATION_SYSTEM},
+        {"role": "user", "content": user_content},
+    ]
