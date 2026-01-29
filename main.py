@@ -64,6 +64,11 @@ def parse_args():
         help="Skip validation of fork against shared law",
     )
     parser.add_argument(
+        "--simple-validation",
+        action="store_true",
+        help="Use simple pattern-based validation instead of LLM (faster but less accurate)",
+    )
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
@@ -137,11 +142,11 @@ def main():
         logger.error(f"Failed to load fork: {e}")
         sys.exit(1)
 
-    # Validate fork against shared law (unless skipped)
-    if shared_law and not args.skip_fork_validation:
+    # Simple validation (if requested) - fast pattern-based check
+    if shared_law and not args.skip_fork_validation and args.simple_validation:
         try:
             fork.validate_against(shared_law)
-            logger.info("Fork validated against shared law")
+            logger.info("Fork validated against shared law (simple mode)")
         except ForkValidationError as e:
             logger.error(f"Fork validation failed: {e}")
             logger.error("Violations:")
@@ -197,6 +202,20 @@ def main():
     except Exception as e:
         logger.error(f"Failed to load LLM: {e}")
         sys.exit(1)
+
+    # LLM-based fork validation (default, more accurate)
+    if shared_law and not args.skip_fork_validation and not args.simple_validation:
+        try:
+            logger.info("Validating fork with LLM (semantic analysis)...")
+            fork.validate_against_with_llm(shared_law, llm)
+            logger.info("Fork validated against shared law (LLM mode)")
+        except ForkValidationError as e:
+            logger.error(f"Fork validation failed: {e}")
+            logger.error("Violations:")
+            for v in e.violations:
+                logger.error(f"  - {v}")
+            logger.error("Use --skip-fork-validation to bypass or --simple-validation for pattern-based check")
+            sys.exit(1)
 
     # Create decision engine (with shared law for enhanced prompts)
     decision_engine = DecisionEngine(llm, fork, shared_law)

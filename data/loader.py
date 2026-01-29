@@ -459,8 +459,9 @@ class SharedLaw:
     ) -> dict[str, bool]:
         """Check if a statement aligns with or conflicts with locked principles.
 
-        This is a simple keyword-based check. For production use,
-        consider using LLM-based semantic alignment checking.
+        This is a simple keyword-based check that looks for direct negation
+        of core principle concepts. For production use, consider using
+        LLM-based semantic alignment checking.
 
         Args:
             statement: The statement to check.
@@ -477,24 +478,25 @@ class SharedLaw:
 
         statement_lower = statement.lower()
 
-        # Check for obvious conflicts with locked principles
-        for name in self.get_locked_principles():
-            principle = self.get_principle(name)
-            if not principle:
+        # Only check for direct negation of core principle concepts
+        # Map principle names to their core concepts that would indicate conflict
+        conflict_patterns = {
+            "@purpose_primacy": ["ignore purpose", "disregard purpose", "purpose doesn't matter"],
+            "@democratic_evolution": ["unilateral", "without consensus", "bypass voting"],
+            "@transparency": ["hide", "secret governance", "obscure decisions"],
+            "@precautionary_default": ["ignore risk", "disregard harm", "skip protection"],
+            "@protection_asymmetry": ["remove all protections", "eliminate safeguards"],
+            "@inheritance_integrity": ["violate core", "ignore locked"],
+        }
+
+        for name, patterns in conflict_patterns.items():
+            if name not in self.get_locked_principles():
                 continue
-
-            # Check for negation patterns that might indicate conflict
-            negation_words = ["not", "never", "reject", "oppose", "against"]
-            principle_keywords = [
-                w.lower() for w in principle.statement.split() if len(w) > 4
-            ]
-
-            for neg in negation_words:
-                for keyword in principle_keywords:
-                    if neg in statement_lower and keyword in statement_lower:
-                        result["has_conflict"] = True
-                        result["conflicts"].append(name)
-                        break
+            for pattern in patterns:
+                if pattern in statement_lower:
+                    result["has_conflict"] = True
+                    result["conflicts"].append(name)
+                    break
 
         # Validate claimed alignment
         if aligns_with:

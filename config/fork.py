@@ -13,6 +13,7 @@ import yaml
 from pydantic import BaseModel, Field, model_validator
 
 if TYPE_CHECKING:
+    from brain.llm import LLMWrapper
     from data.loader import SharedLaw
 
 
@@ -280,3 +281,69 @@ class Fork(BaseModel):
             Dictionary mapping term names to definitions.
         """
         return shared_law.get_term_definitions(self.uses_terms)
+
+    def validate_against_with_llm(
+        self,
+        shared_law: "SharedLaw",
+        llm: "LLMWrapper",
+    ) -> None:
+        """Validate this fork against shared law using LLM semantic analysis.
+
+        This provides more accurate validation than simple pattern matching
+        by using the LLM to understand if principles semantically conflict.
+
+        Checks:
+        1. All referenced terms exist (fast, no LLM)
+        2. Aligned principles exist (fast, no LLM)
+        3. Fork principles don't violate locked principles (LLM-based)
+
+        Args:
+            shared_law: SharedLaw instance to validate against.
+            llm: LLMWrapper instance for semantic validation.
+
+        Raises:
+            ForkValidationError: If validation fails.
+        """
+        from brain.llm import LLMWrapper  # Import here to avoid circular
+
+        violations = []
+
+        # Fast checks first (no LLM needed)
+        if self.uses_terms:
+            invalid_terms = shared_law.validate_term_references(self.uses_terms)
+            if invalid_terms:
+                violations.append(f"Invalid terms: {invalid_terms}")
+
+        # Check aligned principles exist
+        for p in self.principles:
+            if isinstance(p, ForkPrinciple) and p.aligns_with:
+                principle = shared_law.get_principle(p.aligns_with)
+                if principle is None:
+                    violations.append(
+                        f"Aligned principle '{p.aligns_with}' does not exist"
+                    )
+
+        # If basic checks failed, don't bother with LLM
+        if violations:
+            raise ForkValidationError(violations)
+
+        # LLM-based semantic validation
+        fork_statements = self.get_principle_statements()
+        locked_statements = shared_law.get_locked_principle_statements()
+
+        if fork_statements and locked_statements:
+            result = llm.validate_fork(fork_statements, locked_statements)
+
+            if not result.get("valid", True):
+                for v in result.get("violations", []):
+                    violations.append(
+                        f"'{v.get('fork_principle', 'Unknown')[:50]}...' "
+                        f"violates {v.get('locked_principle', 'unknown')}: "
+                        f"{v.get('reason', 'no reason given')}"
+                    )
+
+        if violations:
+            raise ForkValidationError(violations)
+
+        # Mark as validated
+        self._validated_against = shared_law.core_version
