@@ -16,13 +16,17 @@ class Fork(BaseModel):
     )
     voting_style: str = Field(
         default="balanced",
-        description="Overall voting approach: cautious, balanced, progressive",
+        description="Overall voting approach: cautious, balanced, aggressive",
     )
     abstain_threshold: float = Field(
         default=0.6,
         ge=0.0,
         le=1.0,
         description="Confidence threshold below which to abstain",
+    )
+    persona: str | None = Field(
+        default=None,
+        description="Optional persona description for more nuanced LLM behavior",
     )
 
     @classmethod

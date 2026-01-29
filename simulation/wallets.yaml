@@ -1,0 +1,15 @@
+# Wallet mnemonics for simulation agents
+# Generated with: dahaod keys add sim_<name> --keyring-backend test
+#
+# Addresses:
+#   alice:   cosmos1an6syc50wstcualuexqfkungaw6jswm5vsl4dj
+#   bob:     cosmos14c9muh09vexe947nuwyv5xy5tmnwez68he2z9f
+#   charlie: cosmos1skvg6qkkg6x0uuc8e9zld47j2umjx0uz92s6nv
+#   dave:    cosmos1tkyts2q8ne56w7lhfvvn4g4g00g50gt7cqcuep
+#   eve:     cosmos18q6z7dsguuu3qndqjcm3fju33vzfuh33vu52n8
+
+alice: "journey trophy suffer avoid excite wife this renew mutual drink spot say dog dove cat hold amount decline rocket shove iron give lesson swamp"
+bob: "subject cream during entry trouble protect acquire congress clinic work foil push normal lion fresh void trade cement bounce mouse oven gain invite domain"
+charlie: "okay coyote know two bench occur swim broken tortoise review coast gospel gesture stage mail unusual any insect sunset unusual hill foot always hat"
+dave: "reject path yellow faint flag effort quit fan twin regret tomorrow pond opera network vehicle industry nest mean build visa canyon neck neutral cash"
+eve: "element topic proud heavy raven lake range goddess regular border impact lonely derive flag treat view citizen into seat vibrant essence relief range author"

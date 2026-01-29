@@ -1,0 +1,132 @@
+{
+  "_meta": {
+    "type": "principles",
+    "description": "Core principles that all DAHAO domains must inherit. Locked principles cannot be violated by any domain.",
+    "version": "1.1.0",
+    "created": "2026-01-29",
+    "updated": "2026-01-29",
+    "note": "Principles reference terms via 'uses_terms'. Rules implement principles via 'implements_principles'."
+  },
+
+  "@purpose_primacy": {
+    "version": "1.0.0",
+    "statement": "All decisions within a DAHAO instance must serve its stated purpose.",
+    "locked": true,
+    "lock_reason": "Without purpose alignment, DAHAO loses coherence and meaning.",
+    "uses_terms": ["@purpose", "@stakeholder"],
+    "implications": [
+      "Every proposal must demonstrate how it serves purpose",
+      "Changes that undermine purpose are automatically invalid",
+      "Purpose can only change with near-unanimous consent (95%)"
+    ]
+  },
+
+  "@democratic_evolution": {
+    "version": "1.0.0",
+    "statement": "DAHAO evolves through collective deliberation, not unilateral decision. No individual or entity has privileged authority over values.",
+    "locked": true,
+    "lock_reason": "Prevents capture by any single interest. Ensures legitimacy through participation.",
+    "uses_terms": ["@proposal", "@consensus", "@vote", "@contributor"],
+    "implications": [
+      "All changes require community consensus",
+      "No contributor can force changes alone",
+      "Every voice can participate in dialectic"
+    ]
+  },
+
+  "@transparency": {
+    "version": "1.0.0",
+    "statement": "All proposals, discussions, votes, reasoning, and changes are publicly visible and auditable.",
+    "locked": true,
+    "lock_reason": "Hidden governance is illegitimate governance. Accountability requires visibility.",
+    "uses_terms": ["@proposal", "@vote", "@version"],
+    "implications": [
+      "Full version history maintained forever",
+      "Vote records are public",
+      "Reasoning for decisions must be documented",
+      "No secret deliberations"
+    ]
+  },
+
+  "@precautionary_default": {
+    "version": "1.0.0",
+    "statement": "When uncertain about potential harm to stakeholders, err toward protection rather than risk.",
+    "locked": true,
+    "lock_reason": "The cost of failing to protect exceeds the cost of unnecessary protection.",
+    "uses_terms": ["@harm", "@protection", "@stakeholder"],
+    "implications": [
+      "Each domain defines what 'harm' and 'protection' mean",
+      "Uncertainty favors caution",
+      "Protection ratchet enforces this at governance level"
+    ],
+    "note": "This is the meta-principle. Domains apply it to their specific context."
+  },
+
+  "@evidence_based": {
+    "version": "1.0.0",
+    "statement": "Claims about reality must be supported by evidence, weighted by quality.",
+    "locked": false,
+    "uses_terms": ["@evidence"],
+    "rationale": "Prevents unfounded assertions from driving decisions.",
+    "implications": [
+      "Proposals require evidence",
+      "Evidence quality affects weight",
+      "Contradicting evidence triggers deeper review"
+    ],
+    "note": "Unlocked because domains may adjust evidence requirements."
+  },
+
+  "@protection_asymmetry": {
+    "version": "1.0.0",
+    "statement": "Adding protections for stakeholders is easier than removing them.",
+    "locked": true,
+    "lock_reason": "Implements @precautionary_default at governance level.",
+    "uses_terms": ["@protection", "@consensus", "@stakeholder"],
+    "mechanism": "Removing protection requires 1.5× the consensus threshold of adding it.",
+    "implications": [
+      "DAHAO naturally evolves toward more protection",
+      "Economic/political pressure cannot easily remove protections",
+      "Expanding moral circle is easier than contracting it"
+    ]
+  },
+
+  "@fork_freedom": {
+    "version": "1.0.0",
+    "statement": "Anyone may fork any DAHAO instance and modify it according to their values.",
+    "locked": false,
+    "uses_terms": ["@fork"],
+    "rationale": "Freedom to exit ensures voluntary participation. Diversity enables experimentation.",
+    "implications": [
+      "Forks are legitimate, not defections",
+      "Different values can coexist in different forks",
+      "Main branch represents consensus, not absolute truth",
+      "Forks may propose innovations back to main"
+    ]
+  },
+
+  "@good_faith": {
+    "version": "1.0.0",
+    "statement": "All participants are assumed to be acting in good faith toward the stated purpose.",
+    "locked": false,
+    "uses_terms": ["@purpose", "@contributor", "@dialectic"],
+    "rationale": "Collaborative governance requires trust as default.",
+    "implications": [
+      "Assume charitable interpretation of others' positions",
+      "Disagree with arguments, not people",
+      "Bad faith can be demonstrated, but not assumed"
+    ]
+  },
+
+  "@inheritance_integrity": {
+    "version": "1.0.0",
+    "statement": "Domain instances must not violate core locked principles, even through domain-specific additions.",
+    "locked": true,
+    "lock_reason": "Ensures all DAHAOs share fundamental governance legitimacy.",
+    "uses_terms": ["@domain"],
+    "implications": [
+      "Domain proposals checked against core principles",
+      "Conflicts with locked principles auto-reject",
+      "Domains can be stricter than core, never looser"
+    ]
+  }
+}

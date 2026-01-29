@@ -78,27 +78,37 @@ Before running the sidecar:
 
 ```
 leviathan/
-├── main.py                 # Entry point with startup validation
+├── main.py                 # Entry point with CLI args support
 ├── config.yaml             # Chain, LLM, sidecar settings
 ├── fork.yaml               # User's voting principles
+├── simulation_swarm.py     # Multi-agent simulation runner
+├── decisions.log           # Audit trail of all votes
 ├── config/
 │   ├── settings.py         # Pydantic settings
-│   └── fork.py             # Fork model
+│   └── fork.py             # Fork model with persona support
 ├── chain/
 │   ├── client.py           # LedgerClient + gRPC channel wrapper
 │   ├── governance.py       # Proposal fetching, vote submission
 │   └── wallet.py           # LocalWallet.from_mnemonic()
 ├── brain/
 │   ├── llm.py              # Ollama wrapper with JSON schema
-│   ├── prompts.py          # Voting prompt templates
+│   ├── prompts.py          # Voting prompt templates with persona
 │   └── decision.py         # Fork + Proposal → VoteDecision
 ├── sidecar/
 │   ├── loop.py             # Async polling loop
 │   ├── state.py            # Processed proposal tracking
 │   └── logger.py           # Decision audit logging
-└── models/
-    ├── proposal.py         # Proposal dataclass
-    └── vote.py             # VoteChoice enum, VoteDecision
+├── models/
+│   ├── proposal.py         # Proposal dataclass
+│   └── vote.py             # VoteChoice enum, VoteDecision
+└── simulation/
+    ├── alice.yaml          # Nature Mother persona
+    ├── bob.yaml            # Capitalist persona
+    ├── charlie.yaml        # Anarchist persona
+    ├── dave.yaml           # Conformist persona
+    ├── eve.yaml            # Hacker persona
+    ├── wallets.yaml        # Test wallet mnemonics
+    └── fund_wallets.sh     # Script to fund test wallets
 ```
 
 ## Key Implementation Patterns
@@ -229,6 +239,41 @@ All votes logged to `decisions.log` with:
 - Vote choice and confidence
 - LLM reasoning
 - SHA256 hash of reasoning (for future Proof of Alignment)
+
+## Swarm Simulation
+
+Run 5 agents with different worldviews voting on the same proposals:
+
+```bash
+# Generate wallets
+dahaod keys add sim_alice --keyring-backend test
+# ... repeat for bob, charlie, dave, eve
+
+# Fund wallets
+./simulation/fund_wallets.sh
+
+# Run swarm
+uv run python simulation_swarm.py
+```
+
+### CLI Arguments
+
+```bash
+python main.py --fork simulation/alice.yaml \
+               --wallet "mnemonic words..." \
+               --state simulation/state_alice.json \
+               --name Alice
+```
+
+### Agent Personas
+
+| Agent | Worldview | Voting Tendency |
+|-------|-----------|-----------------|
+| Alice | Nature Mother | Biocentric, eco-focused |
+| Bob | Capitalist | Profit-driven, growth-focused |
+| Charlie | Anarchist | Decentralization maximalist |
+| Dave | Conformist | Status quo defender |
+| Eve | Hacker | Security researcher |
 
 ## Dependencies
 

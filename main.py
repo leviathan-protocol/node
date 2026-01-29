@@ -7,8 +7,10 @@ Entry point for the sidecar that:
 4. Submits signed vote transactions
 """
 
+import argparse
 import asyncio
 import logging
+import os
 import sys
 
 from brain.decision import DecisionEngine
@@ -21,22 +23,66 @@ from config.settings import Settings
 from sidecar.loop import SidecarLoop
 from sidecar.state import SidecarState
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-logger = logging.getLogger(__name__)
+
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="DAHAO Sidecar - Autonomous governance voting agent",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--config",
+        default="config.yaml",
+        help="Path to config.yaml (default: config.yaml)",
+    )
+    parser.add_argument(
+        "--fork",
+        default="fork.yaml",
+        help="Path to fork.yaml with voting principles (default: fork.yaml)",
+    )
+    parser.add_argument(
+        "--wallet",
+        help="Wallet mnemonic (24 words). Overrides LEVIATHAN_MNEMONIC env var.",
+    )
+    parser.add_argument(
+        "--state",
+        help="Path to state file (default: from config or sidecar_state.json)",
+    )
+    parser.add_argument(
+        "--name",
+        help="Override agent name for logging (useful for simulations)",
+    )
+    parser.add_argument(
+        "--log-level",
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="Logging level (default: INFO)",
+    )
+    return parser.parse_args()
+
+
+def setup_logging(level: str, agent_name: str | None = None):
+    """Configure logging with optional agent name prefix."""
+    prefix = f"[{agent_name}] " if agent_name else ""
+    logging.basicConfig(
+        level=getattr(logging, level),
+        format=f"%(asctime)s {prefix}[%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    return logging.getLogger(__name__)
 
 
 def main():
     """Main entry point for the DAHAO sidecar."""
-    logger.info("Starting DAHAO Sidecar")
+    args = parse_args()
+    logger = setup_logging(args.log_level, args.name)
+
+    agent_name = args.name or "Sidecar"
+    logger.info(f"Starting DAHAO {agent_name}")
 
     # Load configuration
     try:
-        settings = Settings.from_yaml("config.yaml")
+        settings = Settings.from_yaml(args.config)
         logger.info(f"Loaded settings for chain: {settings.chain.chain_id}")
     except Exception as e:
         logger.error(f"Failed to load settings: {e}")
@@ -44,21 +90,22 @@ def main():
 
     # Load fork (user values)
     try:
-        fork = Fork.from_yaml("fork.yaml")
+        fork = Fork.from_yaml(args.fork)
         logger.info(f"Loaded fork: {fork.name}")
         logger.info(f"Voting style: {fork.voting_style}")
         logger.info(f"Principles: {len(fork.principles)}")
     except FileNotFoundError:
-        logger.error("Fork file 'fork.yaml' not found. Please create it with your voting values.")
+        logger.error(f"Fork file '{args.fork}' not found. Please create it with your voting values.")
         sys.exit(1)
     except Exception as e:
         logger.error(f"Failed to load fork: {e}")
         sys.exit(1)
 
-    # Validate mnemonic
-    if not settings.mnemonic:
+    # Get mnemonic from CLI arg or env var
+    mnemonic = args.wallet or settings.mnemonic
+    if not mnemonic:
         logger.error(
-            "No mnemonic configured. Set LEVIATHAN_MNEMONIC environment variable "
+            "No mnemonic configured. Use --wallet or set LEVIATHAN_MNEMONIC environment variable "
             "with your wallet's 24-word mnemonic."
         )
         sys.exit(1)
@@ -73,7 +120,7 @@ def main():
 
     # Initialize wallet
     try:
-        wallet = WalletManager(settings.mnemonic, settings.chain.address_prefix)
+        wallet = WalletManager(mnemonic, settings.chain.address_prefix)
         logger.info(f"Wallet address: {wallet.address}")
     except Exception as e:
         logger.error(f"Failed to initialize wallet: {e}")
@@ -108,8 +155,9 @@ def main():
     # Create governance client
     governance = GovernanceClient(chain_client, settings.chain)
 
-    # Load state
-    state = SidecarState.load(settings.sidecar.state_file)
+    # Load state - use CLI arg, config, or default
+    state_file = args.state or settings.sidecar.state_file
+    state = SidecarState.load(state_file)
 
     # Create and run the sidecar loop
     sidecar = SidecarLoop(

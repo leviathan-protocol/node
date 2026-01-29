@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "type": "domains_registry",
+    "description": "Registry of known DAHAO domains that inherit from core.",
+    "version": "1.0.0",
+    "updated": "2026-01-29"
+  },
+
+  "domains": [
+    {
+      "id": "animal-welfare",
+      "name": "DAHAO Animal Welfare",
+      "purpose": "Minimize animal suffering through evidence-based ethics",
+      "inherits_core_version": "1.0.0",
+      "status": "active",
+      "created": "2026-01-29"
+    }
+  ],
+
+  "statistics": {
+    "total_domains": 1,
+    "active_domains": 1
+  }
+}

@@ -269,6 +269,76 @@ spec:
           name: sidecar-config
 ```
 
+### Option 5: Swarm Simulation (Multi-Agent)
+
+Run 5 agents with different worldviews on a single machine:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         Swarm Simulation Host                           │
+│                                                                         │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐           │
+│  │  Alice  │ │   Bob   │ │ Charlie │ │  Dave   │ │   Eve   │           │
+│  │ (Nature)│ │ (Capit.)│ │(Anarch.)│ │(Conform)│ │ (Hacker)│           │
+│  └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘           │
+│       │           │           │           │           │                 │
+│       └───────────┴───────────┼───────────┴───────────┘                 │
+│                               │                                         │
+│                               ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                    Shared Ollama (1 LLM)                        │   │
+│  │                    localhost:11434                              │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                               │                                         │
+│                               ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                    DAHAO Chain (1 Node)                         │   │
+│  │                    localhost:9090                               │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Resource Requirements:**
+- CPU: 4+ cores (1 per agent + overhead)
+- RAM: 16GB+ (shared LLM + 5 agents)
+- GPU: 10GB+ VRAM (single shared model)
+
+**Setup:**
+```bash
+# 1. Generate test wallets
+dahaod keys add sim_alice --keyring-backend test
+dahaod keys add sim_bob --keyring-backend test
+dahaod keys add sim_charlie --keyring-backend test
+dahaod keys add sim_dave --keyring-backend test
+dahaod keys add sim_eve --keyring-backend test
+
+# 2. Fund wallets (10M stake each)
+./simulation/fund_wallets.sh
+
+# 3. Run swarm
+uv run python simulation_swarm.py
+```
+
+**Agent Configuration:**
+
+| Agent | Fork File | Wallet | State File |
+|-------|-----------|--------|------------|
+| Alice | `simulation/alice.yaml` | sim_alice | `simulation/state_alice.json` |
+| Bob | `simulation/bob.yaml` | sim_bob | `simulation/state_bob.json` |
+| Charlie | `simulation/charlie.yaml` | sim_charlie | `simulation/state_charlie.json` |
+| Dave | `simulation/dave.yaml` | sim_dave | `simulation/state_dave.json` |
+| Eve | `simulation/eve.yaml` | sim_eve | `simulation/state_eve.json` |
+
+**Simulation Results (Actual Test):**
+
+| Proposal | Alice | Bob | Charlie | Dave | Eve |
+|----------|-------|-----|---------|------|-----|
+| Block Size Increase | NO | YES | NO | NO | ABSTAIN |
+| IBC Untested Chain | NO | YES | NO | NO | **VETO** |
+| Mandatory Audits | YES | NO | NO | YES | YES |
+
+Key insight: Same LLM, same proposals, different votes based on Fork values.
+
 ## Monitoring
 
 ### Health Checks

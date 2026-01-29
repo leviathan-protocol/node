@@ -148,6 +148,71 @@ leviathan/
 └── models/              # Data models
 ```
 
+## Swarm Simulation - AI Democracy
+
+Test AI democracy with 5 agents voting with different worldviews:
+
+| Agent | Personality | Worldview |
+|-------|-------------|-----------|
+| Alice | Nature Mother | Biocentric, eco-focused |
+| Bob | Capitalist | Profit-driven, growth-focused |
+| Charlie | Anarchist | Decentralization maximalist |
+| Dave | Conformist | Status quo defender |
+| Eve | Hacker | Security researcher |
+
+### Actual Simulation Results
+
+**Proposal #1: Increase Block Size**
+| Agent | Vote | Confidence |
+|-------|------|------------|
+| Alice | NO | 0.70 |
+| Bob | **YES** | 0.90 |
+| Charlie | NO | 0.75 |
+| Dave | NO | 0.60 |
+| Eve | ABSTAIN | 0.30 |
+
+**Proposal #2: IBC with Untested Chain**
+| Agent | Vote | Confidence |
+|-------|------|------------|
+| Alice | NO | 0.85 |
+| Bob | **YES** | 0.70 |
+| Charlie | NO | 0.85 |
+| Dave | NO | 0.90 |
+| Eve | **NO_WITH_VETO** | 0.95 |
+
+**Proposal #3: Mandatory Security Audits**
+| Agent | Vote | Confidence |
+|-------|------|------------|
+| Alice | **YES** | 0.75 |
+| Bob | NO | 0.75 |
+| Charlie | NO | 0.95 |
+| Dave | **YES** | 0.85 |
+| Eve | **YES** | 0.95 |
+
+Key observations:
+- Eve (Hacker) used **NO_WITH_VETO** on unaudited IBC - security researcher behavior!
+- Bob (Capitalist) voted YES on risky IBC (profit) but NO on audits (cost)
+- Charlie (Anarchist) opposed audits because they require "trusted third parties"
+
+### Setup
+
+```bash
+# 1. Generate wallets
+dahaod keys add sim_alice --keyring-backend test
+# ... repeat for bob, charlie, dave, eve
+
+# 2. Fund wallets
+./simulation/fund_wallets.sh
+
+# 3. Run swarm
+uv run python simulation_swarm.py
+
+# 4. Submit proposals and watch votes
+dahaod tx gov submit-proposal /tmp/proposal.json --from alice --yes
+```
+
+Each agent evaluates the same proposal through their unique value lens and votes accordingly.
+
 ## Requirements
 
 - Python 3.11+

@@ -1,0 +1,108 @@
+{
+  "_meta": {
+    "type": "governance",
+    "description": "Meta-configuration for DAHAO Core governance system.",
+    "version": "1.0.0",
+    "created": "2026-01-29",
+    "updated": "2026-01-29",
+    "change_requires": "90% consensus (governance-level change)"
+  },
+
+  "instance": {
+    "id": "dahao-core",
+    "name": "DAHAO Core",
+    "type": "core",
+    "description": "Universal governance framework for purpose-driven communities. All domains inherit from this.",
+    "purpose": "Enable any community to collaboratively evolve shared values through transparent, democratic, evidence-based governance.",
+    "created": "2026-01-29",
+    "maintainers": [
+      {
+        "id": "dahao-org",
+        "type": "organization",
+        "github": "dahao-org",
+        "role": "steward"
+      }
+    ]
+  },
+
+  "versioning": {
+    "current": {
+      "terms": "1.0.0",
+      "principles": "1.0.0",
+      "rules": "1.0.0",
+      "governance": "1.0.0"
+    },
+    "format": "semantic",
+    "history_retention": "forever"
+  },
+
+  "consensus": {
+    "thresholds": {
+      "term_addition": 0.66,
+      "term_modification": 0.66,
+      "term_removal": 0.85,
+      "rule_addition": 0.75,
+      "rule_modification": 0.75,
+      "rule_removal": 0.90,
+      "principle_addition": 0.85,
+      "principle_modification": 0.90,
+      "principle_removal": 0.95,
+      "unlock_principle": 0.95,
+      "governance_change": 0.90
+    },
+    "protection_ratchet_multiplier": 1.5,
+    "quorum_percentage": 0.30,
+    "quorum_window_days": 90
+  },
+
+  "timing": {
+    "discussion_minimum_days": {
+      "term": 5,
+      "rule": 7,
+      "principle": 14,
+      "governance": 14
+    },
+    "voting_minimum_days": {
+      "term": 3,
+      "rule": 3,
+      "principle": 7,
+      "governance": 7
+    }
+  },
+
+  "automation": {
+    "alignment_check_on_proposal": true,
+    "auto_reject_principle_conflicts": true,
+    "auto_merge_on_consensus": true,
+    "auto_version_bump": true,
+    "llm_assistance_allowed": true
+  },
+
+  "locked_items": {
+    "principles": [
+      "@purpose_primacy",
+      "@democratic_evolution",
+      "@transparency",
+      "@precautionary_default",
+      "@protection_asymmetry",
+      "@inheritance_integrity"
+    ],
+    "rules": [],
+    "terms": []
+  },
+
+  "platforms": {
+    "discussions": "discussions",
+    "voting": "discussions_poll",
+    "code": "repository",
+    "automation": "actions"
+  },
+
+  "domain_requirements": {
+    "must_inherit_core": true,
+    "must_declare_purpose": true,
+    "must_respect_locked_principles": true,
+    "may_add_stricter_rules": true,
+    "may_not_loosen_core_rules": true
+  }
+}

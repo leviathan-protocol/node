@@ -1,0 +1,196 @@
+{
+  "_meta": {
+    "type": "terms",
+    "description": "Universal vocabulary for DAHAO governance. All domain instances inherit these terms.",
+    "version": "1.0.0",
+    "created": "2026-01-29",
+    "updated": "2026-01-29"
+  },
+
+  "@purpose": {
+    "version": "1.0.0",
+    "definition": "The stated goal that a DAHAO instance exists to serve. Every domain must declare its purpose.",
+    "required": true,
+    "examples": [
+      "Minimize animal suffering through evidence-based ethics",
+      "Ensure AI development benefits humanity",
+      "Achieve climate justice for future generations"
+    ],
+    "note": "Purpose is the foundation. All decisions must serve it."
+  },
+
+  "@stakeholder": {
+    "version": "1.0.0",
+    "definition": "Any entity affected by decisions within a DAHAO domain's scope.",
+    "types": [
+      "direct — immediately affected by decisions",
+      "indirect — affected by consequences of decisions",
+      "future — affected by long-term implications"
+    ],
+    "note": "Each domain defines who its stakeholders are."
+  },
+
+  "@value": {
+    "version": "1.0.0",
+    "definition": "Something the community considers worth protecting or promoting in service of its purpose.",
+    "properties": {
+      "measurable": "Can be assessed through indicators",
+      "defensible": "Can be justified with reasoning",
+      "actionable": "Can guide decisions"
+    }
+  },
+
+  "@harm": {
+    "version": "1.0.0",
+    "definition": "Negative impact on values the community has committed to protect.",
+    "note": "Domain-specific. Animal welfare defines harm differently than AI ethics.",
+    "assessment": "Must be evidence-based, not assumed."
+  },
+
+  "@protection": {
+    "version": "1.0.0",
+    "definition": "Safeguards for stakeholders or values from harm.",
+    "ratchet": "Protection is easier to add than remove. See @rule_protection_ratchet."
+  },
+
+  "@proposal": {
+    "version": "1.0.0",
+    "definition": "A formal request to modify terms, principles, or rules in a DAHAO instance.",
+    "required_fields": [
+      "target — what is being changed",
+      "current_version — version before change",
+      "proposed_version — version after change",
+      "justification — why this change serves purpose",
+      "evidence — supporting documentation"
+    ],
+    "lifecycle": ["DRAFT", "DISCUSSION", "VOTING", "ACCEPTED", "REJECTED", "WITHDRAWN"]
+  },
+
+  "@consensus": {
+    "version": "1.0.0",
+    "definition": "Collective agreement among contributors, measured by voting threshold.",
+    "thresholds": {
+      "term_change": 0.66,
+      "rule_change": 0.75,
+      "principle_change": 0.90,
+      "purpose_change": 0.95,
+      "protection_removal": "base_threshold × 1.5"
+    },
+    "note": "Thresholds can be adjusted by each domain, but cannot be lower than core defaults."
+  },
+
+  "@quorum": {
+    "version": "1.0.0",
+    "definition": "Minimum participation required for a vote to be valid.",
+    "default": 0.30,
+    "calculation": "Percentage of active contributors (activity in last 90 days)"
+  },
+
+  "@vote": {
+    "version": "1.0.0",
+    "definition": "A formal expression of position on a proposal.",
+    "types": [
+      "APPROVE — support the proposal",
+      "REJECT — oppose the proposal (requires justification)",
+      "ABSTAIN — decline to vote but count for quorum",
+      "REQUEST_CHANGES — conditional approval pending modifications"
+    ]
+  },
+
+  "@dialectic": {
+    "version": "1.0.0",
+    "definition": "Structured discussion process to refine proposals through collaborative reasoning.",
+    "phases": [
+      {
+        "name": "thesis",
+        "description": "Original proposal with evidence and justification",
+        "author": "proposer"
+      },
+      {
+        "name": "antithesis",
+        "description": "Counter-arguments, concerns, questions, alternative views",
+        "author": "community"
+      },
+      {
+        "name": "synthesis",
+        "description": "Refined proposal incorporating valid concerns",
+        "author": "proposer or community"
+      }
+    ],
+    "minimum_duration_days": 7
+  },
+
+  "@evidence": {
+    "version": "1.0.0",
+    "definition": "Documentation supporting claims in proposals or discussions.",
+    "quality_tiers": {
+      "S": {
+        "name": "Systematic",
+        "description": "Peer-reviewed meta-analysis or systematic review",
+        "weight": 1.0
+      },
+      "A": {
+        "name": "Academic",
+        "description": "Peer-reviewed primary research",
+        "weight": 0.8
+      },
+      "B": {
+        "name": "Institutional",
+        "description": "Reports from recognized institutions (FAO, WHO, etc.)",
+        "weight": 0.6
+      },
+      "C": {
+        "name": "Expert",
+        "description": "Expert opinion, grey literature, preprints",
+        "weight": 0.4
+      },
+      "D": {
+        "name": "Anecdotal",
+        "description": "Personal observation, unverified claims",
+        "weight": 0.1
+      }
+    },
+    "minimum_for_proposal": {
+      "count": 1,
+      "tier": "C"
+    }
+  },
+
+  "@version": {
+    "version": "1.0.0",
+    "definition": "Semantic version identifier tracking changes to any DAHAO component.",
+    "format": "MAJOR.MINOR.PATCH",
+    "rules": {
+      "MAJOR": "Breaking changes — removals, fundamental redefinitions",
+      "MINOR": "Additions — new terms, rules, extensions",
+      "PATCH": "Fixes — typos, clarifications, source additions"
+    }
+  },
+
+  "@contributor": {
+    "version": "1.0.0",
+    "definition": "Any entity participating in DAHAO governance.",
+    "rights": ["propose", "discuss", "vote"],
+    "identification": "GitHub account (minimum requirement)"
+  },
+
+  "@fork": {
+    "version": "1.0.0",
+    "definition": "An independent copy of a DAHAO instance with potential modifications.",
+    "relationship": "Forks maintain reference to upstream for tracking divergence.",
+    "freedom": "Anyone may fork. Forks need not align with upstream.",
+    "contribution": "Forks may propose changes back to upstream."
+  },
+
+  "@domain": {
+    "version": "1.0.0",
+    "definition": "A DAHAO instance focused on a specific purpose area.",
+    "requirements": [
+      "Must inherit dahao-core",
+      "Must declare @purpose",
+      "Must respect core locked principles",
+      "May add domain-specific terms, principles, rules"
+    ],
+    "examples": ["animal-welfare", "ai-ethics", "climate-justice"]
+  }
+}

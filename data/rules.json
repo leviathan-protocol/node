@@ -1,0 +1,209 @@
+{
+  "_meta": {
+    "type": "rules",
+    "description": "Executable governance rules for DAHAO. Domains inherit these and may add domain-specific rules.",
+    "version": "1.1.0",
+    "created": "2026-01-29",
+    "updated": "2026-01-29",
+    "note": "Rules reference terms via 'uses_terms' and principles via 'implements_principles'."
+  },
+
+  "@rule_proposal_process": {
+    "version": "1.0.0",
+    "description": "The required lifecycle for any change to a DAHAO instance.",
+    "logic": "ALL proposals MUST follow: DISCUSSION → VOTING → DECISION",
+    "uses_terms": ["@proposal", "@dialectic", "@consensus", "@vote", "@quorum"],
+    "implements_principles": ["@democratic_evolution", "@transparency"],
+    "phases": {
+      "discussion": {
+        "platform": "Discussions",
+        "minimum_days": 7,
+        "format": "dialectic (thesis → antithesis → synthesis)",
+        "requirements": [
+          "Title format: [PROPOSAL] {action} @{target} (v{current} → v{proposed})",
+          "Must include: summary, current state, proposed change, evidence, alignment check"
+        ]
+      },
+      "voting": {
+        "platform": "Discussion Polls",
+        "minimum_days": 3,
+        "starts": "After discussion minimum AND synthesis reached",
+        "options": ["APPROVE", "REJECT", "ABSTAIN", "REQUEST_CHANGES"]
+      },
+      "decision": {
+        "auto_merge": "IF consensus >= threshold AND quorum_met",
+        "auto_reject": "IF consensus < threshold OR quorum_not_met OR alignment_conflict"
+      }
+    }
+  },
+
+  "@rule_consensus_threshold": {
+    "version": "1.0.0",
+    "description": "Required agreement levels for different types of changes.",
+    "logic": "Different change types require different consensus thresholds.",
+    "uses_terms": ["@consensus", "@vote"],
+    "implements_principles": ["@democratic_evolution"],
+    "thresholds": {
+      "term_addition": 0.66,
+      "term_modification": 0.66,
+      "term_removal": 0.85,
+      "rule_addition": 0.75,
+      "rule_modification": 0.75,
+      "rule_removal": 0.90,
+      "principle_addition": 0.85,
+      "principle_modification": 0.90,
+      "principle_removal": 0.95,
+      "unlock_locked_principle": 0.95,
+      "purpose_modification": 0.95
+    }
+  },
+
+  "@rule_protection_ratchet": {
+    "version": "1.0.0",
+    "description": "Makes removing protections harder than adding them.",
+    "logic": "IF proposal.effect == 'REMOVE_PROTECTION' THEN required_threshold = base_threshold × 1.5",
+    "uses_terms": ["@protection", "@consensus"],
+    "implements_principles": ["@protection_asymmetry", "@precautionary_default"],
+    "rationale": "Evolution favors expanding protection.",
+    "examples": {
+      "add_stakeholder_protection": "66% required",
+      "remove_stakeholder_protection": "66% × 1.5 = 99% required (practically impossible)"
+    }
+  },
+
+  "@rule_quorum_requirement": {
+    "version": "1.0.0",
+    "description": "Minimum participation for valid decisions.",
+    "logic": "IF participation < 30% of active_contributors THEN vote_result = INVALID",
+    "uses_terms": ["@quorum", "@contributor", "@vote"],
+    "implements_principles": ["@democratic_evolution"],
+    "active_definition": "Contributors with any activity in last 90 days",
+    "rationale": "Decisions require minimum community engagement."
+  },
+
+  "@rule_version_reference": {
+    "version": "1.0.0",
+    "description": "All proposals must reference exact versions being modified.",
+    "logic": "Proposal MUST include current_version AND proposed_version",
+    "uses_terms": ["@version", "@proposal"],
+    "implements_principles": ["@transparency"],
+    "format": "@{term_name} v{major}.{minor}.{patch}",
+    "example": "@suffering v1.0.0 → v1.1.0",
+    "rationale": "Ensures clarity about what exactly is changing."
+  },
+
+  "@rule_dialectic_format": {
+    "version": "1.0.0",
+    "description": "Discussion must follow structured dialectic process.",
+    "logic": "Discussion MUST include thesis AND (antithesis OR explicit_no_objections) AND synthesis",
+    "uses_terms": ["@dialectic", "@proposal"],
+    "implements_principles": ["@democratic_evolution", "@good_faith"],
+    "labels": {
+      "thesis": "[THESIS] — Original proposal",
+      "antithesis": "[ANTITHESIS] — Counter-arguments",
+      "synthesis": "[SYNTHESIS] — Refined proposal"
+    },
+    "completion": "Synthesis must address all substantive antitheses before voting"
+  },
+
+  "@rule_evidence_required": {
+    "version": "1.0.0",
+    "description": "Proposals must include supporting evidence.",
+    "logic": "IF proposal_modifies_factual_claim THEN evidence REQUIRED",
+    "uses_terms": ["@evidence", "@proposal"],
+    "implements_principles": ["@evidence_based"],
+    "minimum": {
+      "count": 1,
+      "tier": "C or higher"
+    },
+    "format": "[Author (Year)] Title. Source. URL/DOI",
+    "exemptions": ["Typo fixes", "Formatting changes", "Clarifications without factual claims"]
+  },
+
+  "@rule_alignment_check": {
+    "version": "1.0.0",
+    "description": "All proposals must be checked against principles before voting.",
+    "logic": "IF proposal CONFLICTS with locked_principle THEN status = AUTO_REJECT",
+    "uses_terms": ["@proposal"],
+    "implements_principles": ["@purpose_primacy", "@inheritance_integrity"],
+    "checks": [
+      "Does proposal serve stated purpose?",
+      "Does proposal violate any locked principle?",
+      "Does proposal remove protection? (triggers ratchet)",
+      "Are referenced terms/rules valid?"
+    ],
+    "executor": "LLM alignment checker + human review for edge cases"
+  },
+
+  "@rule_reference_validity": {
+    "version": "1.0.0",
+    "description": "All references to terms and principles must be valid.",
+    "logic": "ALL items in 'uses_terms' MUST exist in terms.json AND ALL items in 'implements_principles' MUST exist in principles.json",
+    "uses_terms": ["@proposal"],
+    "implements_principles": ["@transparency"],
+    "enforcement": "Auto-check on proposal submission",
+    "on_violation": "Proposal rejected with list of invalid references"
+  },
+
+  "@rule_version_bump": {
+    "version": "1.0.0",
+    "description": "How version numbers change based on modification type.",
+    "logic": {
+      "MAJOR": "IF removal OR fundamental_redefinition THEN major += 1, minor = 0, patch = 0",
+      "MINOR": "IF addition OR extension THEN minor += 1, patch = 0",
+      "PATCH": "IF fix OR clarification THEN patch += 1"
+    },
+    "uses_terms": ["@version"],
+    "implements_principles": ["@transparency"],
+    "examples": {
+      "major": ["Remove term", "Remove principle", "Change meaning fundamentally"],
+      "minor": ["Add new term", "Add indicator to existing term", "Add new rule"],
+      "patch": ["Fix typo", "Add source", "Clarify wording"]
+    }
+  },
+
+  "@rule_domain_inheritance": {
+    "version": "1.0.0",
+    "description": "How domains inherit from core.",
+    "logic": "Domain MUST declare 'inherits: dahao-org/core v{version}' AND MUST NOT violate core locked principles",
+    "uses_terms": ["@domain"],
+    "implements_principles": ["@inheritance_integrity"],
+    "requirements": [
+      "Inherit all core locked principles",
+      "Declare domain @purpose",
+      "May add domain-specific terms, principles, rules",
+      "Domain rules may be stricter than core, never looser"
+    ],
+    "validation": "Core alignment checked on every domain proposal"
+  },
+
+  "@rule_fork_tracking": {
+    "version": "1.0.0",
+    "description": "How forks are tracked relative to upstream.",
+    "logic": "Fork SHOULD declare upstream reference for divergence tracking",
+    "uses_terms": ["@fork"],
+    "implements_principles": ["@fork_freedom", "@transparency"],
+    "tracking": {
+      "divergence_score": "COUNT(changes) / COUNT(upstream_items)",
+      "status_levels": [
+        {"score": "< 0.15", "status": "ALIGNED"},
+        {"score": "0.15 - 0.30", "status": "DIVERGENT"},
+        {"score": "> 0.30", "status": "SIGNIFICANTLY_DIVERGENT"}
+      ]
+    },
+    "note": "Tracking is optional but enables contribution back to upstream."
+  },
+
+  "@rule_contribution_from_fork": {
+    "version": "1.0.0",
+    "description": "How forks can propose changes to upstream.",
+    "logic": "Fork MAY propose changes to upstream following upstream's @rule_proposal_process",
+    "uses_terms": ["@fork", "@proposal", "@evidence"],
+    "implements_principles": ["@fork_freedom", "@democratic_evolution"],
+    "requirements": [
+      "Proposal must align with upstream's principles (not fork's)",
+      "Evidence from fork's experience is valid but weighted as Tier C",
+      "Fork maintainer reputation applies to upstream voting"
+    ]
+  }
+}

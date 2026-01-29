@@ -22,7 +22,7 @@ USER_PROMPT_TEMPLATE = """# Validator Identity: {fork_name}
 
 ## Core Principles
 {principles}
-
+{persona_section}
 ---
 
 # Proposal to Evaluate
@@ -44,10 +44,16 @@ def build_voting_prompt(proposal: Proposal, fork: Fork) -> list[dict]:
     Returns:
         List of chat messages in OpenAI format
     """
+    # Include persona section if defined
+    persona_section = ""
+    if fork.persona:
+        persona_section = f"\n## Persona\n{fork.persona.strip()}\n"
+
     user_content = USER_PROMPT_TEMPLATE.format(
         fork_name=fork.name,
         voting_style=fork.voting_style.capitalize(),
         principles=fork.principles_as_text(),
+        persona_section=persona_section,
         proposal_summary=proposal.summary(max_length=2000),
     )
 
