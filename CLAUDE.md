@@ -14,10 +14,10 @@ uv sync
 uv run python main.py
 
 # Syntax check all modules
-uv run python -m py_compile main.py config/*.py chain/*.py brain/*.py sidecar/*.py models/*.py
+uv run python -m py_compile main.py config/*.py chain/*.py brain/*.py sidecar/*.py models/*.py data/*.py
 
 # Test imports
-uv run python -c "from chain.governance import GovernanceClient; print('OK')"
+uv run python -c "from data import SharedLaw; print(SharedLaw().summary())"
 ```
 
 ## Prerequisites
@@ -58,20 +58,20 @@ Before running the sidecar:
 │  ┌──────────┐   ┌──────────┐   ┌──────────────────┐    │
 │  │  Chain   │◄──│ Sidecar  │──►│      Brain       │    │
 │  │ (CosmPy) │   │  Loop    │   │    (Ollama)      │    │
-│  └────┬─────┘   └──────────┘   └────────┬─────────┘    │
-│       │                                  │              │
-│       ▼                                  ▼              │
-│  ┌──────────┐                      ┌──────────┐        │
-│  │ Wallet   │                      │   Fork   │        │
-│  │(mnemonic)│                      │ (values) │        │
-│  └──────────┘                      └──────────┘        │
+│  └────┬─────┘   └────┬─────┘   └────────┬─────────┘    │
+│       │              │                   │              │
+│       ▼              ▼                   ▼              │
+│  ┌──────────┐  ┌──────────┐        ┌──────────┐        │
+│  │ Wallet   │  │  Shared  │        │   Fork   │        │
+│  │(mnemonic)│  │   Law    │        │ (values) │        │
+│  └──────────┘  └──────────┘        └──────────┘        │
 └─────────────────────────────────────────────────────────┘
-         │                                  │
-         ▼                                  ▼
-   ┌───────────┐                    ┌───────────┐
-   │  Cosmos   │  (gRPC)            │  Ollama   │  (HTTP)
-   │   Chain   │                    │  Server   │
-   └───────────┘                    └───────────┘
+         │              │                   │
+         ▼              ▼                   ▼
+   ┌───────────┐  ┌───────────┐      ┌───────────┐
+   │  Cosmos   │  │  data/    │      │  Ollama   │  (HTTP)
+   │   Chain   │  │  *.json   │      │  Server   │
+   └───────────┘  └───────────┘      └───────────┘
 ```
 
 ## Project Structure
@@ -85,22 +85,32 @@ leviathan/
 ├── decisions.log           # Audit trail of all votes
 ├── config/
 │   ├── settings.py         # Pydantic settings
-│   └── fork.py             # Fork model with persona support
+│   └── fork.py             # Fork model with validation against shared law
 ├── chain/
 │   ├── client.py           # LedgerClient + gRPC channel wrapper
 │   ├── governance.py       # Proposal fetching, vote submission
 │   └── wallet.py           # LocalWallet.from_mnemonic()
 ├── brain/
 │   ├── llm.py              # Ollama wrapper with JSON schema
-│   ├── prompts.py          # Voting prompt templates with persona
-│   └── decision.py         # Fork + Proposal → VoteDecision
+│   ├── prompts.py          # Voting prompts with shared law context
+│   └── decision.py         # Fork + Proposal + SharedLaw → VoteDecision
 ├── sidecar/
 │   ├── loop.py             # Async polling loop
 │   ├── state.py            # Processed proposal tracking
-│   └── logger.py           # Decision audit logging
+│   └── logger.py           # Enhanced decision audit logging
 ├── models/
 │   ├── proposal.py         # Proposal dataclass
 │   └── vote.py             # VoteChoice enum, VoteDecision
+├── data/
+│   ├── __init__.py         # SharedLaw, models exports
+│   ├── models.py           # Pydantic models for Term, Principle, Rule, etc.
+│   ├── loader.py           # SharedLaw class - loads and parses data/*.json
+│   ├── sync.py             # IPFS sync support for shared law updates
+│   ├── terms.json          # Universal vocabulary (@purpose, @vote, etc.)
+│   ├── principles.json     # Core principles (locked and unlocked)
+│   ├── rules.json          # Governance rules
+│   ├── governance.json     # Thresholds, timing, automation settings
+│   └── domains.json        # Domain registry
 └── simulation/
     ├── alice.yaml          # Nature Mother persona
     ├── bob.yaml            # Capitalist persona
@@ -112,6 +122,34 @@ leviathan/
 ```
 
 ## Key Implementation Patterns
+
+### SharedLaw Loading
+```python
+from data import SharedLaw
+
+# Load from default data/ directory
+shared_law = SharedLaw()
+
+# Access terms, principles, rules
+term = shared_law.get_term("@purpose")
+locked = shared_law.get_locked_principles()
+threshold = shared_law.get_threshold("principle_modification")
+```
+
+### Fork Validation Against Shared Law
+```python
+from config.fork import Fork, ForkValidationError
+from data import SharedLaw
+
+fork = Fork.from_yaml("fork.yaml")
+shared_law = SharedLaw()
+
+try:
+    fork.validate_against(shared_law)
+    print("Fork is valid")
+except ForkValidationError as e:
+    print(f"Violations: {e.violations}")
+```
 
 ### CosmPy Wallet Creation
 ```python
@@ -202,7 +240,7 @@ sidecar:
   max_retries: 3
 ```
 
-### fork.yaml
+### fork.yaml (Simple Format - Backward Compatible)
 ```yaml
 name: "Security-First Validator"
 principles:
@@ -211,6 +249,43 @@ principles:
 voting_style: "cautious"
 abstain_threshold: 0.6
 ```
+
+### fork.yaml (Enhanced Format - With Shared Law References)
+```yaml
+name: "Security-First Validator"
+inherits: "dahao-core v1.0.0"
+uses_terms:
+  - "@protection"
+  - "@harm"
+  - "@evidence"
+principles:
+  - statement: "Prioritize network security over feature velocity"
+    aligns_with: "@precautionary_default"
+  - statement: "Support decentralization"
+    aligns_with: "@democratic_evolution"
+voting_style: "cautious"
+abstain_threshold: 0.6
+```
+
+## Shared Law Data Files
+
+The `data/` directory contains the DAHAO governance framework:
+
+| File | Purpose |
+|------|---------|
+| `terms.json` | Universal vocabulary (@purpose, @vote, @evidence, etc.) |
+| `principles.json` | Core principles (6 locked, 3 unlocked) |
+| `rules.json` | Executable governance rules |
+| `governance.json` | Thresholds, timing, automation settings |
+| `domains.json` | Registry of domain instances |
+
+### Locked Principles (Cannot Be Violated)
+- `@purpose_primacy` - All decisions must serve stated purpose
+- `@democratic_evolution` - Evolve through collective deliberation
+- `@transparency` - All governance publicly visible
+- `@precautionary_default` - Err toward protection when uncertain
+- `@protection_asymmetry` - Easier to add protections than remove
+- `@inheritance_integrity` - Domains can't violate core locked principles
 
 ## Testing
 
@@ -228,7 +303,7 @@ dahaod tx gov submit-proposal --title="Test Proposal" \
 ### Check Sidecar Logs
 The sidecar will:
 1. Detect the new proposal
-2. Query LLM for voting decision
+2. Query LLM for voting decision (with shared law context)
 3. Submit vote transaction
 4. Log decision to `decisions.log`
 
@@ -239,6 +314,32 @@ All votes logged to `decisions.log` with:
 - Vote choice and confidence
 - LLM reasoning
 - SHA256 hash of reasoning (for future Proof of Alignment)
+- **Enhanced fields** (when shared law loaded):
+  - Terms referenced
+  - Principles aligned
+  - Locked constraints
+  - Governance version
+
+## CLI Arguments
+
+```bash
+python main.py --fork simulation/alice.yaml \
+               --wallet "mnemonic words..." \
+               --state simulation/state_alice.json \
+               --data-dir data/ \
+               --skip-fork-validation \
+               --name Alice
+```
+
+| Argument | Description |
+|----------|-------------|
+| `--fork` | Path to fork.yaml |
+| `--wallet` | 24-word mnemonic |
+| `--state` | State file path |
+| `--data-dir` | Shared law data directory |
+| `--skip-fork-validation` | Skip fork validation against shared law |
+| `--name` | Agent name for logs |
+| `--log-level` | DEBUG, INFO, WARNING, ERROR |
 
 ## Swarm Simulation
 
@@ -254,15 +355,6 @@ dahaod keys add sim_alice --keyring-backend test
 
 # Run swarm
 uv run python simulation_swarm.py
-```
-
-### CLI Arguments
-
-```bash
-python main.py --fork simulation/alice.yaml \
-               --wallet "mnemonic words..." \
-               --state simulation/state_alice.json \
-               --name Alice
 ```
 
 ### Agent Personas
@@ -281,7 +373,7 @@ python main.py --fork simulation/alice.yaml \
 - **ollama**: Local LLM inference via Ollama
 - **pydantic-settings**: Configuration management
 - **pyyaml**: YAML config parsing
-- **httpx**: HTTP client (used by ollama)
+- **httpx**: HTTP client (used by ollama and IPFS sync)
 
 ## Troubleshooting
 
@@ -293,3 +385,5 @@ python main.py --fork simulation/alice.yaml \
 | `Failed to connect to Ollama` | Ollama not running | Run `ollama serve` |
 | Proposal title shows "Unknown" | Protobuf `Any` type not unpacked | Use `content.Unpack(TextProposal())` to extract |
 | LLM abstains on all proposals | No description extracted | Fix protobuf parsing (see pattern above) |
+| `ForkValidationError` | Fork violates shared law | Fix fork.yaml or use `--skip-fork-validation` |
+| `SharedLawLoadError` | Missing data/*.json files | Ensure data/ directory has all JSON files |

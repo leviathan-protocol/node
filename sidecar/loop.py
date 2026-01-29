@@ -1,9 +1,11 @@
 """Main polling loop for the sidecar."""
 
+from __future__ import annotations
+
 import asyncio
 import logging
 import signal
-from typing import Callable
+from typing import TYPE_CHECKING
 
 from brain.decision import DecisionEngine
 from chain.governance import GovernanceClient
@@ -14,6 +16,9 @@ from models.proposal import Proposal
 from models.vote import VoteDecision
 from sidecar.logger import log_decision
 from sidecar.state import SidecarState
+
+if TYPE_CHECKING:
+    from data.loader import SharedLaw
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +34,7 @@ class SidecarLoop:
         fork: Fork,
         config: SidecarConfig,
         state: SidecarState | None = None,
+        shared_law: "SharedLaw | None" = None,
     ):
         self.governance = governance
         self.wallet = wallet
@@ -36,6 +42,7 @@ class SidecarLoop:
         self.fork = fork
         self.config = config
         self.state = state or SidecarState.load(config.state_file)
+        self.shared_law = shared_law
 
         self._running = False
         self._retry_counts: dict[int, int] = {}
@@ -44,6 +51,14 @@ class SidecarLoop:
         """Run the main polling loop."""
         self._running = True
         logger.info(f"Starting sidecar loop (poll interval: {self.config.poll_interval_seconds}s)")
+
+        # Log shared law context if available
+        if self.shared_law:
+            summary = self.shared_law.summary()
+            logger.info(
+                f"Shared law loaded: {summary['instance_id']} v{summary['core_version']} "
+                f"({summary['terms_count']} terms, {summary['locked_principles_count']} locked principles)"
+            )
 
         # Set up signal handlers for graceful shutdown
         loop = asyncio.get_event_loop()
@@ -93,8 +108,14 @@ class SidecarLoop:
             # Get decision from LLM
             decision = self.decision_engine.decide(proposal)
 
-            # Log the decision for transparency
-            log_decision(proposal, decision, self.fork, self.config.decisions_log)
+            # Log the decision for transparency (with shared law context if available)
+            log_decision(
+                proposal,
+                decision,
+                self.fork,
+                self.config.decisions_log,
+                self.shared_law,
+            )
 
             # Submit vote to chain
             await self._submit_vote(proposal, decision)

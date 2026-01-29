@@ -24,14 +24,18 @@ This document describes the infrastructure components required to run the DAHAO 
 │           │         LLM inference (HTTP POST)           │               │
 │           ├─────────────────────────────────────────────┤               │
 │           │                                             │               │
-└───────────┴─────────────────────────────────────────────┴───────────────┘
+│  ┌────────┴────────┐                                                    │
+│  │   Shared Law    │    (Local data/ directory or IPFS sync)           │
+│  │   data/*.json   │                                                    │
+│  └─────────────────┘                                                    │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Components
 
 ### 1. DAHAO Sidecar (This Project)
 
-**Purpose:** Autonomous governance voting agent
+**Purpose:** Autonomous governance voting agent with shared law enforcement
 
 **Requirements:**
 - Python 3.11+
@@ -45,6 +49,15 @@ This document describes the infrastructure components required to run the DAHAO 
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `LEVIATHAN_MNEMONIC` | Yes | 24-word wallet mnemonic |
+
+**Data Files:**
+| File | Purpose | Required |
+|------|---------|----------|
+| `data/terms.json` | Universal vocabulary | Yes |
+| `data/principles.json` | Core principles (locked/unlocked) | Yes |
+| `data/rules.json` | Governance rules | Yes |
+| `data/governance.json` | Thresholds and timing | Yes |
+| `data/domains.json` | Domain registry | Yes |
 
 ### 2. Cosmos Chain (DAHAO)
 
@@ -124,6 +137,42 @@ ollama pull qwen3:14b
 - 8-16GB VRAM depending on model
 - CPU-only possible but slow
 
+### 4. Shared Law Data (data/)
+
+**Purpose:** DAHAO governance framework files
+
+**Source Options:**
+
+#### Local (Default)
+Files stored in `data/` directory:
+```
+data/
+├── terms.json          # 15 universal terms
+├── principles.json     # 9 principles (6 locked)
+├── rules.json          # 13 governance rules
+├── governance.json     # Thresholds, timing
+└── domains.json        # Domain registry
+```
+
+#### IPFS Sync (Optional)
+For decentralized updates, use the sync module:
+```python
+from data import SharedLawSync
+
+sync = SharedLawSync()
+if sync.is_outdated("QmXxx..."):  # IPFS CID
+    sync.sync_from_ipfs("QmXxx...")
+```
+
+**IPFS Gateway Configuration:**
+```python
+sync = SharedLawSync(
+    local_dir=Path("data"),
+    ipfs_gateway="https://ipfs.io",  # or your own gateway
+    timeout=30.0
+)
+```
+
 ## Network Configuration
 
 ### Firewall Rules (Production)
@@ -132,6 +181,7 @@ ollama pull qwen3:14b
 ```
 ALLOW OUT TCP to <chain-node>:9090  # gRPC
 ALLOW OUT TCP to localhost:11434    # Ollama (if local)
+ALLOW OUT TCP to ipfs.io:443        # IPFS sync (optional)
 ```
 
 **Chain Node:**
@@ -161,6 +211,8 @@ All components on one machine:
 │  Sidecar ──► Chain (localhost)  │
 │     │                           │
 │     └──────► Ollama (localhost) │
+│     │                           │
+│     └──────► data/ (local)      │
 └─────────────────────────────────┘
 ```
 
@@ -215,6 +267,7 @@ services:
     volumes:
       - ./config.yaml:/app/config.yaml
       - ./fork.yaml:/app/fork.yaml
+      - ./data:/app/data  # Shared law data
       - ./decisions.log:/app/decisions.log
 
   ollama:
@@ -263,10 +316,15 @@ spec:
         - name: config
           mountPath: /app/config.yaml
           subPath: config.yaml
+        - name: data
+          mountPath: /app/data
       volumes:
       - name: config
         configMap:
           name: sidecar-config
+      - name: data
+        configMap:
+          name: shared-law-data  # Or use PVC for IPFS sync
 ```
 
 ### Option 5: Swarm Simulation (Multi-Agent)
@@ -286,7 +344,7 @@ Run 5 agents with different worldviews on a single machine:
 │                               │                                         │
 │                               ▼                                         │
 │  ┌─────────────────────────────────────────────────────────────────┐   │
-│  │                    Shared Ollama (1 LLM)                        │   │
+│  │               Shared: Ollama + Shared Law (data/)               │   │
 │  │                    localhost:11434                              │   │
 │  └─────────────────────────────────────────────────────────────────┘   │
 │                               │                                         │
@@ -337,7 +395,7 @@ uv run python simulation_swarm.py
 | IBC Untested Chain | NO | YES | NO | NO | **VETO** |
 | Mandatory Audits | YES | NO | NO | YES | YES |
 
-Key insight: Same LLM, same proposals, different votes based on Fork values.
+Key insight: Same LLM, same proposals, same shared law, different votes based on Fork values.
 
 ## Monitoring
 
@@ -353,6 +411,11 @@ grpcurl -plaintext localhost:9090 list
 curl http://localhost:11434/api/tags
 ```
 
+**Shared Law:**
+```bash
+python -c "from data import SharedLaw; print(SharedLaw().summary())"
+```
+
 **Sidecar logs:**
 ```bash
 tail -f decisions.log | jq .
@@ -366,15 +429,19 @@ tail -f decisions.log | jq .
 | Proposals missed | decisions.log | Any |
 | LLM latency | Ollama logs | > 60s |
 | Vote TX failures | Sidecar logs | Any |
+| Shared law version | data/governance.json | Outdated |
 
 ### Log Aggregation
 
 ```bash
 # decisions.log format (JSON lines)
-{"timestamp": "...", "proposal_id": 1, "vote": "YES", ...}
+{"timestamp": "...", "proposal_id": 1, "vote": "YES", "governance_version": "1.0.0", ...}
 
 # Parse with jq
-cat decisions.log | jq -r '[.timestamp, .proposal_id, .vote] | @tsv'
+cat decisions.log | jq -r '[.timestamp, .proposal_id, .vote, .governance_version] | @tsv'
+
+# Filter by governance version
+cat decisions.log | jq 'select(.governance_version == "1.0.0")'
 ```
 
 ## Security Considerations
@@ -384,6 +451,12 @@ cat decisions.log | jq -r '[.timestamp, .proposal_id, .vote] | @tsv'
 1. **Never commit mnemonic** - Use environment variables or secrets manager
 2. **Minimum balance** - Keep only enough for gas fees
 3. **Separate wallet** - Don't use validator operator key
+
+### Shared Law Integrity
+
+1. **Validate data files** - Check JSON validity before use
+2. **Version tracking** - Log governance_version with every decision
+3. **IPFS pinning** - If using IPFS sync, verify content hashes
 
 ### Network Security
 
@@ -396,6 +469,7 @@ cat decisions.log | jq -r '[.timestamp, .proposal_id, .vote] | @tsv'
 1. **Single instance** - Only one sidecar per wallet (avoid double-voting)
 2. **Audit logs** - Preserve decisions.log for accountability
 3. **Principle review** - Regularly review fork.yaml principles
+4. **Shared law updates** - Review before syncing from IPFS
 
 ## Backup and Recovery
 
@@ -407,10 +481,11 @@ cat decisions.log | jq -r '[.timestamp, .proposal_id, .vote] | @tsv'
 | `decisions.log` | Audit trail | Yes |
 | `fork.yaml` | Voting principles | Yes |
 | `config.yaml` | Configuration | Yes |
+| `data/*.json` | Shared law | Yes (version controlled) |
 
 ### Recovery Procedure
 
-1. Restore `fork.yaml` and `config.yaml`
+1. Restore `fork.yaml`, `config.yaml`, and `data/` directory
 2. Set `LEVIATHAN_MNEMONIC` environment variable
 3. Start sidecar - it will resume from current voting period
 4. (Optional) Restore `decisions.log` for audit continuity

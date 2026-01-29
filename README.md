@@ -1,12 +1,14 @@
 # DAHAO Sidecar
 
-An autonomous governance voting sidecar for Cosmos SDK chains. Uses local LLM inference to make principled voting decisions based on user-defined values ("Fork").
+An autonomous governance voting sidecar for Cosmos SDK chains. Uses local LLM inference to make principled voting decisions based on user-defined values ("Fork") while respecting the DAHAO shared governance framework.
 
 ## Features
 
 - Polls chain for active governance proposals
 - Evaluates proposals using local LLM (Ollama)
 - Votes according to user-defined principles
+- **Validates forks against DAHAO shared law** (locked principles, terms)
+- **Includes governance context in LLM prompts** (thresholds, constraints)
 - Full audit trail with reasoning hashes (for future Proof of Alignment)
 - Supports Cosmos SDK v1 and v1beta1 governance modules
 
@@ -40,11 +42,29 @@ export LEVIATHAN_MNEMONIC="your twenty four word mnemonic phrase here ..."
 ```
 
 Edit `fork.yaml` to define your voting principles:
+
+**Simple format (backward compatible):**
 ```yaml
 name: "My Validator"
 principles:
   - "Prioritize network security"
   - "Support decentralization"
+voting_style: "cautious"
+abstain_threshold: 0.6
+```
+
+**Enhanced format (with shared law references):**
+```yaml
+name: "My Validator"
+inherits: "dahao-core v1.0.0"
+uses_terms:
+  - "@protection"
+  - "@harm"
+principles:
+  - statement: "Prioritize network security"
+    aligns_with: "@precautionary_default"
+  - statement: "Support decentralization"
+    aligns_with: "@democratic_evolution"
 voting_style: "cautious"
 abstain_threshold: 0.6
 ```
@@ -64,16 +84,44 @@ uv run python main.py
 │   Chain ◄──── Sidecar Loop ────► Brain (Ollama)        │
 │     │              │                   │                │
 │     ▼              ▼                   ▼                │
-│  Wallet        decisions.log        Fork               │
-│                                    (values)            │
+│  Wallet      Shared Law             Fork               │
+│            (terms, rules,         (values)            │
+│             principles)                                │
 └─────────────────────────────────────────────────────────┘
 ```
 
-1. **Poll**: Fetches proposals in voting period from chain
-2. **Evaluate**: Sends proposal + Fork principles to LLM
-3. **Decide**: LLM returns structured JSON: `{vote, confidence, reasoning}`
-4. **Vote**: Submits signed MsgVote transaction to chain
-5. **Log**: Records decision with reasoning hash to `decisions.log`
+1. **Load**: Loads DAHAO shared law (terms, principles, rules, governance)
+2. **Validate**: Validates fork against locked principles
+3. **Poll**: Fetches proposals in voting period from chain
+4. **Evaluate**: Sends proposal + Fork + shared law context to LLM
+5. **Decide**: LLM returns structured JSON: `{vote, confidence, reasoning}`
+6. **Vote**: Submits signed MsgVote transaction to chain
+7. **Log**: Records decision with enhanced context to `decisions.log`
+
+## DAHAO Shared Law
+
+The sidecar enforces the DAHAO governance framework through shared law files in `data/`:
+
+| File | Purpose |
+|------|---------|
+| `terms.json` | Universal vocabulary (@purpose, @vote, @evidence, etc.) |
+| `principles.json` | Core principles (6 locked, 3 unlocked) |
+| `rules.json` | Governance rules (thresholds, processes) |
+| `governance.json` | Meta-configuration (timing, automation) |
+| `domains.json` | Domain registry |
+
+### Locked Principles
+
+These principles CANNOT be violated by any fork:
+
+| Principle | Statement |
+|-----------|-----------|
+| `@purpose_primacy` | All decisions must serve stated purpose |
+| `@democratic_evolution` | Evolve through collective deliberation |
+| `@transparency` | All governance publicly visible |
+| `@precautionary_default` | Err toward protection when uncertain |
+| `@protection_asymmetry` | Easier to add protections than remove |
+| `@inheritance_integrity` | Domains can't violate core locked principles |
 
 ## Configuration
 
@@ -98,21 +146,26 @@ sidecar:
   max_retries: 3
 ```
 
-### fork.yaml
+### CLI Arguments
 
-Define your validator's voting principles:
-
-```yaml
-name: "Security-First Validator"
-principles:
-  - "Prioritize network security over feature velocity"
-  - "Support decentralization and resist centralization of power"
-  - "Require clear documentation and audit trails for all changes"
-  - "Favor proposals with thorough security audits"
-  - "Oppose inflationary tokenomics changes"
-voting_style: "cautious"  # cautious, moderate, or aggressive
-abstain_threshold: 0.6    # Abstain if confidence below this
+```bash
+python main.py \
+  --fork fork.yaml \
+  --wallet "24-word mnemonic..." \
+  --data-dir data/ \
+  --skip-fork-validation \
+  --name "MyValidator" \
+  --log-level INFO
 ```
+
+| Argument | Description |
+|----------|-------------|
+| `--fork` | Path to fork.yaml (default: fork.yaml) |
+| `--wallet` | 24-word mnemonic (overrides env var) |
+| `--data-dir` | Shared law data directory (default: data/) |
+| `--skip-fork-validation` | Skip validation against shared law |
+| `--name` | Agent name for logs |
+| `--log-level` | DEBUG, INFO, WARNING, ERROR |
 
 ## Decision Logging
 
@@ -124,10 +177,15 @@ All votes are logged to `decisions.log` in JSON format:
   "proposal_id": 1,
   "proposal_title": "Increase Block Size",
   "fork_name": "Security-First Validator",
+  "fork_inherits": "dahao-core v1.0.0",
   "vote": "NO",
   "confidence": 0.85,
   "llm_reasoning": "Increasing block size risks centralization...",
-  "reasoning_hash": "6345fe1fa25f20b80b20ee9dea2a03ce759479175c472d7a0d11a97fb92741a8"
+  "reasoning_hash": "6345fe1fa25f20b80b20ee9dea2a03ce...",
+  "terms_referenced": ["@protection", "@harm"],
+  "principles_aligned": ["@precautionary_default"],
+  "locked_constraints": ["@purpose_primacy", "@democratic_evolution", ...],
+  "governance_version": "1.0.0"
 }
 ```
 
@@ -145,7 +203,13 @@ leviathan/
 ├── chain/               # CosmPy blockchain interaction
 ├── brain/               # Ollama LLM integration
 ├── sidecar/             # Polling loop and state
-└── models/              # Data models
+├── models/              # Data models
+└── data/                # DAHAO shared law
+    ├── terms.json       # Universal vocabulary
+    ├── principles.json  # Core principles
+    ├── rules.json       # Governance rules
+    ├── governance.json  # Meta-configuration
+    └── domains.json     # Domain registry
 ```
 
 ## Swarm Simulation - AI Democracy

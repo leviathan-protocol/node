@@ -1,7 +1,10 @@
 """Decision engine that combines Fork, Proposal, and LLM to produce VoteDecision."""
 
+from __future__ import annotations
+
 import json
 import logging
+from typing import TYPE_CHECKING
 
 from brain.llm import LLMWrapper
 from brain.prompts import build_voting_prompt
@@ -9,15 +12,27 @@ from config.fork import Fork
 from models.proposal import Proposal
 from models.vote import VoteChoice, VoteDecision
 
+if TYPE_CHECKING:
+    from data.loader import SharedLaw
+
 logger = logging.getLogger(__name__)
 
 
 class DecisionEngine:
-    """Combines Fork principles with LLM to make voting decisions."""
+    """Combines Fork principles with LLM to make voting decisions.
 
-    def __init__(self, llm: LLMWrapper, fork: Fork):
+    Optionally uses SharedLaw for enhanced context in prompts.
+    """
+
+    def __init__(
+        self,
+        llm: LLMWrapper,
+        fork: Fork,
+        shared_law: "SharedLaw | None" = None,
+    ):
         self.llm = llm
         self.fork = fork
+        self.shared_law = shared_law
 
     def decide(self, proposal: Proposal) -> VoteDecision:
         """Generate a voting decision for a proposal.
@@ -30,8 +45,8 @@ class DecisionEngine:
         """
         logger.info(f"Evaluating proposal #{proposal.id}: {proposal.title}")
 
-        # Build the prompt
-        messages = build_voting_prompt(proposal, self.fork)
+        # Build the prompt (with or without shared law context)
+        messages = build_voting_prompt(proposal, self.fork, self.shared_law)
 
         # Generate decision using constrained grammar
         raw_response = self.llm.generate_vote_decision(messages)
