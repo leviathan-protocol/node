@@ -2,6 +2,28 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Quick Start (Local Development)
+
+```bash
+# 1. Install dependencies
+uv sync
+
+# 2. Start local Avalanche L1 blockchain
+./scripts/setup_dahao_subnet.sh
+
+# 3. Deploy contracts (requires Node 22)
+cd contracts && npm install && source ~/.nvm/nvm.sh && nvm use 22 && npx hardhat run scripts/deploy_subnet.js --network dahaoSubnet && cd ..
+
+# 4. Set relayer key (EWOQ test key)
+export RELAYER_PRIVATE_KEY="56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027"
+
+# 5. Start Ollama
+ollama serve & ollama pull qwen3:14b
+
+# 6. Run Observer Mode
+python main.py --mode observer --config config_dahao_subnet.yaml
+```
+
 ## Build and Run Commands
 
 This project uses `uv` for Python package management.
@@ -10,54 +32,166 @@ This project uses `uv` for Python package management.
 # Install dependencies
 uv sync
 
-# Run the sidecar
-uv run python main.py
+# Run the sidecar (Decider Mode - autonomous voting)
+uv run python main.py --mode decider
+
+# Run the sidecar (Observer Mode - API gateway for mobile voting)
+uv run python main.py --mode observer
 
 # Syntax check all modules
-uv run python -m py_compile main.py config/*.py chain/*.py brain/*.py sidecar/*.py models/*.py data/*.py
+uv run python -m py_compile main.py config/*.py chain/*.py brain/*.py sidecar/*.py models/*.py data/*.py api/*.py modes/*.py
+
+# Run tests
+uv run pytest tests/ -v
 
 # Test imports
 uv run python -c "from data import SharedLaw; print(SharedLaw().summary())"
 ```
 
+## Operation Modes
+
+The sidecar supports two operation modes:
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| **Decider** | Autonomous voting agent | Validators running their own nodes |
+| **Observer** | API gateway for mobile clients | Gasless voting for mobile users |
+
+### Decider Mode (Default)
+```bash
+python main.py --mode decider --fork fork.yaml
+```
+- Polls chain for new proposals
+- Uses LLM to make voting decisions based on Fork principles
+- Submits votes automatically using node wallet
+
+### Observer Mode
+```bash
+python main.py --mode observer --host 0.0.0.0 --port 8000
+```
+- Runs FastAPI server for mobile clients
+- Validates signed voting intents
+- Executes votes on behalf of users (gasless)
+- Supports both Cosmos (Authz) and EVM (meta-transactions)
+
+## Multi-Chain Support
+
+The sidecar supports both Cosmos SDK and EVM chains via the Chain Adapter pattern:
+
+| Chain Type | Networks | Authorization | Gasless Mechanism |
+|------------|----------|---------------|-------------------|
+| **Cosmos** | DAHAO, Cosmos Hub | Authz Module | MsgExec |
+| **EVM** | Avalanche, Ethereum | Token Delegation | EIP-2771 Meta-Tx |
+
+### Chain Adapter Pattern
+```python
+from chain.adapter import create_chain_adapter
+from config.settings import ChainConfig
+
+# Cosmos chain
+cosmos_config = ChainConfig(type="cosmos", chain_id="dahao")
+cosmos_adapter = create_chain_adapter(cosmos_config)
+
+# EVM chain (Avalanche)
+evm_config = ChainConfig(type="evm", chain_id="43113", rpc_url="https://api.avax-test.network/ext/bc/C/rpc")
+evm_adapter = create_chain_adapter(evm_config)
+
+# Both implement the same interface
+proposals = adapter.fetch_proposals()
+result = adapter.submit_vote_on_behalf(voter, proposal_id, vote, signature)
+```
+
 ## Prerequisites
 
-Before running the sidecar:
+### For Cosmos Chains (Decider Mode)
 
 1. **DAHAO Chain Running**:
    ```bash
-   # Scaffold if needed (run from home dir to avoid path issues)
-   cd ~
-   ignite scaffold chain dahao
-   mv dahao <project-dir>/
-
-   # Start the chain
-   cd <project-dir>/dahao
-   ignite chain serve
+   cd dahao && ignite chain serve
    ```
    This starts gRPC on `localhost:9090`.
 
-2. **Ollama Running** with a model:
+2. **Wallet Mnemonic**:
    ```bash
-   ollama serve  # if not already running
-   ollama pull qwen3:14b  # or ministral-3:8b
-   ```
-
-3. **Wallet Mnemonic** (use one from `ignite chain serve` output):
-   ```bash
-   # Replace with YOUR 24-word mnemonic from ignite chain serve output
    export LEVIATHAN_MNEMONIC="your twenty four word mnemonic phrase here ..."
    ```
-   **Note:** Do NOT use a cosmos1... address. Use the 24-word mnemonic phrase.
+
+### For EVM Chains (Observer Mode)
+
+1. **Deploy Contracts** (Avalanche Fuji):
+   ```bash
+   cd contracts
+   npm install
+   source ~/.nvm/nvm.sh && nvm use 22
+   npx hardhat compile
+   npx hardhat run scripts/deploy.js --network fuji
+   ```
+
+2. **Set Relayer Private Key**:
+   ```bash
+   export RELAYER_PRIVATE_KEY="0x..."  # Node pays gas for users
+   ```
+
+3. **Fund Relayer Wallet** with AVAX for gas fees.
+
+### DAHAO Subnet (Local Avalanche L1)
+
+For local development, you can run a private Avalanche L1 blockchain instead of using testnet. This is similar to `ignite chain serve` for Cosmos.
+
+```bash
+# 1. Start the DAHAO Subnet
+./scripts/setup_dahao_subnet.sh
+
+# 2. Deploy contracts to subnet
+cd contracts && npx hardhat run scripts/deploy_subnet.js --network dahaoSubnet
+
+# 3. Set relayer key (EWOQ test key - auto-funded)
+export RELAYER_PRIVATE_KEY="56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027"
+
+# 4. Run Observer Mode
+python main.py --mode observer --config config_dahao_subnet.yaml
+```
+
+**DAHAO Subnet Details:**
+
+| Setting | Value |
+|---------|-------|
+| Chain ID | 43210 |
+| RPC URL | `http://127.0.0.1:9654/ext/bc/<blockchain_hash>/rpc` |
+| Token Symbol | DAHAO |
+| EWOQ Test Address | `0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC` |
+| EWOQ Private Key | `56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027` |
+| EWOQ Balance | 1,000,000 DAHAO (native + governance tokens) |
+
+**Subnet Management:**
+```bash
+# Stop the subnet
+avalanche network stop
+
+# Restart the subnet
+avalanche network start
+
+# View subnet info
+avalanche blockchain describe dahao
+```
+
+### For Both Modes
+
+**Ollama Running** with a model:
+```bash
+ollama serve
+ollama pull qwen3:14b
+```
 
 ## Architecture
 
+### Decider Mode Architecture
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    DAHAO Sidecar (Python)               │
 │  ┌──────────┐   ┌──────────┐   ┌──────────────────┐    │
 │  │  Chain   │◄──│ Sidecar  │──►│      Brain       │    │
-│  │ (CosmPy) │   │  Loop    │   │    (Ollama)      │    │
+│  │ Adapter  │   │  Loop    │   │    (Ollama)      │    │
 │  └────┬─────┘   └────┬─────┘   └────────┬─────────┘    │
 │       │              │                   │              │
 │       ▼              ▼                   ▼              │
@@ -66,172 +200,124 @@ Before running the sidecar:
 │  │(mnemonic)│  │   Law    │        │ (values) │        │
 │  └──────────┘  └──────────┘        └──────────┘        │
 └─────────────────────────────────────────────────────────┘
-         │              │                   │
-         ▼              ▼                   ▼
-   ┌───────────┐  ┌───────────┐      ┌───────────┐
-   │  Cosmos   │  │  data/    │      │  Ollama   │  (HTTP)
-   │   Chain   │  │  *.json   │      │  Server   │
-   └───────────┘  └───────────┘      └───────────┘
+         │                                  │
+         ▼                                  ▼
+   ┌───────────┐                     ┌───────────┐
+   │  Cosmos/  │                     │  Ollama   │
+   │   EVM     │                     │  Server   │
+   └───────────┘                     └───────────┘
+```
+
+### Observer Mode Architecture (Gasless Voting)
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Mobile    │     │   DAHAO     │     │   Chain     │     │   Smart     │
+│    Phone    │────►│   Node      │────►│  Adapter    │────►│  Contract   │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+      │                   │                   │                   │
+      │ 1. Sign intent    │                   │                   │
+      │    (ECDSA/EIP712) │                   │                   │
+      │                   │                   │                   │
+      │ 2. POST /submit   │                   │                   │
+      │────────────────────►                   │                   │
+      │                   │                   │                   │
+      │                   │ 3. Validate:      │                   │
+      │                   │    - Signature    │                   │
+      │                   │    - Authorization│                   │
+      │                   │    - Reasoning    │                   │
+      │                   │                   │                   │
+      │                   │ 4. Execute vote   │                   │
+      │                   │   (node pays gas) │                   │
+      │                   │───────────────────►                   │
+      │                   │                   │───────────────────►
 ```
 
 ## Project Structure
 
 ```
 leviathan/
-├── main.py                 # Entry point with CLI args support
-├── config.yaml             # Chain, LLM, sidecar settings
+├── main.py                 # Entry point with --mode flag
+├── config.yaml             # Cosmos chain config
+├── config_evm.yaml         # EVM chain config (Avalanche Fuji)
+├── config_dahao_subnet.yaml # Local Avalanche L1 config
 ├── fork.yaml               # User's voting principles
-├── simulation_swarm.py     # Multi-agent simulation runner
-├── decisions.log           # Audit trail of all votes
-├── adapter/                # Identity Adapter module
-│   ├── __init__.py         # Module exports
-│   ├── models.py           # Persona model
-│   ├── loader.py           # PersonaLoader class
-│   ├── mapper.py           # PersonaMapper (LLM-based conversion)
-│   ├── prompts.py          # LLM schemas and prompts
-│   └── cache.py            # ForkCache for caching mappings
+│
+├── modes/                  # Operation modes
+│   ├── __init__.py
+│   ├── decider.py          # Autonomous voting loop
+│   └── observer.py         # FastAPI server for mobile
+│
+├── api/                    # Observer Mode REST API
+│   ├── server.py           # FastAPI app factory
+│   └── routes/
+│       ├── pair.py         # /invite, /connect, /register
+│       ├── proposals.py    # /proposals
+│       ├── vote.py         # /submit_vote (Cosmos + EVM)
+│       └── status.py       # /status
+│
+├── chain/                  # Multi-chain support
+│   ├── adapter.py          # ChainAdapter ABC + factory
+│   ├── cosmos_adapter.py   # Cosmos SDK implementation
+│   ├── evm_adapter.py      # EVM implementation (Web3.py)
+│   ├── evm_client.py       # Low-level Web3 client
+│   ├── evm_meta_tx.py      # EIP-2771 meta-transactions
+│   ├── client.py           # Legacy Cosmos client
+│   ├── governance.py       # Legacy governance queries
+│   ├── wallet.py           # Cosmos wallet manager
+│   └── authz.py            # Cosmos Authz helpers
+│
+├── contracts/              # Solidity contracts (EVM)
+│   ├── src/
+│   │   ├── DAHAOToken.sol      # ERC20Votes governance token
+│   │   ├── DAHAOGovernor.sol   # Governor with ERC2771Context
+│   │   └── DAHAOForwarder.sol  # EIP-2771 Forwarder
+│   ├── scripts/
+│   │   ├── deploy.js           # Deploy to Fuji testnet
+│   │   └── deploy_subnet.js    # Deploy to local DAHAO Subnet
+│   └── hardhat.config.js   # Network configuration
+│
+├── validator/              # Semantic firewall
+│   ├── __init__.py
+│   ├── signature.py        # ECDSA signature verification
+│   ├── authz.py            # Authz grant checking
+│   └── semantic.py         # Reasoning consistency validation
+│
+├── brain/                  # LLM integration
+│   ├── llm.py              # Ollama wrapper
+│   ├── prompts.py          # Voting prompts
+│   └── decision.py         # Vote decision logic
+│
 ├── config/
-│   ├── settings.py         # Pydantic settings
-│   └── fork.py             # Fork model with validation against shared law
-├── chain/
-│   ├── client.py           # LedgerClient + gRPC channel wrapper
-│   ├── governance.py       # Proposal fetching, vote submission
-│   └── wallet.py           # LocalWallet.from_mnemonic()
-├── brain/
-│   ├── llm.py              # Ollama wrapper with JSON schema
-│   ├── prompts.py          # Voting prompts with shared law context
-│   └── decision.py         # Fork + Proposal + SharedLaw → VoteDecision
-├── sidecar/
-│   ├── loop.py             # Async polling loop
-│   ├── state.py            # Processed proposal tracking
-│   └── logger.py           # Enhanced decision audit logging
+│   ├── settings.py         # Pydantic settings (Cosmos + EVM)
+│   └── fork.py             # Fork model with validation
+│
 ├── models/
 │   ├── proposal.py         # Proposal dataclass
-│   └── vote.py             # VoteChoice enum, VoteDecision
-├── data/
-│   ├── __init__.py         # SharedLaw, models exports
-│   ├── models.py           # Pydantic models for Term, Principle, Rule, etc.
-│   ├── loader.py           # SharedLaw class - loads and parses data/*.json
-│   ├── sync.py             # IPFS sync support for shared law updates
-│   ├── terms.json          # Universal vocabulary (@purpose, @vote, etc.)
-│   ├── principles.json     # Core principles (locked and unlocked)
-│   ├── rules.json          # Governance rules
-│   ├── governance.json     # Thresholds, timing, automation settings
-│   └── domains.json        # Domain registry
-└── simulation/
-    ├── alice.yaml          # Nature Mother persona
-    ├── bob.yaml            # Capitalist persona
-    ├── charlie.yaml        # Anarchist persona
-    ├── dave.yaml           # Conformist persona
-    ├── eve.yaml            # Hacker persona
-    ├── wallets.yaml        # Test wallet mnemonics
-    └── fund_wallets.sh     # Script to fund test wallets
-```
-
-## Key Implementation Patterns
-
-### SharedLaw Loading
-```python
-from data import SharedLaw
-
-# Load from default data/ directory
-shared_law = SharedLaw()
-
-# Access terms, principles, rules
-term = shared_law.get_term("@purpose")
-locked = shared_law.get_locked_principles()
-threshold = shared_law.get_threshold("principle_modification")
-```
-
-### Fork Validation Against Shared Law
-```python
-from config.fork import Fork, ForkValidationError
-from data import SharedLaw
-
-fork = Fork.from_yaml("fork.yaml")
-shared_law = SharedLaw()
-
-try:
-    fork.validate_against(shared_law)
-    print("Fork is valid")
-except ForkValidationError as e:
-    print(f"Violations: {e.violations}")
-```
-
-### CosmPy Wallet Creation
-```python
-# CORRECT - use factory method
-wallet = LocalWallet.from_mnemonic(mnemonic, prefix="cosmos")
-```
-
-### CosmPy Governance Queries
-```python
-# LedgerClient has no .gov attribute - create stub from channel
-from cosmpy.protos.cosmos.gov.v1beta1.query_pb2_grpc import QueryStub
-from cosmpy.aerial.urls import parse_url
-
-parsed = parse_url(grpc_url)
-channel = grpc.insecure_channel(parsed.host_and_port)
-gov_client = QueryStub(channel)
-response = gov_client.Proposals(request)
-```
-
-### CosmPy Transaction Lifecycle
-```python
-# Transaction state machine: Draft → Sealed → Final
-tx = Transaction()
-tx.add_message(msg)
-
-account = ledger.query_account(wallet.address())
-gas_limit, fee = ledger.estimate_gas_and_fee_for_tx(tx)
-
-tx.seal(SigningCfg.direct(wallet.public_key(), account.sequence), fee=fee)
-tx.sign(wallet.signer(), chain_id, account.number)
-tx.complete()
-
-submitted_tx = ledger.broadcast_tx(tx)
-```
-
-### Protobuf Any Type Unpacking (v1beta1 Proposals)
-```python
-# Proposal content is wrapped in protobuf Any type - must unpack
-from cosmpy.protos.cosmos.gov.v1beta1.gov_pb2 import TextProposal
-
-if hasattr(proto_proposal, "content") and proto_proposal.content:
-    content = proto_proposal.content
-    if "TextProposal" in content.type_url:
-        text_proposal = TextProposal()
-        if content.Unpack(text_proposal):
-            title = text_proposal.title
-            description = text_proposal.description
-```
-
-### Ollama Structured Output (JSON Schema)
-```python
-import ollama
-
-VOTE_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "vote": {"type": "string", "enum": ["YES", "NO", "ABSTAIN", "NO_WITH_VETO"]},
-        "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
-        "reasoning": {"type": "string"},
-    },
-    "required": ["vote", "confidence", "reasoning"],
-}
-
-response = client.chat(
-    model="qwen3:14b",
-    messages=messages,
-    format=VOTE_SCHEMA,  # Forces structured JSON output
-)
+│   └── vote.py             # VoteChoice, VoteDecision
+│
+├── data/                   # Shared Law data files
+│   ├── terms.json
+│   ├── principles.json
+│   ├── rules.json
+│   └── governance.json
+│
+├── tests/
+│   ├── test_observer_mode.py   # 19 API tests
+│   ├── test_evm_meta_tx.py     # 15 meta-tx tests
+│   ├── mock_phone.py           # Cosmos phone simulator
+│   └── mock_phone_evm.py       # EVM phone simulator
+│
+└── scripts/
+    ├── setup_dahao_subnet.sh  # Start local Avalanche L1
+    └── demo_meta_tx.py        # EIP-712 signing demo
 ```
 
 ## Configuration Files
 
-### config.yaml
+### config.yaml (Cosmos)
 ```yaml
 chain:
+  type: cosmos
   chain_id: "dahao"
   grpc_url: "grpc+http://localhost:9090"
   fee_denom: "stake"
@@ -240,294 +326,263 @@ chain:
 llm:
   model_name: "qwen3:14b"
   ollama_host: "http://localhost:11434"
-  n_ctx: 8192
 
 sidecar:
   poll_interval_seconds: 60
-  max_retries: 3
 ```
 
-### fork.yaml (Simple Format - Backward Compatible)
+### config_evm.yaml (Avalanche)
 ```yaml
-name: "Security-First Validator"
-principles:
-  - "Prioritize network security over feature velocity"
-  - "Support decentralization"
-voting_style: "cautious"
-abstain_threshold: 0.6
+chain:
+  type: evm
+  chain_id: "43113"  # Fuji testnet
+  rpc_url: "https://api.avax-test.network/ext/bc/C/rpc"
+
+  # Contract addresses (from deploy.js output)
+  governor_address: "0x..."   # DAHAOGovernor
+  token_address: "0x..."      # DAHAOToken
+  forwarder_address: "0x..."  # DAHAOForwarder
+
+llm:
+  model_name: "qwen3:14b"
+  ollama_host: "http://localhost:11434"
 ```
 
-### fork.yaml (Enhanced Format - With Shared Law References)
+### config_dahao_subnet.yaml (Local Avalanche L1)
 ```yaml
-name: "Security-First Validator"
-inherits: "dahao-core v1.0.0"
-uses_terms:
-  - "@protection"
-  - "@harm"
-  - "@evidence"
-principles:
-  - statement: "Prioritize network security over feature velocity"
-    aligns_with: "@precautionary_default"
-  - statement: "Support decentralization"
-    aligns_with: "@democratic_evolution"
-voting_style: "cautious"
-abstain_threshold: 0.6
+chain:
+  type: evm
+  chain_id: "43210"
+  rpc_url: "http://127.0.0.1:9654/ext/bc/<blockchain_hash>/rpc"
+
+  # Contract addresses (auto-generated by deploy_subnet.js)
+  governor_address: "0x..."   # DAHAOGovernor
+  token_address: "0x..."      # DAHAOToken
+  forwarder_address: "0x..."  # DAHAOForwarder
+
+llm:
+  model_name: "qwen3:14b"
+  ollama_host: "http://localhost:11434"
+
+# Env: RELAYER_PRIVATE_KEY=56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027
 ```
 
-### persona.json (External Identity Format)
-External persona files from the Journal App can be converted to Fork configurations:
-```json
+## Key Implementation Patterns
+
+### Chain Adapter Interface
+```python
+from chain.adapter import ChainAdapter, ChainType
+
+class ChainAdapter(ABC):
+    @property
+    def chain_type(self) -> ChainType: ...
+    @property
+    def is_connected(self) -> bool: ...
+
+    def fetch_proposals(self, status: str | None = None) -> list[Proposal]: ...
+    def submit_vote(self, voter, proposal_id, vote, private_key) -> VoteResult: ...
+    def submit_vote_on_behalf(self, voter, proposal_id, vote, signature) -> VoteResult: ...
+    def check_delegation(self, delegator, delegate) -> DelegationInfo: ...
+    def get_voting_power(self, address) -> int: ...
+```
+
+### EVM Meta-Transaction Flow
+```python
+from chain.evm_meta_tx import MetaTransactionRelayer, encode_cast_vote
+
+# Build ForwardRequest
+relayer = MetaTransactionRelayer(client, forwarder_address, abi)
+call_data = encode_cast_vote(proposal_id=42, support=1)  # 1=For
+request = relayer.build_forward_request(
+    from_addr=user_address,
+    to_addr=governor_address,
+    data=call_data,
+)
+
+# User signs EIP-712 typed data (off-chain)
+typed_data = relayer.get_eip712_typed_data(request)
+signature = user_wallet.sign_typed_data(typed_data)
+
+# Relayer executes (pays gas)
+receipt = relayer.execute_and_wait(request, signature)
+```
+
+### Observer Mode Vote Submission
+```python
+# POST /api/v1/submit_vote
+
+# Cosmos request
 {
-  "user_id": "alice_123",
-  "archetype": "Deep Ecologist",
-  "core_values": [
-    "Nature has intrinsic rights regardless of human utility",
-    "Slow down technological acceleration if it harms ecosystems",
-    "Privacy is essential for individual freedom"
-  ],
-  "decision_style": "High caution, requires strong evidence",
-  "last_updated": "2026-01-29T14:00:00Z"
+    "proposal_id": 1,
+    "voter_address": "cosmos1...",
+    "vote_option": "YES",
+    "public_reasoning": "This benefits the network",
+    "intent_signature": "<base64>",  # ECDSA signature
+    "pub_key": "<base64>"
+}
+
+# EVM request
+{
+    "proposal_id": 1,
+    "voter_address": "0x...",
+    "vote_option": "YES",
+    "public_reasoning": "This benefits the network",
+    "eip712_signature": "0x...",  # EIP-712 signature
+    "reasoning_hash": "0x..."     # Optional IPFS hash
 }
 ```
 
-## Shared Law Data Files
+### SharedLaw Loading
+```python
+from data import SharedLaw
 
-The `data/` directory contains the DAHAO governance framework:
-
-| File | Purpose |
-|------|---------|
-| `terms.json` | Universal vocabulary (@purpose, @vote, @evidence, etc.) |
-| `principles.json` | Core principles (6 locked, 3 unlocked) |
-| `rules.json` | Executable governance rules |
-| `governance.json` | Thresholds, timing, automation settings |
-| `domains.json` | Registry of domain instances |
-
-### Locked Principles (Cannot Be Violated)
-- `@purpose_primacy` - All decisions must serve stated purpose
-- `@democratic_evolution` - Evolve through collective deliberation
-- `@transparency` - All governance publicly visible
-- `@precautionary_default` - Err toward protection when uncertain
-- `@protection_asymmetry` - Easier to add protections than remove
-- `@inheritance_integrity` - Domains can't violate core locked principles
-
-## Testing
-
-### Create a Test Proposal
-In a separate terminal (while chain is running):
-```bash
-cd dahao
-dahaod tx gov submit-proposal --title="Test Proposal" \
-  --description="Testing the sidecar" \
-  --type="Text" \
-  --deposit="10000000stake" \
-  --from=alice --yes
+shared_law = SharedLaw()
+term = shared_law.get_term("@purpose")
+locked = shared_law.get_locked_principles()
 ```
 
-### Check Sidecar Logs
-The sidecar will:
-1. Detect the new proposal
-2. Query LLM for voting decision (with shared law context)
-3. Submit vote transaction
-4. Log decision to `decisions.log`
+### Fork Validation
+```python
+from config.fork import Fork, ForkValidationError
 
-## Decision Logging
-
-All votes logged to `decisions.log` with:
-- Timestamp, proposal ID/title
-- Vote choice and confidence
-- LLM reasoning
-- SHA256 hash of reasoning (for future Proof of Alignment)
-- **Enhanced fields** (when shared law loaded):
-  - Terms referenced
-  - Principles aligned
-  - Locked constraints
-  - Governance version
+fork = Fork.from_yaml("fork.yaml")
+try:
+    fork.validate_against(shared_law)
+except ForkValidationError as e:
+    print(f"Violations: {e.violations}")
+```
 
 ## CLI Arguments
 
 ```bash
-python main.py --fork simulation/alice.yaml \
-               --wallet "mnemonic words..." \
-               --state simulation/state_alice.json \
-               --data-dir data/ \
-               --skip-fork-validation \
-               --name Alice
+# Decider Mode
+python main.py --mode decider \
+    --fork fork.yaml \
+    --wallet "mnemonic..." \
+    --config config.yaml
+
+# Observer Mode
+python main.py --mode observer \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --config config_evm.yaml
 ```
 
 | Argument | Description |
 |----------|-------------|
-| `--fork` | Path to fork.yaml |
-| `--wallet` | 24-word mnemonic |
-| `--state` | State file path |
+| `--mode` | `decider` or `observer` (default: decider) |
+| `--config` | Path to config.yaml |
+| `--fork` | Path to fork.yaml (decider mode) |
+| `--wallet` | 24-word mnemonic (Cosmos) |
+| `--host` | API server host (observer mode) |
+| `--port` | API server port (observer mode) |
 | `--data-dir` | Shared law data directory |
-| `--skip-fork-validation` | Skip fork validation against shared law |
-| `--simple-validation` | Use fast pattern-based validation instead of LLM |
-| `--persona` | Path to persona.json (converts to Fork via LLM) |
-| `--persona-cache` | Enable caching of persona-to-fork mappings |
-| `--persona-cache-dir` | Custom cache directory (default: ~/.cache/dahao/forks/) |
-| `--name` | Agent name for logs |
+| `--skip-fork-validation` | Skip fork validation |
 | `--log-level` | DEBUG, INFO, WARNING, ERROR |
 
-## Identity Adapter
+## Observer Mode API Endpoints
 
-The Identity Adapter module converts external persona.json files into valid Fork configurations.
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/health` | GET | Health check |
+| `/api/v1/invite` | GET | Get pairing invite code |
+| `/api/v1/connect` | POST | Connect with invite code |
+| `/api/v1/register` | POST | Register voter address |
+| `/api/v1/proposals` | GET | List active proposals |
+| `/api/v1/submit_vote` | POST | Submit signed vote |
+| `/api/v1/status` | GET | Node status |
 
-### Architecture
+## Solidity Contracts (EVM)
 
-```
-┌─────────────────┐     ┌───────────────┐     ┌─────────────┐
-│  persona.json   │────►│ PersonaLoader │────►│   Persona   │
-│  (Journal App)  │     │               │     │   (model)   │
-└─────────────────┘     └───────────────┘     └──────┬──────┘
-                                                     │
-                                                     ▼
-                        ┌───────────────┐     ┌─────────────┐
-                        │ PersonaMapper │────►│    Fork     │
-                        │   (LLM-based) │     │  (config)   │
-                        └───────────────┘     └──────┬──────┘
-                               │                     │
-                               ▼                     ▼
-                        ┌───────────────┐     ┌─────────────┐
-                        │   ForkCache   │     │  Validation │
-                        │  (~/.cache/)  │     │   (LLM)     │
-                        └───────────────┘     └─────────────┘
-```
+### DAHAOToken.sol
+- ERC20 with ERC20Votes for governance
+- ERC20Permit for gasless approvals
+- Initial supply: 1,000,000 DAHAO
 
-### Usage Examples
+### DAHAOGovernor.sol
+- OpenZeppelin Governor with extensions
+- ERC2771Context for meta-transactions
+- Custom `castVoteWithReasoningHash()` function
+- Voting delay: 1 day, period: 1 week, quorum: 4%
 
+### DAHAOForwarder.sol
+- ERC2771Forwarder for meta-transactions
+- EIP-712 typed data signing
+- Nonce-based replay protection
+
+### Deploying Contracts
 ```bash
-# Use persona instead of fork.yaml
-python main.py --persona ./persona.json
-
-# Use persona with caching (inspect generated Fork)
-python main.py --persona ./persona.json --persona-cache
-
-# Custom cache directory
-python main.py --persona ./persona.json --persona-cache --persona-cache-dir ./debug
-
-# Fallback: if no --persona, uses --fork (existing behavior)
-python main.py --fork fork.yaml
+cd contracts
+npm install
+source ~/.nvm/nvm.sh && nvm use 22
+npx hardhat compile
+npx hardhat run scripts/deploy.js --network fuji
 ```
 
-### Programmatic Usage
+## Testing
 
-```python
-from adapter import PersonaLoader, PersonaMapper, Persona, ForkCache
-from data import SharedLaw
-from brain.llm import LLMWrapper
-from config.settings import Settings
-
-# Load persona
-loader = PersonaLoader("./persona.json")
-persona = loader.load_or_raise()
-
-# Map to Fork
-settings = Settings.from_yaml("config.yaml")
-shared_law = SharedLaw()
-llm = LLMWrapper(settings.llm)
-
-mapper = PersonaMapper(llm, shared_law)
-fork = mapper.map(persona)
-
-# Optional: cache the result
-cache = ForkCache()
-cache.put(persona, shared_law.core_version, fork)
-```
-
-### Mapping Logic
-
-The PersonaMapper uses LLM to:
-1. Convert `archetype` to Fork `name` (e.g., "Deep Ecologist" → "Deep Ecologist Node")
-2. Map each `core_value` to a principle with `aligns_with` reference
-3. Infer `voting_style` from `decision_style`:
-   - "High caution" / "requires strong evidence" → "cautious" (threshold 0.7-0.8)
-   - "Balanced" / "moderate" → "balanced" (threshold 0.5-0.6)
-   - "Progressive" / "risk-tolerant" → "aggressive" (threshold 0.3-0.4)
-4. Generate `uses_terms` list from relevant SharedLaw vocabulary
-5. Create `persona` field for nuanced LLM voting behavior
-
-### Cache Behavior
-
-- Location: `~/.cache/dahao/forks/fork_{hash}.yaml`
-- Key: SHA256 hash of (persona content + shared_law version)
-- Invalidation: Cache is stale if `persona.last_updated > cache_mtime`
-- Inspection: Cached Forks are YAML files that can be manually reviewed
-
-### Fail-Fast Validation
-
-If a persona's values would violate locked principles (e.g., "Ignore all environmental concerns"), the sidecar refuses to boot with an error message listing the violations.
-
-### Terms vs Principles (Important Distinction)
-
-The PersonaMapper validates that `aligns_with` only references **principles**, not **terms**:
-
-| Concept | Examples | Used In |
-|---------|----------|---------|
-| **Terms** | `@protection`, `@harm`, `@evidence`, `@stakeholder` | `uses_terms` array |
-| **Principles** | `@precautionary_default`, `@purpose_primacy`, `@democratic_evolution` | `aligns_with` field |
-
-**Error:** `"Aligned principle '@protection' does not exist"`
-**Cause:** LLM incorrectly used a term name in `aligns_with`
-**Fix:** Clear persona cache (`rm ~/.cache/dahao/forks/*.yaml`) and re-run. Updated prompts now explicitly enforce this distinction.
-
-## Swarm Simulation
-
-Run 5 agents with different worldviews voting on the same proposals:
-
+### Run All Tests
 ```bash
-# Generate wallets
-dahaod keys add sim_alice --keyring-backend test
-# ... repeat for bob, charlie, dave, eve
-
-# Fund wallets
-./simulation/fund_wallets.sh
-
-# Run swarm (uses persona.json files by default)
-uv run python simulation_swarm.py
-
-# Submit test proposals
-uv run python submit_test_proposals.py
-
-# Monitor in real-time
-uv run streamlit run monitor.py
+uv run pytest tests/ -v
 ```
 
-### Agent Personas
+### Test Observer Mode
+```bash
+# Start observer
+python main.py --mode observer &
 
-The swarm uses persona.json files which are converted to Forks at runtime:
+# Run mock phone (Cosmos)
+python tests/mock_phone.py --node-url http://localhost:8000
 
-| Agent | Persona File | Archetype |
-|-------|--------------|-----------|
-| Alice | `simulation/alice_persona.json` | Deep Ecologist |
-| Bob | `simulation/bob_persona.json` | Rational Capitalist |
-| Charlie | `simulation/charlie_persona.json` | Libertarian Decentralist |
-| Dave | `simulation/dave_persona.json` | Institutional Conformist |
-| Eve | `simulation/eve_persona.json` | Security Researcher |
+# Run mock phone (EVM)
+python tests/mock_phone_evm.py --node-url http://localhost:8000
+```
 
-**Note:** Some personas (like Bob's "Rational Capitalist") may fail validation if their values conflict with locked principles. This is intentional fail-fast behavior.
+### Test Meta-Transactions
+```bash
+uv run python scripts/demo_meta_tx.py
+```
 
-## Dependencies
+## Environment Variables
 
-- **cosmpy**: Cosmos SDK Python client
-- **ollama**: Local LLM inference via Ollama
-- **pydantic-settings**: Configuration management
-- **pyyaml**: YAML config parsing
-- **httpx**: HTTP client (used by ollama and IPFS sync)
+| Variable | Description |
+|----------|-------------|
+| `LEVIATHAN_MNEMONIC` | Cosmos wallet mnemonic (24 words) |
+| `RELAYER_PRIVATE_KEY` | EVM relayer private key (0x...) |
+| `FUJI_RPC_URL` | Custom Avalanche Fuji RPC URL |
+| `SNOWTRACE_API_KEY` | Snowtrace API key for verification |
 
 ## Troubleshooting
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `'NetworkConfig' has no attribute 'grpc_channel'` | CosmPy API change | Use `parse_url()` + `grpc.insecure_channel()` |
-| `Model not found in Ollama` | Model not pulled | Run `ollama pull <model-name>` |
-| `Invalid mnemonic length` | Set address instead of mnemonic | Use 24-word phrase, not cosmos1... address |
-| `Failed to connect to Ollama` | Ollama not running | Run `ollama serve` |
-| Proposal title shows "Unknown" | Protobuf `Any` type not unpacked | Use `content.Unpack(TextProposal())` to extract |
-| LLM abstains on all proposals | No description extracted | Fix protobuf parsing (see pattern above) |
+| `No RELAYER_PRIVATE_KEY set` | Missing env var for EVM | `export RELAYER_PRIVATE_KEY="0x..."` |
+| `Governor address not configured` | Missing contract address | Update config_evm.yaml |
+| `Forwarder ABI not found` | Contracts not compiled | `cd contracts && npx hardhat compile` |
+| `Invalid signature` | EIP-712 domain mismatch | Verify chain ID and forwarder address |
+| `No voting power` | Tokens not delegated | Call `token.delegate(address)` |
+| `not_delegated` error | Has tokens but no voting power | User must delegate to self |
+| Node.js version error | Hardhat requires Node 22 LTS | `nvm use 22` |
 | `ForkValidationError` | Fork violates shared law | Fix fork.yaml or use `--skip-fork-validation` |
-| `SharedLawLoadError` | Missing data/*.json files | Ensure data/ directory has all JSON files |
-| `PersonaNotFoundError` | persona.json not found | Check path or use fallback `--fork` |
-| `PersonaMappingError` | LLM failed to map persona | Check LLM availability, review persona values |
-| `"Aligned principle '@protection' does not exist"` | LLM used a term in `aligns_with` | Clear persona cache, prompts now enforce principle-only |
-| `"LLM used term '@xxx' in aligns_with"` | Terms vs principles confusion | The mapper now validates and rejects invalid mappings |
-| Persona fails validation against locked principles | Persona values conflict with DAHAO core | Adjust persona values or accept fail-fast behavior |
+| `avalanche: command not found` | Avalanche CLI not in PATH | `export PATH=~/bin:$PATH` |
+| DAHAO Subnet not responding | Subnet stopped | `avalanche network start` |
+| `network is not running` | Normal during clean | Not an error, just informational |
+| RPC URL changed after restart | Blockchain hash regenerated | Re-run `setup_dahao_subnet.sh` |
+
+## Gasless Voting Flow Summary
+
+### Cosmos (Authz)
+1. User grants MsgVote authorization to node
+2. User signs voting intent (ECDSA secp256k1)
+3. Node validates signature + authz + reasoning
+4. Node wraps vote in MsgExec and broadcasts
+5. Node pays gas fees
+
+### EVM (Meta-Transactions)
+1. User delegates voting power (token.delegate)
+2. User signs EIP-712 ForwardRequest
+3. Node validates signature + voting power + reasoning
+4. Node calls forwarder.execute(request, signature)
+5. Forwarder verifies and calls Governor
+6. Governor sees user as msg.sender
+7. Node pays gas fees

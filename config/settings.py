@@ -1,6 +1,7 @@
 """Pydantic settings for chain, LLM, and sidecar configuration."""
 
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, Field
@@ -8,14 +9,29 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class ChainConfig(BaseModel):
-    """Cosmos chain connection settings."""
+    """Base chain connection settings.
 
+    Supports both Cosmos SDK and EVM chains via the 'type' field.
+    """
+
+    # Chain type: "cosmos" or "evm"
+    type: Literal["cosmos", "evm"] = "cosmos"
+
+    # Common fields
     chain_id: str = "dahao"
+    gas_limit: int = 200000
+
+    # Cosmos-specific fields
     grpc_url: str = "grpc+http://localhost:9090"
     fee_denom: str = "stake"
     address_prefix: str = "cosmos"
-    gas_limit: int = 200000
     fee_amount: int = 1000
+
+    # EVM-specific fields
+    rpc_url: str = "https://api.avax-test.network/ext/bc/C/rpc"  # Fuji testnet
+    governor_address: str = ""  # Governor contract address
+    token_address: str = ""  # ERC20Votes token address
+    forwarder_address: str = ""  # EIP-2771 Forwarder address (for gasless voting)
 
 
 class LLMConfig(BaseModel):

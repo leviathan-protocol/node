@@ -1,0 +1,51 @@
+# DAHAO Sidecar Configuration - EVM (Avalanche C-Chain)
+#
+# This config is for running Observer Mode on Avalanche Fuji Testnet.
+# Copy this file to config.yaml and fill in your contract addresses.
+#
+# Prerequisites:
+# 1. Deploy contracts: cd contracts && npx hardhat run scripts/deploy.js --network fuji
+# 2. Set relayer private key: export RELAYER_PRIVATE_KEY="0x..."
+# 3. Fund relayer wallet with AVAX for gas
+#
+# Usage:
+#   cp config_evm.yaml config.yaml
+#   # Edit with your contract addresses
+#   python main.py --mode observer
+
+chain:
+  # Chain type: "cosmos" or "evm"
+  type: evm
+
+  # Avalanche Fuji Testnet
+  chain_id: "43113"
+  rpc_url: "https://api.avax-test.network/ext/bc/C/rpc"
+
+  # Contract addresses (from deploy.js output)
+  # Replace these with your deployed contract addresses
+  governor_address: "0x..."  # DAHAOGovernor
+  token_address: "0x..."     # DAHAOToken
+  forwarder_address: "0x..." # DAHAOForwarder
+
+  # Gas settings
+  gas_limit: 200000
+
+# LLM settings for semantic validation
+llm:
+  model_name: "qwen3:14b"
+  ollama_host: "http://localhost:11434"
+  n_ctx: 8192
+
+# Sidecar settings
+sidecar:
+  poll_interval_seconds: 60
+  max_retries: 3
+  state_file: "sidecar_state.json"
+  decisions_log: "decisions.log"
+
+# Environment variables (do not store secrets in this file):
+#
+# RELAYER_PRIVATE_KEY - Private key for the relayer wallet (pays gas)
+#   export RELAYER_PRIVATE_KEY="0x..."
+#
+# Get test AVAX from: https://core.app/tools/testnet-faucet/

@@ -1,0 +1,12 @@
+{
+  "network": "dahaoSubnet",
+  "chainId": "43210",
+  "rpcUrl": "http://127.0.0.1:9654/ext/bc/2QfrnBRib5ZfJac5vNc6gTSHsvNtPnwhxF5GEwNFZMbariKTVT/rpc",
+  "deployer": "0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC",
+  "contracts": {
+    "forwarder": "0x4Ac1d98D9cEF99EC6546dEd4Bd550b0b287aaD6D",
+    "token": "0xA4cD3b0Eb6E5Ab5d8CE4065BcCD70040ADAB1F00",
+    "governor": "0xa4DfF80B4a1D748BF28BC4A271eD834689Ea3407"
+  },
+  "deployedAt": "2026-01-30T03:09:53.630Z"
+}

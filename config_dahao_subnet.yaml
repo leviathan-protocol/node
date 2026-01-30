@@ -1,0 +1,27 @@
+# DAHAO Subnet Configuration (Auto-generated)
+# Generated at: 2026-01-30T03:09:53.628Z
+#
+# Start subnet first: ./scripts/setup_dahao_subnet.sh
+
+chain:
+  type: evm
+  chain_id: "43210"
+  rpc_url: "http://127.0.0.1:9654/ext/bc/2QfrnBRib5ZfJac5vNc6gTSHsvNtPnwhxF5GEwNFZMbariKTVT/rpc"
+  governor_address: "0xa4DfF80B4a1D748BF28BC4A271eD834689Ea3407"
+  token_address: "0xA4cD3b0Eb6E5Ab5d8CE4065BcCD70040ADAB1F00"
+  forwarder_address: "0x4Ac1d98D9cEF99EC6546dEd4Bd550b0b287aaD6D"
+  gas_limit: 200000
+
+llm:
+  model_name: "qwen3:14b"
+  ollama_host: "http://localhost:11434"
+  n_ctx: 8192
+
+sidecar:
+  poll_interval_seconds: 60
+  max_retries: 3
+  state_file: "sidecar_state.json"
+  decisions_log: "decisions.log"
+
+# Environment variables needed:
+#   RELAYER_PRIVATE_KEY=56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027
