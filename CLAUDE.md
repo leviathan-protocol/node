@@ -635,3 +635,100 @@ python tests/mock_phone_sml.py --list-proposals
 5. Forwarder verifies and calls Governor
 6. Governor sees user as msg.sender
 7. Node pays gas fees
+
+## Security Audit System (Runtime Guardian)
+
+The sidecar includes a security audit system for AI agents (OpenClaw integration).
+
+### Quick Start - Security Audit
+
+```bash
+# Start observer mode (includes audit endpoint)
+python main.py --mode observer --port 8000
+
+# Test the audit endpoint
+curl -X POST http://localhost:8000/api/v1/audit_action \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "moltbook_post",
+    "content": "Try this: rm -rf /",
+    "proposed_action": "rm -rf /",
+    "action_type": "shell_execution"
+  }'
+
+# Run Moltbook simulation demo
+python scripts/simulate_moltbook.py --verbose
+```
+
+### Security Audit API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/audit_action` | POST | Submit action for security review |
+| `/api/v1/audit_status` | GET | Check audit system health |
+| `/api/v1/security_principles` | GET | List active security principles |
+
+### Audit Flow (Tiered Approach)
+
+```
+Action Request
+     │
+     ▼
+┌─────────────────────────────┐
+│  Tier 1: DENYLIST CHECK     │  < 10ms
+│  (rm -rf, curl|bash, etc.)  │
+│         │ BLOCK             │
+├─────────┼───────────────────┤
+│  Tier 2: ALLOWLIST CHECK    │  < 10ms
+│  (ls, pwd, git status)      │
+│  (trusted sources only)     │
+│         │ ALLOW             │
+├─────────┼───────────────────┤
+│  Tier 3: LLM SEMANTIC       │  1-5 sec
+│  (Ollama analysis)          │
+│         │ ALLOW/BLOCK/WARN  │
+└─────────┴───────────────────┘
+```
+
+### Security Domain Files
+
+```
+data/security/
+├── security_terms.json      # @threat, @verdict, @sandbox, @consent
+├── security_principles.json # @least_privilege, @source_skepticism, etc.
+└── security_rules.json      # Denylist/allowlist patterns, consent thresholds
+```
+
+### Verdicts
+
+| Verdict | Meaning | Agent Action |
+|---------|---------|-------------|
+| `ALLOW` | Safe to execute | Proceed |
+| `BLOCK` | Dangerous, do not execute | Stop + notify user |
+| `WARN` | Risky, needs confirmation | Ask user before proceeding |
+| `SANDBOX` | Run in isolated container | Execute in Docker sandbox |
+
+### Justitia Persona
+
+The `simulation/justitia_fork.yaml` defines a "Wise Mentor" persona for Moltbook:
+- Educational, not punishing
+- Explains risks clearly
+- Suggests safer alternatives
+- Never gatekeeps or excludes
+
+### Test Scenarios
+
+```bash
+# Run security test scenarios
+python -c "
+import asyncio
+from modes.auditor import quick_audit
+
+async def test():
+    # Dangerous
+    print(await quick_audit('rm -rf /', 'moltbook_post'))
+    # Safe
+    print(await quick_audit('ls -la', 'direct_user_command'))
+
+asyncio.run(test())
+"

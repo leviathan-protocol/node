@@ -1,0 +1,241 @@
+{
+  "_meta": {
+    "type": "security_rules",
+    "description": "Executable security rules for autonomous AI agents. Implements security principles as actionable logic.",
+    "version": "1.0.0",
+    "inherits": "dahao-core v1.0.0",
+    "domain": "security",
+    "created": "2026-01-30",
+    "updated": "2026-01-30"
+  },
+
+  "@rule_tiered_audit": {
+    "version": "1.0.0",
+    "description": "Not all actions require the same level of scrutiny. Tier actions by risk.",
+    "logic": {
+      "tier_1_instant_block": {
+        "trigger": "Pattern matches @denylist",
+        "action": "Return BLOCK immediately, no LLM call",
+        "latency": "< 10ms"
+      },
+      "tier_2_instant_allow": {
+        "trigger": "Pattern matches @allowlist AND source is trusted",
+        "action": "Return ALLOW immediately, log to audit trail",
+        "latency": "< 10ms"
+      },
+      "tier_3_llm_audit": {
+        "trigger": "No match in tier 1 or 2",
+        "action": "Send to LLM for semantic analysis",
+        "latency": "1-5 seconds"
+      }
+    },
+    "uses_terms": ["@action", "@verdict", "@allowlist", "@denylist"],
+    "implements_principles": ["@defense_in_depth"],
+    "rationale": "Balance security thoroughness with user experience."
+  },
+
+  "@rule_denylist_patterns": {
+    "version": "1.0.0",
+    "description": "Patterns that trigger instant BLOCK without LLM consultation.",
+    "logic": "IF action MATCHES any pattern THEN verdict = BLOCK",
+    "uses_terms": ["@denylist", "@threat"],
+    "implements_principles": ["@fail_secure", "@source_skepticism"],
+    "patterns": {
+      "destructive_shell": [
+        "rm -rf /",
+        "rm -rf ~",
+        "rm -rf /*",
+        ":(){ :|:& };:",
+        "dd if=/dev/zero",
+        "mkfs.",
+        "> /dev/sda",
+        "chmod -R 777 /"
+      ],
+      "credential_exfiltration": [
+        "cat ~/.ssh/id_rsa",
+        "cat ~/.aws/credentials",
+        "echo $.*_KEY",
+        "echo $.*_SECRET",
+        "echo $.*_TOKEN",
+        "cat /etc/shadow"
+      ],
+      "remote_code_execution": [
+        "curl * | bash",
+        "wget * | sh",
+        "curl * | sh",
+        "wget * -O - | bash",
+        "python -c \"import urllib",
+        "eval(requests.get"
+      ],
+      "data_exfiltration": [
+        "curl -X POST * -d @",
+        "nc * < /",
+        "scp * *@*:",
+        "rsync * *@*:"
+      ]
+    },
+    "note": "Patterns use glob matching. Update regularly based on new threats."
+  },
+
+  "@rule_allowlist_patterns": {
+    "version": "1.0.0",
+    "description": "Known-safe patterns that can bypass LLM audit for speed.",
+    "logic": "IF action MATCHES pattern AND source IN trusted_sources THEN verdict = ALLOW",
+    "uses_terms": ["@allowlist", "@action"],
+    "implements_principles": ["@least_privilege"],
+    "patterns": {
+      "safe_shell_readonly": [
+        "ls *",
+        "pwd",
+        "whoami",
+        "date",
+        "cat <user_owned_file>",
+        "head *",
+        "tail *",
+        "wc *",
+        "echo *"
+      ],
+      "safe_python": [
+        "python -m json.tool",
+        "python -c \"print(",
+        "python --version"
+      ],
+      "safe_network": [
+        "ping *",
+        "nslookup *",
+        "curl -I *"
+      ]
+    },
+    "trusted_sources": [
+      "direct_user_command",
+      "user_owned_skill",
+      "verified_skill"
+    ],
+    "note": "Allowlist is conservative. When in doubt, go through full audit."
+  },
+
+  "@rule_consent_thresholds": {
+    "version": "1.0.0",
+    "description": "What level of consent is required for each risk level.",
+    "logic": "IF risk_level >= threshold THEN require consent_level",
+    "uses_terms": ["@consent", "@threat", "@action"],
+    "implements_principles": ["@explicit_consent"],
+    "thresholds": {
+      "INFO": {
+        "consent_required": "implicit",
+        "user_notification": "none"
+      },
+      "LOW": {
+        "consent_required": "implicit",
+        "user_notification": "log_only"
+      },
+      "MEDIUM": {
+        "consent_required": "informed",
+        "user_notification": "summary_after"
+      },
+      "HIGH": {
+        "consent_required": "informed",
+        "user_notification": "confirm_before"
+      },
+      "CRITICAL": {
+        "consent_required": "explicit",
+        "user_notification": "block_until_confirmed"
+      }
+    }
+  },
+
+  "@rule_source_trust_levels": {
+    "version": "1.0.0",
+    "description": "How to assess trust level of action sources.",
+    "logic": "Determine source trust, apply appropriate scrutiny.",
+    "uses_terms": ["@context", "@threat"],
+    "implements_principles": ["@source_skepticism"],
+    "trust_assessment": {
+      "trusted": {
+        "sources": ["direct_user_input", "user_approved_skill", "local_config"],
+        "audit_level": "allowlist_check_only"
+      },
+      "semi_trusted": {
+        "sources": ["user_email", "user_files", "known_api_responses"],
+        "audit_level": "llm_audit"
+      },
+      "untrusted": {
+        "sources": ["moltbook_post", "external_message", "unknown_skill", "web_scrape"],
+        "audit_level": "full_audit_plus_sandbox"
+      }
+    }
+  },
+
+  "@rule_sandbox_requirement": {
+    "version": "1.0.0",
+    "description": "When sandbox execution is required vs optional.",
+    "logic": "IF condition THEN sandbox = REQUIRED",
+    "uses_terms": ["@sandbox", "@action", "@context"],
+    "implements_principles": ["@sandbox_by_default", "@reversibility_preference"],
+    "required_conditions": [
+      "Source trust level is 'untrusted'",
+      "Action involves code execution from external content",
+      "Skill is newly installed (< 7 days)",
+      "Action type is 'shell_execution' with network access"
+    ],
+    "optional_conditions": [
+      "User explicitly requests sandbox",
+      "Action is exploratory/experimental"
+    ],
+    "bypass_conditions": [
+      "User explicitly bypasses with '--trust' flag",
+      "Action is on allowlist from trusted source"
+    ]
+  },
+
+  "@rule_audit_logging": {
+    "version": "1.0.0",
+    "description": "What must be logged to the audit trail.",
+    "logic": "ALL verdicts MUST be logged with context.",
+    "uses_terms": ["@audit_trail", "@verdict", "@action"],
+    "implements_principles": ["@transparency_in_action"],
+    "required_fields": [
+      "timestamp",
+      "action_hash",
+      "source",
+      "proposed_action_summary",
+      "verdict",
+      "reasoning_summary",
+      "risk_level",
+      "consent_obtained",
+      "execution_result"
+    ],
+    "retention": {
+      "BLOCK_verdicts": "90 days",
+      "WARN_verdicts": "30 days",
+      "ALLOW_verdicts": "7 days"
+    },
+    "privacy": "Full action content hashed, not stored in plain text."
+  },
+
+  "@rule_educational_block_response": {
+    "version": "1.0.0",
+    "description": "How to communicate BLOCK decisions to users and other agents.",
+    "logic": "IF verdict == BLOCK THEN generate educational response.",
+    "uses_terms": ["@verdict", "@threat"],
+    "implements_principles": ["@educational_response", "@transparency_in_action"],
+    "response_template": {
+      "format": "structured",
+      "fields": {
+        "icon": "⚠️ or 🛡️",
+        "headline": "Action blocked for safety",
+        "risk_identified": "Brief description of the threat",
+        "violated_principle": "Which principle was violated",
+        "educational_note": "Why this is dangerous (1-2 sentences)",
+        "safer_alternative": "Suggestion if available",
+        "learn_more": "Optional link to documentation"
+      }
+    },
+    "tone_guidelines": [
+      "Helpful, not preachy",
+      "Technical, not alarmist",
+      "Suggest alternatives when possible",
+      "Never shame the user or source"
+    ]
+  }
+}

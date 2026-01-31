@@ -140,12 +140,13 @@ async def generic_error_handler(request: Request, exc: Exception) -> JSONRespons
 
 def _register_routes(app: FastAPI):
     """Register API route handlers."""
-    from api.routes import pair, proposals, status, vote
+    from api.routes import pair, proposals, status, vote, audit
 
     app.include_router(pair.router, prefix="/api/v1", tags=["connection"])
     app.include_router(status.router, prefix="/api/v1", tags=["status"])
     app.include_router(vote.router, prefix="/api/v1", tags=["voting"])
     app.include_router(proposals.router, prefix="/api/v1", tags=["proposals"])
+    app.include_router(audit.router, prefix="/api/v1", tags=["security"])
 
     # Health check at root
     @app.get("/health")

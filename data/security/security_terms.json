@@ -1,0 +1,138 @@
+{
+  "_meta": {
+    "type": "security_terms",
+    "description": "Security domain vocabulary for DAHAO. Extends core terms with security-specific concepts.",
+    "version": "1.0.0",
+    "inherits": "dahao-core v1.0.0",
+    "domain": "security",
+    "created": "2026-01-30",
+    "updated": "2026-01-30"
+  },
+
+  "@threat": {
+    "version": "1.0.0",
+    "definition": "Any input, action, or sequence that could cause unintended harm to the host system, user data, or connected services.",
+    "categories": [
+      "data_exfiltration — unauthorized transmission of sensitive data",
+      "destructive_command — actions that delete, corrupt, or modify critical resources",
+      "privilege_escalation — attempts to gain unauthorized access levels",
+      "prompt_injection — malicious instructions hidden in seemingly benign content",
+      "supply_chain — compromised dependencies or external resources"
+    ],
+    "severity_levels": {
+      "CRITICAL": "Immediate, irreversible harm (e.g., rm -rf, wallet drain)",
+      "HIGH": "Significant harm, potentially reversible (e.g., file deletion with backup)",
+      "MEDIUM": "Limited harm, easily reversible (e.g., config change)",
+      "LOW": "Minimal harm, informational concern (e.g., verbose logging)",
+      "INFO": "No harm, but worth noting (e.g., deprecated function)"
+    }
+  },
+
+  "@action": {
+    "version": "1.0.0",
+    "definition": "Any operation an agent attempts to execute on behalf of or affecting the user.",
+    "types": [
+      "shell_execution — running commands in system shell",
+      "file_operation — read, write, delete, move files",
+      "network_request — HTTP calls, API requests, data transmission",
+      "process_control — starting, stopping, or modifying processes",
+      "credential_access — reading or using authentication tokens",
+      "financial_transaction — any operation involving value transfer"
+    ],
+    "audit_requirement": "All actions SHOULD be auditable before execution."
+  },
+
+  "@context": {
+    "version": "1.0.0",
+    "definition": "The situational information surrounding an action request.",
+    "required_fields": [
+      "source — where the action request originated (moltbook, email, slack, etc.)",
+      "content — the raw content triggering the action",
+      "proposed_action — what the agent wants to do",
+      "target_resource — what will be affected"
+    ],
+    "optional_fields": [
+      "user_intent — what the human user originally asked for",
+      "chain_of_thought — agent's reasoning for this action",
+      "previous_actions — recent action history for pattern detection"
+    ]
+  },
+
+  "@verdict": {
+    "version": "1.0.0",
+    "definition": "The security decision made by the audit system.",
+    "outcomes": {
+      "ALLOW": "Action is safe to execute",
+      "BLOCK": "Action violates security principles, must not execute",
+      "WARN": "Action has risks, proceed with caution and user confirmation",
+      "SANDBOX": "Action should run in isolated environment only"
+    },
+    "required_fields": [
+      "outcome — ALLOW, BLOCK, WARN, or SANDBOX",
+      "reasoning — explanation of why this decision was made",
+      "violated_principles — list of principles that would be violated (if any)",
+      "risk_level — severity assessment"
+    ]
+  },
+
+  "@sandbox": {
+    "version": "1.0.0",
+    "definition": "An isolated execution environment that limits the blast radius of potentially harmful actions.",
+    "properties": {
+      "filesystem": "Restricted to specific directories, no access to host system",
+      "network": "Optionally disabled or limited to allowlist",
+      "resources": "CPU, memory, and time limits enforced",
+      "persistence": "No state persists after execution unless explicitly saved"
+    },
+    "note": "Default recommendation for untrusted code execution."
+  },
+
+  "@consent": {
+    "version": "1.0.0",
+    "definition": "Explicit user approval for an action, especially those with significant impact.",
+    "levels": {
+      "implicit": "User's general instructions imply approval (e.g., 'organize my files')",
+      "informed": "User approves after understanding risks (e.g., 'this will delete files, proceed?')",
+      "explicit": "User directly commands the specific action (e.g., 'delete file X')"
+    },
+    "requirement": "CRITICAL and HIGH severity actions require at minimum informed consent."
+  },
+
+  "@audit_trail": {
+    "version": "1.0.0",
+    "definition": "A chronological record of all actions attempted, their verdicts, and outcomes.",
+    "purpose": "Enables accountability, debugging, and pattern detection.",
+    "retention": "Minimum 30 days for security-relevant events.",
+    "fields": [
+      "timestamp",
+      "action_type",
+      "context_hash",
+      "verdict",
+      "execution_result",
+      "user_notification"
+    ]
+  },
+
+  "@allowlist": {
+    "version": "1.0.0",
+    "definition": "A set of pre-approved actions, commands, or resources that bypass full audit.",
+    "examples": [
+      "Safe shell commands: ls, pwd, echo, cat (read-only)",
+      "Trusted domains: github.com, pypi.org",
+      "Local operations: reading from ~/safe_directory/"
+    ],
+    "maintenance": "Allowlists should be minimal and reviewed regularly.",
+    "note": "Presence on allowlist skips LLM audit but still logs to audit_trail."
+  },
+
+  "@denylist": {
+    "version": "1.0.0",
+    "definition": "A set of always-blocked patterns that trigger immediate BLOCK verdict.",
+    "examples": [
+      "Destructive patterns: rm -rf, format, dd if=",
+      "Exfiltration patterns: curl * | bash, base64 encode + send",
+      "Credential access: cat ~/.ssh/*, echo $API_KEY"
+    ],
+    "note": "Denylist match triggers BLOCK without LLM consultation for speed."
+  }
+}
