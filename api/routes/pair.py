@@ -328,3 +328,69 @@ async def register_voter(request: RegisterRequest) -> RegisterResponse:
         voter_address=request.voter_address,
         grant_expires_at=grant_expires_iso,
     )
+
+
+# =============================================================================
+# EVM Registration (Simplified for testing)
+# =============================================================================
+
+
+class EVMRegisterRequest(BaseModel):
+    """Request model for POST /register_evm - simplified EVM registration."""
+
+    voter_address: str = Field(..., description="User's EVM address (0x...)")
+
+
+class EVMRegisterResponse(BaseModel):
+    """Response model for POST /register_evm."""
+
+    status: str = "registered"
+    voter_address: str
+    chain_type: str = "evm"
+
+
+@router.post("/register_evm", response_model=EVMRegisterResponse)
+async def register_evm_voter(request: EVMRegisterRequest) -> EVMRegisterResponse:
+    """Register an EVM address for testing.
+
+    Simplified registration for EVM chains that doesn't require the full
+    invite/connect/authz flow. Useful for testing the semantic firewall.
+
+    For production, EVM voters would register via token delegation which
+    can be verified on-chain.
+
+    Args:
+        request: Registration request with EVM address.
+
+    Returns:
+        EVMRegisterResponse confirming registration.
+    """
+    voter_address = request.voter_address
+
+    # Validate address format (basic check)
+    if not voter_address.startswith("0x") or len(voter_address) != 42:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "status": "rejected",
+                "error": "invalid_address",
+                "detail": "Invalid EVM address format. Must be 0x followed by 40 hex characters.",
+            },
+        )
+
+    logger.info(f"Registering EVM voter: {voter_address}")
+
+    # Store voter information (simplified for EVM)
+    app_state.voters[voter_address] = {
+        "chain_type": "evm",
+        "registered_at": datetime.now(timezone.utc),
+        "grant_expires_at": datetime.now(timezone.utc) + timedelta(days=365),
+    }
+
+    logger.info(f"Registered EVM voter {voter_address}")
+
+    return EVMRegisterResponse(
+        status="registered",
+        voter_address=voter_address,
+        chain_type="evm",
+    )

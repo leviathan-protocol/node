@@ -192,7 +192,7 @@ class MetaTransactionRelayer:
         self.version = version
 
         # Create contract instance
-        self.forwarder = client.w3.eth.contract(
+        self.forwarder = client.web3.eth.contract(
             address=self.forwarder_address,
             abi=forwarder_abi,
         )
@@ -389,8 +389,8 @@ class MetaTransactionRelayer:
             "from": self.client.account.address,
             "gas": execute_gas,
             "nonce": self.client.get_nonce(),
-            "maxFeePerGas": self.client.w3.eth.gas_price * 2,
-            "maxPriorityFeePerGas": self.client.w3.eth.max_priority_fee,
+            "maxFeePerGas": self.client.web3.eth.gas_price * 2,
+            "maxPriorityFeePerGas": self.client.web3.eth.max_priority_fee,
         })
 
         # Sign and send

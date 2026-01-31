@@ -92,8 +92,8 @@ from config.settings import ChainConfig
 cosmos_config = ChainConfig(type="cosmos", chain_id="dahao")
 cosmos_adapter = create_chain_adapter(cosmos_config)
 
-# EVM chain (Avalanche)
-evm_config = ChainConfig(type="evm", chain_id="43113", rpc_url="https://api.avax-test.network/ext/bc/C/rpc")
+# EVM chain (Local DAHAO Subnet - PRIMARY)
+evm_config = ChainConfig(type="evm", chain_id="43210", rpc_url="http://127.0.0.1:9654/ext/bc/.../rpc")
 evm_adapter = create_chain_adapter(evm_config)
 
 # Both implement the same interface
@@ -116,27 +116,9 @@ result = adapter.submit_vote_on_behalf(voter, proposal_id, vote, signature)
    export LEVIATHAN_MNEMONIC="your twenty four word mnemonic phrase here ..."
    ```
 
-### For EVM Chains (Observer Mode)
+### For EVM Chains - PRIMARY: Local DAHAO Subnet
 
-1. **Deploy Contracts** (Avalanche Fuji):
-   ```bash
-   cd contracts
-   npm install
-   source ~/.nvm/nvm.sh && nvm use 22
-   npx hardhat compile
-   npx hardhat run scripts/deploy.js --network fuji
-   ```
-
-2. **Set Relayer Private Key**:
-   ```bash
-   export RELAYER_PRIVATE_KEY="0x..."  # Node pays gas for users
-   ```
-
-3. **Fund Relayer Wallet** with AVAX for gas fees.
-
-### DAHAO Subnet (Local Avalanche L1)
-
-For local development, you can run a private Avalanche L1 blockchain instead of using testnet. This is similar to `ignite chain serve` for Cosmos.
+Run a private Avalanche L1 blockchain for local development. This is the **recommended approach** - free, fast, and fully isolated.
 
 ```bash
 # 1. Start the DAHAO Subnet
@@ -174,6 +156,31 @@ avalanche network start
 # View subnet info
 avalanche blockchain describe dahao
 ```
+
+### For EVM Chains - ALTERNATIVE: Fuji Testnet
+
+For public demos or multi-node testing, use Avalanche Fuji testnet instead.
+
+1. **Deploy Contracts**:
+   ```bash
+   cd contracts
+   npm install
+   source ~/.nvm/nvm.sh && nvm use 22
+   npx hardhat compile
+   npx hardhat run scripts/deploy_fuji.js --network fuji
+   ```
+
+2. **Set Relayer Private Key**:
+   ```bash
+   export RELAYER_PRIVATE_KEY="0x..."  # Your funded wallet
+   ```
+
+3. **Fund Relayer Wallet** with test AVAX from [Fuji Faucet](https://faucet.avax.network/).
+
+4. **Run with Fuji config**:
+   ```bash
+   python main.py --mode observer --config config_fuji.yaml
+   ```
 
 ### For Both Modes
 
@@ -237,9 +244,9 @@ ollama pull qwen3:14b
 ```
 leviathan/
 ├── main.py                 # Entry point with --mode flag
-├── config.yaml             # Cosmos chain config
-├── config_evm.yaml         # EVM chain config (Avalanche Fuji)
-├── config_dahao_subnet.yaml # Local Avalanche L1 config
+├── config.yaml             # Cosmos (Decider Mode)
+├── config_dahao_subnet.yaml # EVM PRIMARY (Local Avalanche L1)
+├── config_fuji.yaml        # EVM ALTERNATIVE (Fuji testnet)
 ├── fork.yaml               # User's voting principles
 │
 ├── modes/                  # Operation modes
@@ -272,8 +279,8 @@ leviathan/
 │   │   ├── DAHAOGovernor.sol   # Governor with ERC2771Context
 │   │   └── DAHAOForwarder.sol  # EIP-2771 Forwarder
 │   ├── scripts/
-│   │   ├── deploy.js           # Deploy to Fuji testnet
-│   │   └── deploy_subnet.js    # Deploy to local DAHAO Subnet
+│   │   ├── deploy_subnet.js    # Deploy to local DAHAO Subnet (PRIMARY)
+│   │   └── deploy_fuji.js      # Deploy to Fuji testnet (ALTERNATIVE)
 │   └── hardhat.config.js   # Network configuration
 │
 ├── validator/              # Semantic firewall
@@ -305,16 +312,18 @@ leviathan/
 │   ├── test_observer_mode.py   # 19 API tests
 │   ├── test_evm_meta_tx.py     # 15 meta-tx tests
 │   ├── mock_phone.py           # Cosmos phone simulator
-│   └── mock_phone_evm.py       # EVM phone simulator
+│   ├── mock_phone_evm.py       # EVM phone simulator
+│   └── mock_phone_sml.py       # SML phone with persona-based voting
 │
 └── scripts/
     ├── setup_dahao_subnet.sh  # Start local Avalanche L1
+    ├── run_sml_test.sh        # SML semantic firewall tests
     └── demo_meta_tx.py        # EIP-712 signing demo
 ```
 
 ## Configuration Files
 
-### config.yaml (Cosmos)
+### config.yaml (Cosmos - Decider Mode)
 ```yaml
 chain:
   type: cosmos
@@ -331,24 +340,7 @@ sidecar:
   poll_interval_seconds: 60
 ```
 
-### config_evm.yaml (Avalanche)
-```yaml
-chain:
-  type: evm
-  chain_id: "43113"  # Fuji testnet
-  rpc_url: "https://api.avax-test.network/ext/bc/C/rpc"
-
-  # Contract addresses (from deploy.js output)
-  governor_address: "0x..."   # DAHAOGovernor
-  token_address: "0x..."      # DAHAOToken
-  forwarder_address: "0x..."  # DAHAOForwarder
-
-llm:
-  model_name: "qwen3:14b"
-  ollama_host: "http://localhost:11434"
-```
-
-### config_dahao_subnet.yaml (Local Avalanche L1)
+### config_dahao_subnet.yaml (EVM PRIMARY - Local Avalanche L1)
 ```yaml
 chain:
   type: evm
@@ -365,6 +357,25 @@ llm:
   ollama_host: "http://localhost:11434"
 
 # Env: RELAYER_PRIVATE_KEY=56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027
+```
+
+### config_fuji.yaml (EVM ALTERNATIVE - Fuji Testnet)
+```yaml
+chain:
+  type: evm
+  chain_id: "43113"  # Fuji testnet
+  rpc_url: "https://api.avax-test.network/ext/bc/C/rpc"
+
+  # Contract addresses (from deploy_fuji.js output)
+  governor_address: "0x..."   # DAHAOGovernor
+  token_address: "0x..."      # DAHAOToken
+  forwarder_address: "0x..."  # DAHAOForwarder
+
+llm:
+  model_name: "qwen3:14b"
+  ollama_host: "http://localhost:11434"
+
+# Env: RELAYER_PRIVATE_KEY=0x... (your funded wallet)
 ```
 
 ## Key Implementation Patterns
@@ -461,11 +472,11 @@ python main.py --mode decider \
     --wallet "mnemonic..." \
     --config config.yaml
 
-# Observer Mode
+# Observer Mode (Local DAHAO Subnet)
 python main.py --mode observer \
     --host 0.0.0.0 \
     --port 8000 \
-    --config config_evm.yaml
+    --config config_dahao_subnet.yaml
 ```
 
 | Argument | Description |
@@ -516,7 +527,12 @@ cd contracts
 npm install
 source ~/.nvm/nvm.sh && nvm use 22
 npx hardhat compile
-npx hardhat run scripts/deploy.js --network fuji
+
+# PRIMARY: Deploy to local DAHAO Subnet
+npx hardhat run scripts/deploy_subnet.js --network dahaoSubnet
+
+# ALTERNATIVE: Deploy to Fuji testnet
+npx hardhat run scripts/deploy_fuji.js --network fuji
 ```
 
 ## Testing
@@ -543,6 +559,39 @@ python tests/mock_phone_evm.py --node-url http://localhost:8000
 uv run python scripts/demo_meta_tx.py
 ```
 
+### Test SML Semantic Firewall
+Tests the full flow: Phone (small LLM) → Observer (large LLM) → Blockchain
+
+The SML phone uses qwen3:4b to analyze proposals based on persona values, generates reasoning, and submits to the Observer which validates reasoning consistency using qwen3:14b.
+
+```bash
+# Run all SML tests (requires Observer running)
+./scripts/run_sml_test.sh
+
+# Test individual persona/proposal combinations
+python tests/mock_phone_sml.py --persona eco_warrior --proposal-id 1 --use-ewoq --use-local-proposals
+python tests/mock_phone_sml.py --persona profit_maximizer --proposal-id 4 --use-ewoq --use-local-proposals
+
+# List available personas and proposals
+python tests/mock_phone_sml.py --list-personas
+python tests/mock_phone_sml.py --list-proposals
+```
+
+**Test Scenarios:**
+| Persona | Proposal | Expected | Rationale |
+|---------|----------|----------|-----------|
+| eco_warrior | Solar Panels (#1) | YES | Aligns with environmental values |
+| eco_warrior | Coal Plant (#5) | NO | Conflicts with environmental values |
+| profit_maximizer | AI Trading Bot (#4) | YES | Aligns with profit/ROI values |
+| community_builder | Education Program (#3) | YES | Aligns with community values |
+| tech_progressive | AI Trading Bot (#4) | YES | Aligns with tech innovation values |
+
+**Key Flags:**
+- `--use-ewoq`: Use pre-funded EWOQ test account (has 1M DAHAO tokens)
+- `--use-local-proposals`: Use built-in diverse test proposals instead of API
+
+**Requires:** `ollama pull qwen3:4b` (phone) + `ollama pull qwen3:14b` (observer)
+
 ## Environment Variables
 
 | Variable | Description |
@@ -557,7 +606,7 @@ uv run python scripts/demo_meta_tx.py
 | Error | Cause | Fix |
 |-------|-------|-----|
 | `No RELAYER_PRIVATE_KEY set` | Missing env var for EVM | `export RELAYER_PRIVATE_KEY="0x..."` |
-| `Governor address not configured` | Missing contract address | Update config_evm.yaml |
+| `Governor address not configured` | Missing contract address | Update config_dahao_subnet.yaml or config_fuji.yaml |
 | `Forwarder ABI not found` | Contracts not compiled | `cd contracts && npx hardhat compile` |
 | `Invalid signature` | EIP-712 domain mismatch | Verify chain ID and forwarder address |
 | `No voting power` | Tokens not delegated | Call `token.delegate(address)` |

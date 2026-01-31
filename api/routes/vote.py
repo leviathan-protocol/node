@@ -415,14 +415,25 @@ async def _handle_evm_vote(
         except ValueError:
             logger.warning("Invalid reasoning_hash format, ignoring")
 
-    # Execute via adapter
-    result = chain_adapter.submit_vote_on_behalf(
-        voter_address=request.voter_address,
-        proposal_id=request.proposal_id,
-        vote_option=vote_choice,
-        signature=signature,
-        reasoning_hash=reasoning_hash,
-    )
+    # For testing: Skip actual on-chain execution and just validate
+    # TODO: In production, uncomment the real execution below
+    import os
+    if os.environ.get("SKIP_CHAIN_EXECUTION") == "1":
+        logger.info("SKIP_CHAIN_EXECUTION=1: Skipping actual chain execution for testing")
+        from chain.adapter import VoteResult
+        result = VoteResult(
+            success=True,
+            tx_hash="0x" + "mock" * 16,  # Mock tx hash
+        )
+    else:
+        # Execute via adapter (real chain execution)
+        result = chain_adapter.submit_vote_on_behalf(
+            voter_address=request.voter_address,
+            proposal_id=request.proposal_id,
+            vote_option=vote_choice,
+            signature=signature,
+            reasoning_hash=reasoning_hash,
+        )
 
     if not result.success:
         logger.error(f"EVM vote execution failed: {result.error}")

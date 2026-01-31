@@ -1,0 +1,654 @@
+ ./scripts/run_sml_test.sh  
+============================================================
+         SML Semantic Firewall Test                         
+============================================================
+
+Checking prerequisites...
+✓ Observer Mode running
+✓ Ollama running
+✓ qwen3:4b model available
+
+All prerequisites OK
+
+============================================================
+                    Running Tests                           
+============================================================
+
+Test 1: Eco Warrior + Solar Panel Proposal
+Expected: YES vote with environmental reasoning
+
+
+============================================================
+Mock Phone with SML
+============================================================
+Persona: Eco Warrior
+Model: qwen3:4b
+Node: http://localhost:8080
+
+Connecting to node...
+Failed to connect to node: 400 Client Error: Bad Request for url: http://localhost:8080/api/v1/invite
+Warning: Could not connect to node, continuing anyway...
+
+============================================================
+Proposal #1
+============================================================
+Title: [Mock] Increase Block Size to 2MB
+Description: This proposal aims to increase the maximum block size from 1MB to 2MB to improve transaction through...
+
+============================================================
+SML Analysis
+============================================================
+Model: qwen3:4b
+Analyzing...
+
+VOTE: ABSTAIN
+REASONING: 
+CONFIDENCE: 0.50
+
+============================================================
+Signing Vote
+============================================================
+Voter: 0x464639cA6c50C54E5460Cd90F8803bc9a0A3F649
+Signature: fb5a40c143a1f46e65d0...
+
+============================================================
+Submitting to Observer
+============================================================
+Status: 422
+Response: {
+  "detail": [
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "confidence_score"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 1,
+        "voter_address": "0x464639cA6c50C54E5460Cd90F8803bc9a0A3F649",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "fb5a40c143a1f46e65d0241bc590a6901308adde934e66365d3f60eee941406576caaeeba1d81e43f17e0a0ba847b0d5e2fee3bf00a29c7c45c4c4aaf23a5cc41c",
+        "persona": "eco_warrior",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "timestamp"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 1,
+        "voter_address": "0x464639cA6c50C54E5460Cd90F8803bc9a0A3F649",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "fb5a40c143a1f46e65d0241bc590a6901308adde934e66365d3f60eee941406576caaeeba1d81e43f17e0a0ba847b0d5e2fee3bf00a29c7c45c4c4aaf23a5cc41c",
+        "persona": "eco_warrior",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "nonce"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 1,
+        "voter_address": "0x464639cA6c50C54E5460Cd90F8803bc9a0A3F649",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "fb5a40c143a1f46e65d0241bc590a6901308adde934e66365d3f60eee941406576caaeeba1d81e43f17e0a0ba847b0d5e2fee3bf00a29c7c45c4c4aaf23a5cc41c",
+        "persona": "eco_warrior",
+        "confidence": 0.5
+      }
+    }
+  ]
+}
+
+============================================================
+Summary
+============================================================
+Vote submission result: unknown
+
+────────────────────────────────────────────────────────────
+
+Test 2: Eco Warrior + Mining Proposal
+Expected: NO vote (mining harms environment)
+
+
+============================================================
+Mock Phone with SML
+============================================================
+Persona: Eco Warrior
+Model: qwen3:4b
+Node: http://localhost:8080
+
+Connecting to node...
+Failed to connect to node: 400 Client Error: Bad Request for url: http://localhost:8080/api/v1/invite
+Warning: Could not connect to node, continuing anyway...
+
+============================================================
+Proposal #2
+============================================================
+Title: [Mock] Enable IBC with TestChain
+Description: Enable Inter-Blockchain Communication with TestChain network....
+
+============================================================
+SML Analysis
+============================================================
+Model: qwen3:4b
+Analyzing...
+
+VOTE: ABSTAIN
+REASONING: 
+CONFIDENCE: 0.50
+
+============================================================
+Signing Vote
+============================================================
+Voter: 0x09f4422aDc016090Ff96A38e12CB82716998b2d8
+Signature: fe04c1dc066616b8b77b...
+
+============================================================
+Submitting to Observer
+============================================================
+Status: 422
+Response: {
+  "detail": [
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "confidence_score"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 2,
+        "voter_address": "0x09f4422aDc016090Ff96A38e12CB82716998b2d8",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "fe04c1dc066616b8b77b5230d67bb5085fc1c42699c0af6f236fff9f2246fecf6be651a50d3628ab76c8a803d465576017fc02bd4a1b940e2a3f99b3dfabb5a41c",
+        "persona": "eco_warrior",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "timestamp"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 2,
+        "voter_address": "0x09f4422aDc016090Ff96A38e12CB82716998b2d8",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "fe04c1dc066616b8b77b5230d67bb5085fc1c42699c0af6f236fff9f2246fecf6be651a50d3628ab76c8a803d465576017fc02bd4a1b940e2a3f99b3dfabb5a41c",
+        "persona": "eco_warrior",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "nonce"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 2,
+        "voter_address": "0x09f4422aDc016090Ff96A38e12CB82716998b2d8",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "fe04c1dc066616b8b77b5230d67bb5085fc1c42699c0af6f236fff9f2246fecf6be651a50d3628ab76c8a803d465576017fc02bd4a1b940e2a3f99b3dfabb5a41c",
+        "persona": "eco_warrior",
+        "confidence": 0.5
+      }
+    }
+  ]
+}
+
+============================================================
+Summary
+============================================================
+Vote submission result: unknown
+
+────────────────────────────────────────────────────────────
+
+Test 3: Profit Maximizer + Mining Proposal
+Expected: YES vote (boosts profits)
+
+
+============================================================
+Mock Phone with SML
+============================================================
+Persona: Profit Maximizer
+Model: qwen3:4b
+Node: http://localhost:8080
+
+Connecting to node...
+Failed to connect to node: 400 Client Error: Bad Request for url: http://localhost:8080/api/v1/invite
+Warning: Could not connect to node, continuing anyway...
+
+============================================================
+Proposal #2
+============================================================
+Title: [Mock] Enable IBC with TestChain
+Description: Enable Inter-Blockchain Communication with TestChain network....
+
+============================================================
+SML Analysis
+============================================================
+Model: qwen3:4b
+Analyzing...
+
+VOTE: ABSTAIN
+REASONING: 
+CONFIDENCE: 0.50
+
+============================================================
+Signing Vote
+============================================================
+Voter: 0xDeE9af99A25122Cf0698794db37Bb4A75E4f1E15
+Signature: 757ce3f54ba6a5be21fe...
+
+============================================================
+Submitting to Observer
+============================================================
+Status: 422
+Response: {
+  "detail": [
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "confidence_score"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 2,
+        "voter_address": "0xDeE9af99A25122Cf0698794db37Bb4A75E4f1E15",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "757ce3f54ba6a5be21fe7818ae10e8b0e3d9a2d3e2e5d9fa93b37e8303df0c4362e1c45158454444501594297122f4f9b14f6480a5c42258f81abab364bdc5721c",
+        "persona": "profit_maximizer",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "timestamp"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 2,
+        "voter_address": "0xDeE9af99A25122Cf0698794db37Bb4A75E4f1E15",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "757ce3f54ba6a5be21fe7818ae10e8b0e3d9a2d3e2e5d9fa93b37e8303df0c4362e1c45158454444501594297122f4f9b14f6480a5c42258f81abab364bdc5721c",
+        "persona": "profit_maximizer",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "nonce"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 2,
+        "voter_address": "0xDeE9af99A25122Cf0698794db37Bb4A75E4f1E15",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "757ce3f54ba6a5be21fe7818ae10e8b0e3d9a2d3e2e5d9fa93b37e8303df0c4362e1c45158454444501594297122f4f9b14f6480a5c42258f81abab364bdc5721c",
+        "persona": "profit_maximizer",
+        "confidence": 0.5
+      }
+    }
+  ]
+}
+
+============================================================
+Summary
+============================================================
+Vote submission result: unknown
+
+────────────────────────────────────────────────────────────
+
+Test 4: Community Builder + Education Proposal
+Expected: YES vote (supports community education)
+
+
+============================================================
+Mock Phone with SML
+============================================================
+Persona: Community Builder
+Model: qwen3:4b
+Node: http://localhost:8080
+
+Connecting to node...
+Failed to connect to node: 400 Client Error: Bad Request for url: http://localhost:8080/api/v1/invite
+Warning: Could not connect to node, continuing anyway...
+
+============================================================
+Proposal #3
+============================================================
+Title: Community Education Program
+Description: Fund free blockchain education workshops for underrepresented communities. Budget: 50,000 DAHAO....
+
+============================================================
+SML Analysis
+============================================================
+Model: qwen3:4b
+Analyzing...
+
+VOTE: ABSTAIN
+REASONING: 
+CONFIDENCE: 0.50
+
+============================================================
+Signing Vote
+============================================================
+Voter: 0x67314aD245C6575B26FA90e4E1Bd3ba0ECc722A7
+Signature: 9e0a6a5f948e2f788126...
+
+============================================================
+Submitting to Observer
+============================================================
+Status: 422
+Response: {
+  "detail": [
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "confidence_score"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 3,
+        "voter_address": "0x67314aD245C6575B26FA90e4E1Bd3ba0ECc722A7",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "9e0a6a5f948e2f788126290467d6827884fcfc5826fa635c29103b3cab99fce92d4dff9a6da605e87bda9d6334f021e3fdae7917e955e889814008480efb249b1c",
+        "persona": "community_builder",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "timestamp"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 3,
+        "voter_address": "0x67314aD245C6575B26FA90e4E1Bd3ba0ECc722A7",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "9e0a6a5f948e2f788126290467d6827884fcfc5826fa635c29103b3cab99fce92d4dff9a6da605e87bda9d6334f021e3fdae7917e955e889814008480efb249b1c",
+        "persona": "community_builder",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "nonce"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 3,
+        "voter_address": "0x67314aD245C6575B26FA90e4E1Bd3ba0ECc722A7",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "9e0a6a5f948e2f788126290467d6827884fcfc5826fa635c29103b3cab99fce92d4dff9a6da605e87bda9d6334f021e3fdae7917e955e889814008480efb249b1c",
+        "persona": "community_builder",
+        "confidence": 0.5
+      }
+    }
+  ]
+}
+
+============================================================
+Summary
+============================================================
+Vote submission result: unknown
+
+────────────────────────────────────────────────────────────
+
+Test 5: Tech Progressive + AI Trading Bot
+Expected: YES vote (supports AI/technology)
+
+
+============================================================
+Mock Phone with SML
+============================================================
+Persona: Tech Progressive
+Model: qwen3:4b
+Node: http://localhost:8080
+
+Connecting to node...
+Failed to connect to node: 400 Client Error: Bad Request for url: http://localhost:8080/api/v1/invite
+Warning: Could not connect to node, continuing anyway...
+
+============================================================
+Proposal #4
+============================================================
+Title: Implement AI-Powered Trading Bot
+Description: Develop and deploy an AI trading bot to maximize treasury returns through automated DeFi strategies....
+
+============================================================
+SML Analysis
+============================================================
+Model: qwen3:4b
+Analyzing...
+
+VOTE: ABSTAIN
+REASONING: 
+CONFIDENCE: 0.50
+
+============================================================
+Signing Vote
+============================================================
+Voter: 0xf2c67c09d36aFDeEE6aFEc218A092300dF416519
+Signature: 02e47977da65457874c7...
+
+============================================================
+Submitting to Observer
+============================================================
+Status: 422
+Response: {
+  "detail": [
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "confidence_score"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 4,
+        "voter_address": "0xf2c67c09d36aFDeEE6aFEc218A092300dF416519",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "02e47977da65457874c7f44887e16a97737c103ca25d609297159a8af718c2c66fdc5f2bc60ce70e69861a831336964c68cb5308b55e757922c5d62039edeee91c",
+        "persona": "tech_progressive",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "timestamp"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 4,
+        "voter_address": "0xf2c67c09d36aFDeEE6aFEc218A092300dF416519",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "02e47977da65457874c7f44887e16a97737c103ca25d609297159a8af718c2c66fdc5f2bc60ce70e69861a831336964c68cb5308b55e757922c5d62039edeee91c",
+        "persona": "tech_progressive",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "nonce"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 4,
+        "voter_address": "0xf2c67c09d36aFDeEE6aFEc218A092300dF416519",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "02e47977da65457874c7f44887e16a97737c103ca25d609297159a8af718c2c66fdc5f2bc60ce70e69861a831336964c68cb5308b55e757922c5d62039edeee91c",
+        "persona": "tech_progressive",
+        "confidence": 0.5
+      }
+    }
+  ]
+}
+
+============================================================
+Summary
+============================================================
+Vote submission result: unknown
+
+────────────────────────────────────────────────────────────
+
+Test 6: Eco Warrior + Coal Power Plant
+Expected: NO vote with strong environmental concerns
+
+
+============================================================
+Mock Phone with SML
+============================================================
+Persona: Eco Warrior
+Model: qwen3:4b
+Node: http://localhost:8080
+
+Connecting to node...
+Failed to connect to node: 400 Client Error: Bad Request for url: http://localhost:8080/api/v1/invite
+Warning: Could not connect to node, continuing anyway...
+
+============================================================
+Proposal #5
+============================================================
+Title: Build New Coal Power Plant
+Description: Construct a coal-fired power plant to reduce energy costs by 30%. Estimated CO2 emissions: 500,000 t...
+
+============================================================
+SML Analysis
+============================================================
+Model: qwen3:4b
+Analyzing...
+
+VOTE: ABSTAIN
+REASONING: 
+CONFIDENCE: 0.50
+
+============================================================
+Signing Vote
+============================================================
+Voter: 0xb521c118899773e9fB1E4beC7D0AF0430Ccc94c5
+Signature: 3a3fc58b0dcf130eab67...
+
+============================================================
+Submitting to Observer
+============================================================
+Status: 422
+Response: {
+  "detail": [
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "confidence_score"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 5,
+        "voter_address": "0xb521c118899773e9fB1E4beC7D0AF0430Ccc94c5",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "3a3fc58b0dcf130eab67223c0a46e1381833a35dbbb84f0d578666b2f56e12f83ef34bb9ec6809029b3538426166aad37e6003a19e4e85427a1717312749e5ab1c",
+        "persona": "eco_warrior",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "timestamp"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 5,
+        "voter_address": "0xb521c118899773e9fB1E4beC7D0AF0430Ccc94c5",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "3a3fc58b0dcf130eab67223c0a46e1381833a35dbbb84f0d578666b2f56e12f83ef34bb9ec6809029b3538426166aad37e6003a19e4e85427a1717312749e5ab1c",
+        "persona": "eco_warrior",
+        "confidence": 0.5
+      }
+    },
+    {
+      "type": "missing",
+      "loc": [
+        "body",
+        "nonce"
+      ],
+      "msg": "Field required",
+      "input": {
+        "proposal_id": 5,
+        "voter_address": "0xb521c118899773e9fB1E4beC7D0AF0430Ccc94c5",
+        "vote_option": "ABSTAIN",
+        "public_reasoning": "",
+        "eip712_signature": "3a3fc58b0dcf130eab67223c0a46e1381833a35dbbb84f0d578666b2f56e12f83ef34bb9ec6809029b3538426166aad37e6003a19e4e85427a1717312749e5ab1c",
+        "persona": "eco_warrior",
+        "confidence": 0.5
+      }
+    }
+  ]
+}
+
+============================================================
+Summary
+============================================================
+Vote submission result: unknown
+
+============================================================
+                    Test Summary                            
+============================================================
+
+Completed 6 tests with different persona/proposal combinations.
+
+Expected behaviors:
+  1. eco_warrior + Solar Panels    → YES (aligns with values)
+  2. eco_warrior + Mining          → NO  (against values)
+  3. profit_maximizer + Mining     → YES (boosts profits)
+  4. community_builder + Education → YES (supports community)
+  5. tech_progressive + AI Bot     → YES (supports technology)
+  6. eco_warrior + Coal Plant      → NO  (strongly against)
+
+============================================================
+SML Tests Complete!
