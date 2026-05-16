@@ -1,9 +1,9 @@
 {
   "_meta": {
     "type": "security_principles",
-    "description": "Security principles for autonomous AI agents. Extends DAHAO core principles with security-specific guidance.",
+    "description": "Security principles for autonomous AI agents. Extends Leviathan core principles with security-specific guidance.",
     "version": "1.0.0",
-    "inherits": "dahao-core v1.0.0",
+    "inherits": "leviathan-core v1.0.0",
     "domain": "security",
     "created": "2026-01-30",
     "updated": "2026-01-30"

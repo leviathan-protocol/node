@@ -1,10 +1,10 @@
 /**
- * DAHAO Contracts Deployment Script
+ * Leviathan Contracts Deployment Script
  *
- * Deploys the full DAHAO governance stack:
- * 1. DAHAOForwarder - ERC2771 forwarder for meta-transactions
- * 2. DAHAOToken - ERC20Votes governance token
- * 3. DAHAOGovernor - Governance contract with gasless voting support
+ * Deploys the full Leviathan governance stack:
+ * 1. LeviathanForwarder - ERC2771 forwarder for meta-transactions
+ * 2. LeviathanToken - ERC20Votes governance token
+ * 3. LeviathanGovernor - Governance contract with gasless voting support
  *
  * Usage:
  *   # Local hardhat network
@@ -24,7 +24,7 @@ async function main() {
   const [deployer] = await hre.ethers.getSigners();
 
   console.log("=".repeat(60));
-  console.log("DAHAO Contracts Deployment");
+  console.log("Leviathan Contracts Deployment");
   console.log("=".repeat(60));
   console.log();
   console.log(`Network: ${hre.network.name}`);
@@ -35,36 +35,36 @@ async function main() {
   console.log(`Balance: ${hre.ethers.formatEther(balance)} AVAX/ETH`);
   console.log();
 
-  // 1. Deploy DAHAOForwarder
-  console.log("1. Deploying DAHAOForwarder...");
-  const DAHAOForwarder = await hre.ethers.getContractFactory("DAHAOForwarder");
-  const forwarder = await DAHAOForwarder.deploy();
+  // 1. Deploy LeviathanForwarder
+  console.log("1. Deploying LeviathanForwarder...");
+  const LeviathanForwarder = await hre.ethers.getContractFactory("LeviathanForwarder");
+  const forwarder = await LeviathanForwarder.deploy();
   await forwarder.waitForDeployment();
   const forwarderAddress = await forwarder.getAddress();
-  console.log(`   DAHAOForwarder deployed to: ${forwarderAddress}`);
+  console.log(`   LeviathanForwarder deployed to: ${forwarderAddress}`);
 
-  // 2. Deploy DAHAOToken
-  console.log("2. Deploying DAHAOToken...");
-  const DAHAOToken = await hre.ethers.getContractFactory("DAHAOToken");
-  const token = await DAHAOToken.deploy(deployer.address);
+  // 2. Deploy LeviathanToken
+  console.log("2. Deploying LeviathanToken...");
+  const LeviathanToken = await hre.ethers.getContractFactory("LeviathanToken");
+  const token = await LeviathanToken.deploy(deployer.address);
   await token.waitForDeployment();
   const tokenAddress = await token.getAddress();
-  console.log(`   DAHAOToken deployed to: ${tokenAddress}`);
+  console.log(`   LeviathanToken deployed to: ${tokenAddress}`);
 
   // Verify token details
   const tokenName = await token.name();
   const tokenSymbol = await token.symbol();
   const totalSupply = await token.totalSupply();
   console.log(`   Token: ${tokenName} (${tokenSymbol})`);
-  console.log(`   Total Supply: ${hre.ethers.formatEther(totalSupply)} DAHAO`);
+  console.log(`   Total Supply: ${hre.ethers.formatEther(totalSupply)} Leviathan`);
 
-  // 3. Deploy DAHAOGovernor
-  console.log("3. Deploying DAHAOGovernor...");
-  const DAHAOGovernor = await hre.ethers.getContractFactory("DAHAOGovernor");
-  const governor = await DAHAOGovernor.deploy(tokenAddress, forwarderAddress);
+  // 3. Deploy LeviathanGovernor
+  console.log("3. Deploying LeviathanGovernor...");
+  const LeviathanGovernor = await hre.ethers.getContractFactory("LeviathanGovernor");
+  const governor = await LeviathanGovernor.deploy(tokenAddress, forwarderAddress);
   await governor.waitForDeployment();
   const governorAddress = await governor.getAddress();
-  console.log(`   DAHAOGovernor deployed to: ${governorAddress}`);
+  console.log(`   LeviathanGovernor deployed to: ${governorAddress}`);
 
   // Verify governor settings
   const votingDelay = await governor.votingDelay();
@@ -79,9 +79,9 @@ async function main() {
   console.log("=".repeat(60));
   console.log();
   console.log("Contract Addresses:");
-  console.log(`  DAHAOForwarder: ${forwarderAddress}`);
-  console.log(`  DAHAOToken:     ${tokenAddress}`);
-  console.log(`  DAHAOGovernor:  ${governorAddress}`);
+  console.log(`  LeviathanForwarder: ${forwarderAddress}`);
+  console.log(`  LeviathanToken:     ${tokenAddress}`);
+  console.log(`  LeviathanGovernor:  ${governorAddress}`);
   console.log();
 
   // Output for config.yaml
@@ -102,7 +102,7 @@ async function main() {
   const delegateTx = await token.delegate(deployer.address);
   await delegateTx.wait();
   const votingPower = await token.getVotes(deployer.address);
-  console.log(`   Voting power: ${hre.ethers.formatEther(votingPower)} DAHAO`);
+  console.log(`   Voting power: ${hre.ethers.formatEther(votingPower)} Leviathan`);
 
   console.log();
   console.log("Deployment complete!");
@@ -113,8 +113,8 @@ async function main() {
   console.log("1. Update config.yaml with the contract addresses above");
   console.log("2. Distribute tokens to test voters");
   console.log("3. Have voters delegate their tokens (token.delegate(voterAddress))");
-  console.log("4. Create a test proposal via DAHAOGovernor");
-  console.log("5. Test gasless voting via DAHAO Observer Mode");
+  console.log("4. Create a test proposal via LeviathanGovernor");
+  console.log("5. Test gasless voting via Leviathan Observer Mode");
 }
 
 main()

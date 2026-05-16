@@ -14,7 +14,7 @@ PERSONA_MAPPING_SCHEMA = {
         },
         "inherits": {
             "type": "string",
-            "description": "Core DAHAO version to inherit from (always 'dahao-core v1.0.0')",
+            "description": "Core Leviathan version to inherit from (always 'leviathan-core v1.0.0')",
         },
         "uses_terms": {
             "type": "array",
@@ -99,7 +99,7 @@ def build_system_prompt(
     all_principle_names = list(locked_principles.keys()) + list(unlocked_principles.keys())
     valid_aligns_with = ", ".join(all_principle_names)
 
-    return f"""You are a governance configuration specialist for the DAHAO framework. Your task is to convert external user personas into valid Fork configurations that respect the governance framework.
+    return f"""You are a governance configuration specialist for the Leviathan framework. Your task is to convert external user personas into valid Fork configurations that respect the governance framework.
 
 ## Available Terms (for uses_terms field ONLY)
 These are vocabulary terms that can ONLY be used in the "uses_terms" array. DO NOT use these in "aligns_with":

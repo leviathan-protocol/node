@@ -31,7 +31,7 @@ class ForkCache:
     This allows inspection of generated Forks and avoids re-running
     LLM mapping when the same persona is used repeatedly.
 
-    Default location: ~/.cache/dahao/forks/
+    Default location: ~/.cache/leviathan/forks/
 
     Usage:
         cache = ForkCache()
@@ -41,14 +41,14 @@ class ForkCache:
             cache.put(persona, "1.0.0", fork)
     """
 
-    DEFAULT_CACHE_DIR = Path.home() / ".cache" / "dahao" / "forks"
+    DEFAULT_CACHE_DIR = Path.home() / ".cache" / "leviathan" / "forks"
 
     def __init__(self, cache_dir: str | Path | None = None):
         """Initialize the ForkCache.
 
         Args:
             cache_dir: Optional custom cache directory.
-                      Defaults to ~/.cache/dahao/forks/
+                      Defaults to ~/.cache/leviathan/forks/
         """
         if cache_dir is None:
             self._cache_dir = self.DEFAULT_CACHE_DIR

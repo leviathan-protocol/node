@@ -1,14 +1,13 @@
-"""DAHAO Sidecar operation modes.
+"""Leviathan Sidecar operation modes.
 
-Two modes of operation:
-- Decider: Autonomous polling loop that makes voting decisions (original mode)
-- Observer: API gateway that validates and relays votes from mobile clients (Gasless Voting)
+Available modes:
+- Auditor: Security auditor (Runtime Guardian) for AI agent action validation
 """
 
-from .decider import run_decider_mode
-from .observer import run_observer_mode
+from .auditor import SecurityAuditor, create_auditor, quick_audit
 
 __all__ = [
-    "run_decider_mode",
-    "run_observer_mode",
+    "SecurityAuditor",
+    "create_auditor",
+    "quick_audit",
 ]

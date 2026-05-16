@@ -1,7 +1,7 @@
-# DAHAO Subnet Configuration (Auto-generated)
+# Leviathan Subnet Configuration (Auto-generated)
 # Generated at: 2026-01-30T03:09:53.628Z
 #
-# Start subnet first: ./scripts/setup_dahao_subnet.sh
+# Start subnet first: ./scripts/setup_leviathan_subnet.sh
 
 chain:
   type: evm

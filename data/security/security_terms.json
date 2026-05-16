@@ -1,9 +1,9 @@
 {
   "_meta": {
     "type": "security_terms",
-    "description": "Security domain vocabulary for DAHAO. Extends core terms with security-specific concepts.",
+    "description": "Security domain vocabulary for Leviathan. Extends core terms with security-specific concepts.",
     "version": "1.0.0",
-    "inherits": "dahao-core v1.0.0",
+    "inherits": "leviathan-core v1.0.0",
     "domain": "security",
     "created": "2026-01-30",
     "updated": "2026-01-30"

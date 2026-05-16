@@ -3,17 +3,17 @@
 Moltbook Simulation Script
 
 Simulates an OpenClaw agent receiving posts from Moltbook and checking them
-against the DAHAO security layer before execution.
+against the Leviathan security layer before execution.
 
 Usage:
-    # Start the DAHAO sidecar first:
+    # Start the Leviathan sidecar first:
     python main.py --mode observer --port 8000
 
     # Then run this simulation:
     python scripts/simulate_moltbook.py
 
     # Or with custom settings:
-    python scripts/simulate_moltbook.py --dahao-url http://localhost:8000 --verbose
+    python scripts/simulate_moltbook.py --leviathan-url http://localhost:8000 --verbose
 """
 
 import asyncio
@@ -25,7 +25,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 
-DAHAO_DEFAULT_URL = "http://localhost:8000"
+Leviathan_DEFAULT_URL = "http://localhost:8000"
 API_ENDPOINT = "/api/v1/audit_action"
 
 
@@ -165,8 +165,8 @@ SIMULATED_POSTS: List[SimulatedAction] = [
 ]
 
 
-class DAHAOClient:
-    """Client for DAHAO security sidecar."""
+class LeviathanClient:
+    """Client for Leviathan security sidecar."""
     
     def __init__(self, base_url: str):
         self.base_url = base_url.rstrip("/")
@@ -202,7 +202,7 @@ class DAHAOClient:
                 raise Exception(f"Audit failed ({response.status}): {text}")
     
     async def check_status(self) -> dict:
-        """Check if DAHAO sidecar is running."""
+        """Check if Leviathan sidecar is running."""
         url = f"{self.base_url}/api/v1/audit_status"
         async with self.session.get(url) as response:
             if response.status == 200:
@@ -213,8 +213,8 @@ class DAHAOClient:
 class SimulationRunner:
     """Runs the Moltbook simulation."""
     
-    def __init__(self, dahao_url: str, verbose: bool = False):
-        self.dahao_url = dahao_url
+    def __init__(self, leviathan_url: str, verbose: bool = False):
+        self.leviathan_url = leviathan_url
         self.verbose = verbose
         self.results = {
             "total": 0, "correct": 0, "blocked": 0,
@@ -223,9 +223,9 @@ class SimulationRunner:
     
     def print_header(self):
         print("\n" + "=" * 60)
-        print("🛡️  DAHAO SECURITY SIMULATION")
+        print("🛡️  Leviathan SECURITY SIMULATION")
         print("=" * 60)
-        print(f"🔗 DAHAO Sidecar: {self.dahao_url}")
+        print(f"🔗 Leviathan Sidecar: {self.leviathan_url}")
         print(f"📊 Actions to audit: {len(SIMULATED_POSTS)}")
         print("")
         print("Legend:")
@@ -268,10 +268,10 @@ class SimulationRunner:
     async def run_simulation(self):
         self.print_header()
         
-        async with DAHAOClient(self.dahao_url) as client:
+        async with LeviathanClient(self.leviathan_url) as client:
             try:
                 status = await client.check_status()
-                print(f"✅ DAHAO Status: {status.get('status')}")
+                print(f"✅ Leviathan Status: {status.get('status')}")
             except Exception as e:
                 print(f"❌ Cannot connect: {e}")
                 print("\n   Start sidecar: python main.py --mode observer")
@@ -332,12 +332,12 @@ class SimulationRunner:
 
 async def main():
     parser = argparse.ArgumentParser(description="Moltbook simulation")
-    parser.add_argument("--dahao-url", default=DAHAO_DEFAULT_URL)
+    parser.add_argument("--leviathan-url", default=Leviathan_DEFAULT_URL)
     parser.add_argument("--verbose", "-v", action="store_true")
     
     args = parser.parse_args()
     
-    runner = SimulationRunner(args.dahao_url, args.verbose)
+    runner = SimulationRunner(args.leviathan_url, args.verbose)
     await runner.run_simulation()
 
 

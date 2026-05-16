@@ -1,5 +1,5 @@
 """
-EVM Meta-Transaction Relayer for DAHAO Gasless Voting.
+EVM Meta-Transaction Relayer for Leviathan Gasless Voting.
 
 Implements EIP-712 typed data signing for ERC2771 ForwardRequests,
 allowing users to sign voting intents off-chain while the node
@@ -35,14 +35,14 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # Default path to compiled forwarder ABI
-DEFAULT_FORWARDER_ABI_PATH = Path(__file__).parent.parent / "contracts" / "artifacts" / "src" / "DAHAOForwarder.sol" / "DAHAOForwarder.json"
+DEFAULT_FORWARDER_ABI_PATH = Path(__file__).parent.parent / "contracts" / "artifacts" / "src" / "LeviathanForwarder.sol" / "LeviathanForwarder.json"
 
 
 @dataclass
 class ForwardRequest:
     """ERC2771 ForwardRequest structure."""
     from_addr: str  # User's address
-    to: str  # Target contract (DAHAOGovernor)
+    to: str  # Target contract (LeviathanGovernor)
     value: int  # ETH value (usually 0 for voting)
     gas: int  # Gas limit for the forwarded call
     nonce: int  # User's nonce in forwarder
@@ -75,7 +75,7 @@ class ForwardRequest:
 
 
 def load_forwarder_abi(abi_path: Path | None = None) -> list:
-    """Load DAHAOForwarder ABI from compiled artifacts.
+    """Load LeviathanForwarder ABI from compiled artifacts.
 
     Args:
         abi_path: Path to ABI JSON file. Uses default if not provided.
@@ -101,8 +101,8 @@ def load_forwarder_abi(abi_path: Path | None = None) -> list:
 
 
 def load_governor_abi(abi_path: Path | None = None) -> list:
-    """Load DAHAOGovernor ABI from compiled artifacts."""
-    default_path = Path(__file__).parent.parent / "contracts" / "artifacts" / "src" / "DAHAOGovernor.sol" / "DAHAOGovernor.json"
+    """Load LeviathanGovernor ABI from compiled artifacts."""
+    default_path = Path(__file__).parent.parent / "contracts" / "artifacts" / "src" / "LeviathanGovernor.sol" / "LeviathanGovernor.json"
     path = abi_path or default_path
 
     if not path.exists():
@@ -173,7 +173,7 @@ class MetaTransactionRelayer:
         client: "EVMChainClient",
         forwarder_address: str,
         forwarder_abi: list,
-        name: str = "DAHAOForwarder",
+        name: str = "LeviathanForwarder",
         version: str = "1",
     ):
         """
@@ -181,7 +181,7 @@ class MetaTransactionRelayer:
 
         Args:
             client: EVMChainClient instance for chain interactions
-            forwarder_address: Address of deployed DAHAOForwarder contract
+            forwarder_address: Address of deployed LeviathanForwarder contract
             forwarder_abi: ABI of the forwarder contract
             name: EIP-712 domain name (must match contract)
             version: EIP-712 domain version (must match contract)
@@ -240,7 +240,7 @@ class MetaTransactionRelayer:
 
         Args:
             from_addr: User's address (will be msg.sender in target)
-            to_addr: Target contract address (DAHAOGovernor)
+            to_addr: Target contract address (LeviathanGovernor)
             data: Encoded function call data
             value: ETH value to send (usually 0 for voting)
             gas: Gas limit for the forwarded call

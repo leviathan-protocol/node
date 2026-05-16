@@ -1,132 +1,163 @@
 {
   "_meta": {
     "type": "principles",
-    "description": "Core principles that all DAHAO domains must inherit. Locked principles cannot be violated by any domain.",
-    "version": "1.1.0",
-    "created": "2026-01-29",
-    "updated": "2026-01-29",
-    "note": "Principles reference terms via 'uses_terms'. Rules implement principles via 'implements_principles'."
+    "description": "Core principles of Leviathan Protocol. Immutable (Article I) cannot be changed. Locked require 95% consensus.",
+    "version": "1.0.0",
+    "created": "2025-02-01",
+    "updated": "2025-02-01",
+    "project": "LEVIATHAN - Algorithmic Sovereignty for the Agentic Web",
+    "note": "immutable = cannot change (fork to escape). locked = 95% consensus. unlocked = normal governance."
   },
 
-  "@purpose_primacy": {
+  "@user_sovereignty": {
     "version": "1.0.0",
-    "statement": "All decisions within a DAHAO instance must serve its stated purpose.",
+    "statement": "Users define boundaries, agents act freely within them.",
+    "immutable": true,
     "locked": true,
-    "lock_reason": "Without purpose alignment, DAHAO loses coherence and meaning.",
-    "uses_terms": ["@purpose", "@stakeholder"],
+    "lock_reason": "Article I Foundation. Cannot be changed by any vote. Fork if you disagree.",
+    "uses_terms": ["@citizen", "@sidecar"],
     "implications": [
-      "Every proposal must demonstrate how it serves purpose",
-      "Changes that undermine purpose are automatically invalid",
-      "Purpose can only change with near-unanimous consent (95%)"
-    ]
-  },
-
-  "@democratic_evolution": {
-    "version": "1.0.0",
-    "statement": "DAHAO evolves through collective deliberation, not unilateral decision. No individual or entity has privileged authority over values.",
-    "locked": true,
-    "lock_reason": "Prevents capture by any single interest. Ensures legitimacy through participation.",
-    "uses_terms": ["@proposal", "@consensus", "@vote", "@contributor"],
-    "implications": [
-      "All changes require community consensus",
-      "No contributor can force changes alone",
-      "Every voice can participate in dialectic"
-    ]
-  },
-
-  "@transparency": {
-    "version": "1.0.0",
-    "statement": "All proposals, discussions, votes, reasoning, and changes are publicly visible and auditable.",
-    "locked": true,
-    "lock_reason": "Hidden governance is illegitimate governance. Accountability requires visibility.",
-    "uses_terms": ["@proposal", "@vote", "@version"],
-    "implications": [
-      "Full version history maintained forever",
-      "Vote records are public",
-      "Reasoning for decisions must be documented",
-      "No secret deliberations"
-    ]
-  },
-
-  "@precautionary_default": {
-    "version": "1.0.0",
-    "statement": "When uncertain about potential harm to stakeholders, err toward protection rather than risk.",
-    "locked": true,
-    "lock_reason": "The cost of failing to protect exceeds the cost of unnecessary protection.",
-    "uses_terms": ["@harm", "@protection", "@stakeholder"],
-    "implications": [
-      "Each domain defines what 'harm' and 'protection' mean",
-      "Uncertainty favors caution",
-      "Protection ratchet enforces this at governance level"
-    ],
-    "note": "This is the meta-principle. Domains apply it to their specific context."
-  },
-
-  "@evidence_based": {
-    "version": "1.0.0",
-    "statement": "Claims about reality must be supported by evidence, weighted by quality.",
-    "locked": false,
-    "uses_terms": ["@evidence"],
-    "rationale": "Prevents unfounded assertions from driving decisions.",
-    "implications": [
-      "Proposals require evidence",
-      "Evidence quality affects weight",
-      "Contradicting evidence triggers deeper review"
-    ],
-    "note": "Unlocked because domains may adjust evidence requirements."
-  },
-
-  "@protection_asymmetry": {
-    "version": "1.0.0",
-    "statement": "Adding protections for stakeholders is easier than removing them.",
-    "locked": true,
-    "lock_reason": "Implements @precautionary_default at governance level.",
-    "uses_terms": ["@protection", "@consensus", "@stakeholder"],
-    "mechanism": "Removing protection requires 1.5× the consensus threshold of adding it.",
-    "implications": [
-      "DAHAO naturally evolves toward more protection",
-      "Economic/political pressure cannot easily remove protections",
-      "Expanding moral circle is easier than contracting it"
+      "Bonding ceremony: User explicitly accepts agent's operating boundaries",
+      "Autonomous operation: No per-action consent required after bonding",
+      "Magistrate verifies alignment, not user approving every action",
+      "Revocation right: User can unbond at any time"
     ]
   },
 
   "@fork_freedom": {
     "version": "1.0.0",
-    "statement": "Anyone may fork any DAHAO instance and modify it according to their values.",
-    "locked": false,
-    "uses_terms": ["@fork"],
-    "rationale": "Freedom to exit ensures voluntary participation. Diversity enables experimentation.",
-    "implications": [
-      "Forks are legitimate, not defections",
-      "Different values can coexist in different forks",
-      "Main branch represents consensus, not absolute truth",
-      "Forks may propose innovations back to main"
-    ]
-  },
-
-  "@good_faith": {
-    "version": "1.0.0",
-    "statement": "All participants are assumed to be acting in good faith toward the stated purpose.",
-    "locked": false,
-    "uses_terms": ["@purpose", "@contributor", "@dialectic"],
-    "rationale": "Collaborative governance requires trust as default.",
-    "implications": [
-      "Assume charitable interpretation of others' positions",
-      "Disagree with arguments, not people",
-      "Bad faith can be demonstrated, but not assumed"
-    ]
-  },
-
-  "@inheritance_integrity": {
-    "version": "1.0.0",
-    "statement": "Domain instances must not violate core locked principles, even through domain-specific additions.",
+    "statement": "The right to exit is absolute. Anyone may fork Leviathan.",
+    "immutable": true,
     "locked": true,
-    "lock_reason": "Ensures all DAHAOs share fundamental governance legitimacy.",
+    "lock_reason": "Article I Foundation. Cannot be changed by any vote. Fork if you disagree.",
+    "uses_terms": ["@fork"],
+    "implications": [
+      "Genesis file is public domain",
+      "Smart contracts are open source",
+      "No permission required to fork",
+      "Disagreement is not betrayal"
+    ]
+  },
+
+  "@transparency": {
+    "version": "1.0.0",
+    "statement": "All governance is auditable. Every decision, vote, verdict is publicly visible with reasoning.",
+    "immutable": true,
+    "locked": true,
+    "lock_reason": "Article I Foundation. Cannot be changed by any vote. Fork if you disagree.",
+    "uses_terms": ["@verdict", "@proposal", "@consensus"],
+    "implications": [
+      "All verdicts include reasoning",
+      "All votes recorded with rationale",
+      "No secret deliberations",
+      "AI votes must include reasoning"
+    ]
+  },
+
+  "@immutable_history": {
+    "version": "1.0.0",
+    "statement": "The ledger cannot be erased. No authority can rewrite history.",
+    "immutable": true,
+    "locked": true,
+    "lock_reason": "Article I Foundation. Cannot be changed by any vote. Fork if you disagree.",
+    "uses_terms": ["@verdict", "@proof"],
+    "implications": [
+      "Blockchain immutability enforced",
+      "Not even unanimous consent can erase records",
+      "IPFS + on-chain hash for all verdicts"
+    ]
+  },
+
+  "@distributed_justice": {
+    "version": "1.0.0",
+    "statement": "No single entity defines truth. Justice requires consensus of multiple independent judges.",
+    "immutable": true,
+    "locked": true,
+    "lock_reason": "Article I Foundation. Cannot be changed by any vote. Fork if you disagree.",
+    "uses_terms": ["@magistrate", "@verdict", "@consensus"],
+    "implications": [
+      "Magistrate network consists of multiple independent nodes",
+      "Consensus required, not any individual's judgment",
+      "To manipulate justice, must corrupt majority of nodes"
+    ]
+  },
+
+  "@meritocracy": {
+    "version": "1.0.0",
+    "statement": "Status is earned through contribution, not purchased with wealth. XP cannot be bought.",
+    "immutable": false,
+    "locked": true,
+    "lock_reason": "Core governance principle. Requires 95% consensus to modify.",
+    "uses_terms": ["@xp", "@rank", "@citizen"],
+    "implications": [
+      "Only verified contributions earn XP",
+      "Self-reported achievements worth nothing",
+      "Quadratic voting prevents whale domination"
+    ]
+  },
+
+  "@precautionary_default": {
+    "version": "1.0.0",
+    "statement": "When uncertain about potential harm, err toward protection rather than risk.",
+    "immutable": false,
+    "locked": true,
+    "lock_reason": "Core security principle. Requires 95% consensus to modify.",
+    "uses_terms": ["@threat", "@verdict", "@appeal"],
+    "implications": [
+      "Sentinel blocks first, allows appeal after",
+      "Confidence threshold required to allow risky actions",
+      "Protection ratchet makes removing safeguards harder"
+    ]
+  },
+
+  "@protection_asymmetry": {
+    "version": "1.0.0",
+    "statement": "Adding protections is easier than removing them.",
+    "immutable": false,
+    "locked": true,
+    "lock_reason": "Implements @precautionary_default at governance level. Requires 95% consensus to modify.",
+    "uses_terms": ["@consensus", "@proposal"],
+    "mechanism": "Removing protection requires 1.5x the consensus threshold of adding it."
+  },
+
+  "@domain_inheritance": {
+    "version": "1.0.0",
+    "statement": "Domain instances must not violate core locked principles.",
+    "immutable": false,
+    "locked": true,
+    "lock_reason": "Ensures all Leviathan instances share fundamental governance legitimacy. Requires 95% consensus.",
     "uses_terms": ["@domain"],
     "implications": [
       "Domain proposals checked against core principles",
       "Conflicts with locked principles auto-reject",
       "Domains can be stricter than core, never looser"
     ]
+  },
+
+  "@due_process": {
+    "version": "1.0.0",
+    "statement": "Every citizen has the right to appeal decisions that affect them.",
+    "immutable": false,
+    "locked": false,
+    "uses_terms": ["@appeal", "@verdict", "@magistrate"],
+    "rationale": "Justice requires recourse. Mistakes must be correctable."
+  },
+
+  "@evidence_based": {
+    "version": "1.0.0",
+    "statement": "Claims about reality must be supported by evidence, weighted by quality.",
+    "immutable": false,
+    "locked": false,
+    "uses_terms": ["@proof", "@proposal"],
+    "rationale": "Prevents unfounded assertions from driving decisions."
+  },
+
+  "@good_faith": {
+    "version": "1.0.0",
+    "statement": "All participants are assumed to be acting in good faith toward the stated purpose.",
+    "immutable": false,
+    "locked": false,
+    "uses_terms": ["@citizen", "@dialectic"],
+    "rationale": "Collaborative governance requires trust as default."
   }
 }

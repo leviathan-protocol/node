@@ -192,7 +192,7 @@ class LLMWrapper:
         # Format fork principles
         fork_text = "\n".join(f"- {p}" for p in fork_principles)
 
-        system_prompt = """You are a governance validator for the DAHAO framework. Your task is to check if a validator's personal principles (fork) conflict with the locked governance principles.
+        system_prompt = """You are a governance validator for the Leviathan framework. Your task is to check if a validator's personal principles (fork) conflict with the locked governance principles.
 
 LOCKED PRINCIPLES are immutable rules that cannot be violated. A fork principle VIOLATES a locked principle if it:
 1. Directly contradicts it (e.g., "hide decisions" violates "transparency")

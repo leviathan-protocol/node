@@ -17,7 +17,7 @@ class Persona(BaseModel):
     """A user persona from the Journal App.
 
     Represents an external identity file that can be converted to a Fork
-    configuration for DAHAO governance participation.
+    configuration for Leviathan governance participation.
 
     Example persona.json:
     ```json

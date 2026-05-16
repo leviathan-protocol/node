@@ -246,14 +246,14 @@ async def audit_action(request: AuditRequest) -> AuditResponse:
 @router.get(
     "/audit_status",
     summary="Check audit system status",
-    description="Verify that the DAHAO audit system is running and healthy."
+    description="Verify that the Leviathan audit system is running and healthy."
 )
 async def audit_status():
     """Health check for the audit system."""
     return {
         "status": "operational",
         "version": "1.0.0",
-        "domain": "dahao-security",
+        "domain": "leviathan-security",
         "features": {
             "denylist_check": True,
             "allowlist_check": True,
@@ -272,7 +272,7 @@ async def audit_status():
 async def list_security_principles():
     """Return the active security principles for transparency."""
     return {
-        "domain": "dahao-security",
+        "domain": "leviathan-security",
         "version": "1.0.0",
         "principles": [
             {

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "type": "governance",
-    "description": "Meta-configuration for DAHAO Core governance system.",
+    "description": "Meta-configuration for Leviathan Core governance system.",
     "version": "1.0.0",
     "created": "2026-01-29",
     "updated": "2026-01-29",
@@ -9,17 +9,17 @@
   },
 
   "instance": {
-    "id": "dahao-core",
-    "name": "DAHAO Core",
+    "id": "leviathan-core",
+    "name": "Leviathan Core",
     "type": "core",
     "description": "Universal governance framework for purpose-driven communities. All domains inherit from this.",
     "purpose": "Enable any community to collaboratively evolve shared values through transparent, democratic, evidence-based governance.",
     "created": "2026-01-29",
     "maintainers": [
       {
-        "id": "dahao-org",
+        "id": "leviathan-org",
         "type": "organization",
-        "github": "dahao-org",
+        "github": "leviathan-org",
         "role": "steward"
       }
     ]

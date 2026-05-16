@@ -21,11 +21,11 @@ module.exports = {
     localhost: {
       url: "http://127.0.0.1:8545",
     },
-    // DAHAO Subnet (Local Avalanche L1)
-    // Start with: ./scripts/setup_dahao_subnet.sh
+    // Leviathan Subnet (Local Avalanche L1)
+    // Start with: ./scripts/setup_leviathan_subnet.sh
     // Note: RPC URL includes the blockchain hash assigned at deployment
-    dahaoSubnet: {
-      url: process.env.DAHAO_RPC_URL || "http://127.0.0.1:9654/ext/bc/2QfrnBRib5ZfJac5vNc6gTSHsvNtPnwhxF5GEwNFZMbariKTVT/rpc",
+    leviathanSubnet: {
+      url: process.env.Leviathan_RPC_URL || "http://127.0.0.1:9654/ext/bc/2QfrnBRib5ZfJac5vNc6gTSHsvNtPnwhxF5GEwNFZMbariKTVT/rpc",
       chainId: 43210,
       // EWOQ test key - pre-funded with 1M tokens (DO NOT USE IN PRODUCTION)
       accounts: ["56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027"],

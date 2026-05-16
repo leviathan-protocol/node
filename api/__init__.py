@@ -1,4 +1,4 @@
-"""DAHAO Sidecar API - Observer Mode endpoints."""
+"""Leviathan Sidecar API - Observer Mode endpoints."""
 
 from .server import create_app
 

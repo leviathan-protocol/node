@@ -61,5 +61,5 @@ class WalletManager:
             raise InsufficientFundsError(
                 f"Wallet {self.address} has {balance} {chain_client.config.fee_denom}. "
                 f"Minimum required: {min_balance}. "
-                f"Fund it with: dahao tx bank send alice {self.address} 10000stake --yes"
+                f"Fund it with: leviathan tx bank send alice {self.address} 10000stake --yes"
             )

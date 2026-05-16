@@ -1,7 +1,7 @@
-"""Identity Adapter module for DAHAO.
+"""Identity Adapter module for Leviathan.
 
 Converts external persona.json files (from Journal App) into valid Fork
-configurations for the DAHAO sidecar.
+configurations for the Leviathan sidecar.
 
 Usage:
     from adapter import PersonaLoader, PersonaMapper, Persona

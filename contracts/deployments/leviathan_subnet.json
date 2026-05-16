@@ -1,5 +1,5 @@
 {
-  "network": "dahaoSubnet",
+  "network": "leviathanSubnet",
   "chainId": "43210",
   "rpcUrl": "http://127.0.0.1:9654/ext/bc/2QfrnBRib5ZfJac5vNc6gTSHsvNtPnwhxF5GEwNFZMbariKTVT/rpc",
   "deployer": "0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC",

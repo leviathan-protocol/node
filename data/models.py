@@ -1,7 +1,7 @@
-"""Pydantic models for DAHAO shared law data structures.
+"""Pydantic models for Leviathan shared law data structures.
 
 These models represent the terms, principles, rules, and governance
-configuration that all DAHAO instances inherit.
+configuration that all Leviathan instances inherit.
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ class EvidenceQualityTier(BaseModel):
 class Term(BaseModel):
     """A term definition from the shared vocabulary.
 
-    Terms provide universal definitions that all DAHAO domains use.
+    Terms provide universal definitions that all Leviathan domains use.
     Examples: @purpose, @stakeholder, @vote, @evidence, etc.
     """
 
@@ -74,7 +74,7 @@ class PrincipleMeta(BaseModel):
 
 
 class Principle(BaseModel):
-    """A core principle from the DAHAO governance framework.
+    """A core principle from the Leviathan governance framework.
 
     Principles can be locked (cannot be violated) or unlocked (domains may adjust).
     """
@@ -135,7 +135,7 @@ class Rule(BaseModel):
 
 
 class GovernanceInstance(BaseModel):
-    """Instance configuration for a DAHAO governance instance."""
+    """Instance configuration for a Leviathan governance instance."""
 
     id: str
     name: str
@@ -234,7 +234,7 @@ class DomainsMeta(BaseModel):
 
 
 class DomainsRegistry(BaseModel):
-    """Registry of known DAHAO domains."""
+    """Registry of known Leviathan domains."""
 
     domains: list[DomainEntry] = Field(default_factory=list)
     statistics: dict[str, int] = Field(default_factory=dict)

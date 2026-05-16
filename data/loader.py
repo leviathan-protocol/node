@@ -1,4 +1,4 @@
-"""SharedLaw loader for DAHAO governance data.
+"""SharedLaw loader for Leviathan governance data.
 
 Loads and parses the shared law JSON files (terms, principles, rules, governance)
 and provides methods to access and validate against them.
@@ -42,7 +42,7 @@ class SharedLawLoadError(SharedLawError):
 
 
 class SharedLaw:
-    """Loader and accessor for DAHAO shared law data.
+    """Loader and accessor for Leviathan shared law data.
 
     Loads terms, principles, rules, and governance configuration from JSON files
     and provides methods to access, query, and validate against them.

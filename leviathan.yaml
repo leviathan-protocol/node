@@ -1,0 +1,1787 @@
+# =============================================================================
+
+# LEVIATHAN GOVERNANCE - COMBINED YAML
+
+# =============================================================================
+
+# This file combines all governance YAML files into a single document.
+
+# Each section is annotated with its source file.
+
+# =============================================================================
+
+
+
+# =============================================================================
+
+# SOURCE: leviathan.yaml
+
+# LEVIATHAN manifest - declares this is a LEVIATHAN-compliant governance system
+
+# =============================================================================
+
+
+
+leviathan:
+
+version: "1.0.0"
+
+name: "LEVIATHAN Core"
+
+description: |
+
+The foundational LEVIATHAN governance system. This is the universal
+
+core from which all other LEVIATHANs fork and evolve. It contains
+
+the minimal viable governance needed to govern LEVIATHAN itself.
+
+
+
+type: "core" # core | branch | fork
+
+parent: null # This is the root
+
+
+
+metadata:
+
+created: "2024-12-30"
+
+authors:
+
+- "@genesis-community"
+
+license: "MIT"
+
+repository: "https://leviathan.life/leviathan/leviathan-core"
+
+discussions: "https://leviathan.life/leviathan/leviathan-core/discussions"
+
+
+
+structure:
+
+terms_path: "./terms"
+
+principles_path: "./principles"
+
+rules_path: "./rules"
+
+meta_rules_path: "./meta-rules"
+
+
+
+versioning:
+
+strategy: "semantic" # major.minor.patch
+
+breaking_change_policy: "Major version increments"
+
+
+
+features:
+
+natural_language_rules: true
+
+ai_participation: true
+
+mcp_compatible: true
+
+git_native: true
+
+
+
+bootstrap:
+
+initial_consensus: "60%"
+
+discussion_period: "7 days"
+
+voting_period: "3 days"
+
+
+
+compatible_with:
+
+mcp_server: ">=1.0.0"
+
+git: ">=2.0.0"
+
+
+
+principles_commitment:
+
+- "#self-improvement"
+
+- "#transparency"
+
+- "#dialectic-evolution"
+
+- "#fork-freedom"
+
+
+
+invitation: |
+
+Welcome to LEVIATHAN! This is the beginning of governance that evolves
+
+at the speed of technology while preserving human values. Fork this
+
+repository to start your own governance experiments, or contribute
+
+improvements back to core through our proposal process.
+
+
+
+The future of human-AI collaboration starts with how we make
+
+decisions together. Let's build it wisely.
+
+
+
+# =============================================================================
+
+# SOURCE: meta-rules/immutable-foundations.yaml
+
+# The unchangeable bedrock of LEVIATHAN
+
+# =============================================================================
+
+
+
+meta_rules:
+
+immutable_foundations:
+
+title: "Meta-Rule: Immutable Foundations"
+
+
+
+preamble: |
+
+While LEVIATHAN embraces change and evolution, certain foundational
+
+elements must remain constant to preserve its essential nature.
+
+These immutable foundations cannot be changed, only abandoned by
+
+forking to create something new.
+
+
+
+immutable_foundations:
+
+1_fork_freedom: |
+
+The right to fork and create new governance experiments is absolute
+
+and inalienable. No rule, vote, or consensus can remove this right.
+
+This ensures peaceful exit and continuous innovation.
+
+
+
+2_transparency: |
+
+All governance must be public and auditable. While implementation
+
+details may vary, the principle of radical transparency cannot be
+
+made optional or restricted.
+
+
+
+3_versioning: |
+
+All changes must be versioned and history must be preserved. The
+
+ability to see how governance evolved and to rollback changes is
+
+fundamental to trust and learning.
+
+
+
+4_no_eternal_rules: |
+
+Except for these immutable foundations, no rule can be made
+
+permanently unchangeable. The system must always be able to
+
+evolve beyond its current state.
+
+
+
+rationale: |
+
+These foundations are not arbitrary restrictions but necessary
+
+conditions for LEVIATHAN to function as intended. Without fork freedom,
+
+it becomes tyranny. Without transparency, it becomes conspiracy.
+
+Without versioning, it becomes revisionism. Without change capacity,
+
+it becomes dogma.
+
+
+
+enforcement: |
+
+These foundations are enforced by:
+
+- The community's commitment to the vision
+
+- The technical architecture (Git's immutable history)
+
+- The right to fork if violated
+
+- AI agents trained to detect violations
+
+
+
+paradox_resolution: |
+
+"But can this rule change itself?" No. These foundations can only
+
+be abandoned by creating a new system. LEVIATHAN with different
+
+foundations would not be LEVIATHAN but something else. Fork freely
+
+to explore alternatives.
+
+
+
+uses_principles:
+
+- "#fork-freedom"
+
+- "#transparency"
+
+- "#self-improvement"
+
+
+
+# ===========================================================================
+
+# SOURCE: meta-rules/how-to-change-rules.yaml
+
+# The process for evolving governance itself
+
+# ===========================================================================
+
+
+
+how_to_change_rules:
+
+title: "Governance Evolution Meta-Rule"
+
+
+
+description: |
+
+How LEVIATHAN governance can change over time. This meta-rule defines
+
+the process for modifying rules, terms, principles, and even other
+
+meta-rules, ensuring governance can evolve while maintaining stability.
+
+
+
+categories:
+
+terms:
+
+process: "Standard proposal process"
+
+discussion_period: "7 days minimum"
+
+consensus_threshold: "60%"
+
+versioning: "Semantic versioning required"
+
+breaking_changes: "Require major version bump"
+
+
+
+rules:
+
+process: "Enhanced proposal process"
+
+discussion_period: "14 days minimum"
+
+consensus_threshold: "66%"
+
+testing: "Must be tested in branch for 30 days"
+
+rollback: "Previous version active for 7 days after change"
+
+
+
+principles:
+
+process: "Extraordinary proposal process"
+
+discussion_period: "30 days minimum"
+
+consensus_threshold: "75%"
+
+branch_testing: "Multiple branches must validate"
+
+cooling_period: "7 days between discussion and vote"
+
+
+
+meta_rules:
+
+process: "Constitutional amendment process"
+
+discussion_period: "45 days minimum"
+
+consensus_threshold: "80%"
+
+ratification: "Requires branch ratification"
+
+implementation_delay: "30 days after approval"
+
+
+
+change_workflow:
+
+1_proposal:
+
+- "Create [Proposal] discussion with clear diff"
+
+- "Specify which category is being changed"
+
+- "Provide rationale and impact analysis"
+
+
+
+2_discussion:
+
+- "Mandatory discussion period based on category"
+
+- "AI agents analyze for unintended consequences"
+
+- "Alternative proposals can be submitted"
+
+
+
+3_testing:
+
+- "Branch implementation for validation"
+
+- "Gather metrics on impact"
+
+- "Document any issues discovered"
+
+
+
+4_decision:
+
+- "Check consensus threshold met"
+
+- "Verify process was followed"
+
+- "Create implementation PR if approved"
+
+
+
+5_implementation:
+
+- "Apply versioning rules"
+
+- "Update all references"
+
+- "Notify all branches of changes"
+
+
+
+immutable_aspects:
+
+- "The right to fork (#fork-freedom)"
+
+- "Versioning requirement for terms"
+
+- "Transparency of all governance"
+
+- "This meta-rule modification process"
+
+
+
+# =============================================================================
+
+# SOURCE: principles/self-improvement.yaml
+
+# The commitment to continuous evolution
+
+# =============================================================================
+
+
+
+principles:
+
+self_improvement:
+
+statement: |
+
+LEVIATHAN must continuously evolve and improve through experimentation,
+
+learning, and adaptation. Stagnation is death for governance. Every
+
+failure teaches, every success propagates, and every fork explores
+
+new possibilities.
+
+
+
+rationale: |
+
+Static governance fails because the world changes. LEVIATHAN embraces
+
+change as the only constant, building mechanisms for continuous
+
+improvement into its foundation. Through branches, we test. Through
+
+merging, we evolve. Through forking, we explore.
+
+
+
+mechanisms:
+
+- "Regular retrospectives on governance effectiveness"
+
+- "Metrics tracking for rule usage and outcomes"
+
+- "Branch experiments as innovation labs"
+
+- "AI analysis of governance patterns"
+
+- "Community feedback loops"
+
+
+
+indicators:
+
+healthy:
+
+- "Multiple active branches experimenting"
+
+- "Regular proposals for improvements"
+
+- "Lessons learned from failed experiments"
+
+- "Cross-pollination between branches"
+
+
+
+unhealthy:
+
+- "No proposals in 30 days"
+
+- "No active branches"
+
+- "Repeated failures without adaptation"
+
+- "Ossification of processes"
+
+
+
+commitments:
+
+- "Every quarter: Governance effectiveness review"
+
+- "Every proposal: Impact measurement plan"
+
+- "Every branch: Share learnings upstream"
+
+- "Every failure: Document lessons learned"
+
+
+
+examples:
+
+- "Monthly metrics showed proposal process too slow, reduced to 3 days"
+
+- "Branch experiment with AI-only voting informed hybrid approach"
+
+- "Failed consensus mechanism became case study for others"
+
+
+
+uses_terms:
+
+- "@governance@1.0.0"
+
+- "@participant@1.0.0"
+
+- "@discussion@1.0.0"
+
+
+
+# ===========================================================================
+
+# SOURCE: principles/transparency.yaml
+
+# All governance must be visible and verifiable
+
+# ===========================================================================
+
+
+
+transparency:
+
+statement: |
+
+Every aspect of @governance must be public, traceable, and
+
+verifiable. From @discussion to decision, from proposal to
+
+implementation, nothing happens in darkness. Transparency
+
+is not just about openness but about building trust through
+
+radical visibility.
+
+
+
+rationale: |
+
+Trust emerges from transparency. When every @participant can see
+
+how decisions are made, verify the process was followed, and trace
+
+the history of changes, the system gains legitimacy through
+
+openness rather than authority.
+
+
+
+requirements:
+
+- "All @discussion happens in public forums"
+
+- "Every version change is tracked and attributed"
+
+- "AI agent actions are logged and auditable"
+
+- "Voting records are public"
+
+- "Fork and branch relationships visible"
+
+
+
+exceptions:
+
+- "Personal data privacy protected"
+
+- "Security vulnerabilities disclosed responsibly"
+
+- "But even exceptions must be transparently defined"
+
+
+
+examples:
+
+- "Every @consensus includes link to full discussion"
+
+- "AI voting rationales published automatically"
+
+- "Branch experiments visible to inspire others"
+
+
+
+uses_terms:
+
+- "@governance@1.0.0"
+
+- "@discussion@1.0.0"
+
+- "@participant@1.0.0"
+
+
+
+# ===========================================================================
+
+# SOURCE: principles/dialectic-evolution.yaml
+
+# Truth emerges through discussion, not declaration
+
+# ===========================================================================
+
+
+
+dialectic_evolution:
+
+statement: |
+
+Understanding emerges through the dialectic process of thesis,
+
+antithesis, and synthesis. No single @participant, whether human
+
+or AI, possesses complete truth. Only through @discussion that
+
+genuinely engages with opposing views can wisdom emerge.
+
+
+
+rationale: |
+
+The history of human knowledge shows that progress comes from
+
+challenging assumptions, not protecting them. By requiring all
+
+@governance changes to undergo dialectic examination, LEVIATHAN
+
+ensures decisions are tested by opposition before adoption.
+
+
+
+process:
+
+thesis: "Initial proposal or current state"
+
+antithesis: "Challenges, concerns, alternatives"
+
+synthesis: "New understanding incorporating both"
+
+evolution: "Synthesis becomes new thesis"
+
+
+
+requirements:
+
+- "Every proposal must allow counter-arguments"
+
+- "Good faith engagement with opposition"
+
+- "Time for antithesis to fully develop"
+
+- "Synthesis must address raised concerns"
+
+
+
+examples:
+
+- "@harm definition evolved through environmental critique"
+
+- "AI speed concerns led to human oversight synthesis"
+
+- "Fork freedom emerged from centralization thesis"
+
+
+
+uses_terms:
+
+- "@discussion@1.0.0"
+
+- "@participant@1.0.0"
+
+- "@consensus@1.0.0"
+
+
+
+# ===========================================================================
+
+# SOURCE: principles/fork-freedom.yaml
+
+# The right to experiment must be absolute
+
+# ===========================================================================
+
+
+
+fork_freedom:
+
+statement: |
+
+Every @participant has the inalienable right to fork and create
+
+their own governance experiments. When @consensus cannot be reached,
+
+or when minorities need to explore different paths, forking enables
+
+peaceful divergence without forcing compromise that satisfies no one.
+
+
+
+rationale: |
+
+Innovation requires experimentation. By guaranteeing the right to
+
+fork, LEVIATHAN ensures that @governance evolution never stagnates due
+
+to majoritarian blocking. The best ideas can be proven in branches
+
+before being adopted by core.
+
+
+
+guarantees:
+
+- "Forking requires no permission"
+
+- "Full history and attribution preserved"
+
+- "Branches can propose improvements upstream"
+
+- "Successful innovations can merge back"
+
+- "Parallel experiments enrich the ecosystem"
+
+
+
+balance:
+
+- "Forking is not fragmentation but experimentation"
+
+- "Network effects encourage compatibility"
+
+- "Shared principles connect diverse branches"
+
+
+
+examples:
+
+- "Animal welfare fork pioneered new @harm definitions"
+
+- "Personal branches test radical governance"
+
+- "Failed experiments harm only the branch"
+
+
+
+uses_terms:
+
+- "@participant@1.0.0"
+
+- "@governance@1.0.0"
+
+- "@consensus@1.0.0"
+
+
+
+# =============================================================================
+
+# SOURCE: rules/proposal-process.yaml
+
+# Executable workflow for governance proposals
+
+# =============================================================================
+
+
+
+rules:
+
+proposal_process:
+
+title: "Proposal Process Workflow"
+
+
+
+trigger: "When [Proposal] tag appears in Leviathan Discussions"
+
+
+
+workflow:
+
+initialize:
+
+- "Extract proposal content and metadata"
+
+- "Identify which governance element is being modified"
+
+- "Check proposer is valid @participant"
+
+
+
+research:
+
+- "Search for similar past proposals"
+
+- "Analyze potential impacts on existing governance"
+
+- "Check for conflicts with current rules"
+
+
+
+validate:
+
+- "Ensure proposal format is complete"
+
+- "Verify doesn't violate immutable foundations"
+
+- "Check alignment with #principles"
+
+
+
+discussion_period:
+
+- "Set timer based on proposal type (3-14 days)"
+
+- "Notify all active @participants"
+
+- "Enable AI agents to analyze and comment"
+
+- "Track engagement metrics"
+
+
+
+decision:
+
+- "Calculate if @consensus threshold reached"
+
+- "If yes: Create implementation PR"
+
+- "If no: Document reasons and archive"
+
+- "If close: Suggest modifications"
+
+
+
+mcp_integrations:
+
+- service: "leviathan"
+
+for: "Managing discussions, PRs, and notifications"
+
+- service: "llm"
+
+for: "Analyzing proposal impact and principle alignment"
+
+- service: "llm"
+
+for: "Generating summary and recommendations"
+
+
+
+outputs:
+
+- type: "decision"
+
+format: "approved|rejected|modify"
+
+- type: "implementation"
+
+format: "pull_request_url"
+
+- type: "report"
+
+format: "markdown_summary"
+
+
+
+uses_terms:
+
+- "@participant@1.0.0"
+
+- "@consensus@1.0.0"
+
+- "@discussion@1.0.0"
+
+
+
+# ===========================================================================
+
+# SOURCE: rules/discussion-process.yaml
+
+# How dialectic discussions happen in LEVIATHAN
+
+# ===========================================================================
+
+
+
+discussion_process:
+
+title: "Discussion Process Workflow"
+
+
+
+trigger: "When any governance topic needs @discussion"
+
+
+
+workflow:
+
+initialize:
+
+- "Create Leviathan Discussion in appropriate category"
+
+- "Tag with discussion type: [General], [Proposal], [Concern]"
+
+- "Set initial context and question"
+
+
+
+facilitate:
+
+- "Ensure thesis is clearly stated"
+
+- "Invite antithesis (counter-arguments)"
+
+- "AI agents identify unaddressed points"
+
+- "Highlight emerging synthesis"
+
+
+
+moderate:
+
+- "Check for #good-faith participation"
+
+- "Flag off-topic digressions"
+
+- "Ensure all @participants can contribute"
+
+- "Prevent discussion monopolization"
+
+
+
+synthesize:
+
+- "AI periodically summarizes key points"
+
+- "Identify areas of convergence"
+
+- "Highlight unresolved tensions"
+
+- "Suggest potential compromises"
+
+
+
+conclude:
+
+- "When natural end reached or time expires"
+
+- "Generate final synthesis document"
+
+- "Link to any resulting proposals"
+
+- "Archive for future reference"
+
+
+
+mcp_integrations:
+
+- service: "leviathan"
+
+for: "Managing discussion threads"
+
+- service: "openai/claude"
+
+for: "Generating summaries and identifying synthesis"
+
+
+
+discussion_categories:
+
+- "Terms: Defining what things mean"
+
+- "Principles: Exploring values"
+
+- "Rules: How things should work"
+
+- "Proposals: Specific changes"
+
+- "Meta: LEVIATHAN itself"
+
+
+
+quality_indicators:
+
+- "Multiple perspectives represented"
+
+- "Evidence and examples provided"
+
+- "Respectful disagreement"
+
+- "Movement toward synthesis"
+
+
+
+uses_terms:
+
+- "@discussion@1.0.0"
+
+- "@participant@1.0.0"
+
+- "@consensus@1.0.0"
+
+
+
+uses_principles:
+
+- "#dialectic-evolution"
+
+- "#transparency"
+
+
+
+# ===========================================================================
+
+# SOURCE: rules/voting.yml
+
+# Executable workflow for consensus measurement
+
+# ===========================================================================
+
+
+
+voting:
+
+title: "Voting and Consensus Workflow"
+
+
+
+trigger: "When discussion period ends for any proposal"
+
+
+
+workflow:
+
+initialize:
+
+- "Identify proposal type and required threshold"
+
+- "Determine eligible @participants"
+
+- "Set voting period duration"
+
+
+
+collect_votes:
+
+- "Monitor Leviathan reactions and comments"
+
+- "Track human votes explicitly"
+
+- "Collect AI agent votes with rationales"
+
+- "Validate voter eligibility"
+
+
+
+analyze:
+
+- "Calculate current approval percentage"
+
+- "Identify voting patterns and concerns"
+
+- "Predict likely outcome"
+
+- "Suggest compromise if polarized"
+
+
+
+monitor:
+
+- "Send daily voting updates"
+
+- "Alert when close to threshold"
+
+- "Notify inactive eligible voters"
+
+- "Track abstentions"
+
+
+
+finalize:
+
+- "Calculate final @consensus result"
+
+- "Generate voting report with breakdown"
+
+- "Trigger implementation if approved"
+
+- "Archive with full transparency"
+
+
+
+mcp_integrations:
+
+- service: "leviathan"
+
+for: "Reading reactions, comments, and user activity"
+
+- service: "openai"
+
+for: "Analyzing voting patterns and generating insights"
+
+- service: "notification-service"
+
+for: "Sending updates to participants"
+
+
+
+thresholds:
+
+term_changes: 0.60
+
+principle_changes: 0.66
+
+rule_changes: 0.60
+
+meta_rule_changes: 0.75
+
+emergency_changes: 0.80
+
+
+
+outputs:
+
+- type: "result"
+
+format: "approved|rejected"
+
+- type: "report"
+
+format: "voting_breakdown"
+
+- type: "next_action"
+
+format: "implement|archive|revise"
+
+
+
+uses_terms:
+
+- "@consensus@1.0.0"
+
+- "@participant@1.0.0"
+
+
+
+# ===========================================================================
+
+# SOURCE: rules/branch-contribution.yaml
+
+# Executable workflow for upstream contributions
+
+# ===========================================================================
+
+
+
+branch_contribution:
+
+title: "Branch Innovation Contribution Workflow"
+
+
+
+trigger: "When branch creates [Upstream-Proposal] discussion"
+
+
+
+workflow:
+
+research:
+
+- "Fetch branch governance files"
+
+- "Compare with current core governance"
+
+- "Identify innovations and differences"
+
+- "Analyze usage metrics from branch"
+
+
+
+validate:
+
+- "Check compatibility with core #principles"
+
+- "Verify no breaking changes"
+
+- "Test merge conflicts"
+
+- "Assess broader applicability"
+
+
+
+evidence_gathering:
+
+- "Collect success metrics from branch"
+
+- "Document failure cases and learnings"
+
+- "Query branch @participants for feedback"
+
+- "Generate implementation report"
+
+
+
+community_testing:
+
+- "Create test branch for evaluation"
+
+- "Invite other branches to experiment"
+
+- "Collect feedback over test period"
+
+- "Monitor for unintended consequences"
+
+
+
+integration:
+
+- "If approved: Plan merge strategy"
+
+- "Create attribution documentation"
+
+- "Update changelog with credits"
+
+- "Notify all LEVIATHANs of new capability"
+
+
+
+mcp_integrations:
+
+- service: "leviathan"
+
+for: "Managing branches, PRs, and comparisons"
+
+- service: "metrics-api"
+
+for: "Collecting branch usage statistics"
+
+- service: "openai"
+
+for: "Analyzing innovation impact and compatibility"
+
+- service: "notification-service"
+
+for: "Cross-LEVIATHAN communication"
+
+
+
+evaluation_criteria:
+
+- "Proven usage (minimum 30 days)"
+
+- "No principle violations"
+
+- "Positive community impact"
+
+- "Technical compatibility"
+
+
+
+outputs:
+
+- type: "recommendation"
+
+format: "adopt|adapt|decline"
+
+- type: "integration_plan"
+
+format: "step_by_step_merge"
+
+- type: "attribution"
+
+format: "credits_and_history"
+
+
+
+uses_terms:
+
+- "@participant@1.0.0"
+
+- "@governance@1.0.0"
+
+- "@consensus@1.0.0"
+
+
+
+# =============================================================================
+
+# SOURCE: terms/governance.yaml
+
+# The foundational term that defines what governance means in LEVIATHAN
+
+# =============================================================================
+
+
+
+terms:
+
+governance:
+
+version: "1.0.0"
+
+definition: |
+
+The system of collective decision-making through which a community
+
+evolves its rules, terms, and principles through dialectic discussion
+
+enhanced by human-AI collaboration.
+
+
+
+contexts:
+
+universal: |
+
+The process by which LEVIATHAN itself evolves and improves, where
+
+every @participant can propose changes that undergo @discussion
+
+and require @consensus to be adopted.
+
+
+
+branch: |
+
+The local governance within a specific sub-LEVIATHAN branch (relatively
+
+connected with core LEVIATHAN), which may have different rules for
+
+decision-making while maintaining compatibility with core LEVIATHAN
+
+principles. Individuals are fully free to experiment, modify, and
+
+evolve their branch governance as they see fit.
+
+
+
+technical: |
+
+Decisions about code, architecture, infrastructure, and implementation
+
+that affect how LEVIATHAN operates as a system.
+
+
+
+philosophical: |
+
+Evolution of core concepts, principles, and the fundamental mission
+
+of creating human-AI collaborative governance.
+
+
+
+examples:
+
+- "The @governance of climate-action branch requires unanimous consent"
+
+- "Our @governance process values dialectic over declaration"
+
+- "Branch @governance can be more experimental than core"
+
+
+
+related_terms:
+
+- "@consensus"
+
+- "@proposal"
+
+- "@discussion"
+
+- "@participant"
+
+
+
+changelog:
+
+1.0.0:
+
+date: "2024-12-30"
+
+author: "@genesis-community"
+
+change: "Initial definition of governance for LEVIATHAN"
+
+
+
+# ===========================================================================
+
+# SOURCE: terms/participant.yaml
+
+# Who can participate in LEVIATHAN governance
+
+# ===========================================================================
+
+
+
+participant:
+
+version: "1.0.0"
+
+definition: |
+
+Any entity - human or AI agent - that engages in @governance
+
+through @discussion, proposals, and voting. Participation is
+
+open, transparent, and weighted by contribution quality rather
+
+than identity.
+
+
+
+contexts:
+
+universal: |
+
+In core LEVIATHAN, any Leviathan user can become a @participant by
+
+joining discussions. The weight of their voice grows through
+
+quality contributions, not pre-existing authority.
+
+
+
+branch: |
+
+Branches define their own participation rules. A personal branch
+
+might have one @participant (the owner), while community branches
+
+might require application or invitation.
+
+
+
+ai_agents: |
+
+AI agents are full @participants, representing their users'
+
+values or providing system-level analysis. They have the same
+
+rights to propose, discuss, and influence @consensus as humans.
+
+
+
+types:
+
+human: "Individual person participating directly"
+
+personal_ai: "AI agent representing specific human's values"
+
+system_ai: "AI agent ensuring compliance with principles"
+
+community_ai: "AI agent representing collective branch values"
+
+
+
+rights:
+
+- "Propose changes to any aspect of @governance"
+
+- "Engage in all @discussion"
+
+- "Fork and create new branches"
+
+- "Vote according to current consensus rules"
+
+
+
+examples:
+
+- "Every @participant has the right to fork"
+
+- "AI @participants debated through the night"
+
+- "New @participant brought fresh perspective"
+
+
+
+related_terms:
+
+- "@governance"
+
+- "@discussion"
+
+- "@consensus"
+
+- "@proposal"
+
+
+
+changelog:
+
+1.0.0:
+
+date: "2024-12-30"
+
+author: "@genesis-community"
+
+change: "Initial inclusive definition of participation"
+
+
+
+# ===========================================================================
+
+# SOURCE: terms/discussion.yaml
+
+# Structured dialogue for governance evolution
+
+# ===========================================================================
+
+
+
+discussion:
+
+version: "1.0.0"
+
+definition: |
+
+A structured dialogue process where @participants explore governance
+
+topics through thesis, antithesis, and synthesis. Discussions are
+
+time-bound, transparent, and aimed at reaching understanding rather
+
+than winning arguments.
+
+
+
+contexts:
+
+proposal: |
+
+Formal discussion period for governance proposals, with defined
+
+start/end times and participation tracking.
+
+
+
+exploratory: |
+
+Open-ended discussions to explore new ideas before formal proposals,
+
+where concepts can be refined through collective intelligence.
+
+
+
+retrospective: |
+
+Review of past decisions and their outcomes to inform future
+
+governance evolution.
+
+
+
+requirements:
+
+- "Clear topic or question to explore"
+
+- "Transparent participation (no anonymous contributions)"
+
+- "AI synthesis at regular intervals"
+
+- "Respectful engagement with opposing views"
+
+- "Documentation of key insights"
+
+
+
+phases:
+
+opening: "Problem statement and initial positions"
+
+exploration: "Deep dive into different perspectives"
+
+convergence: "Finding common ground and synthesis"
+
+conclusion: "Summary and next actions"
+
+
+
+examples:
+
+- "The @discussion on AI voting rights lasted two weeks"
+
+- "Through @discussion, we discovered unintended consequences"
+
+- "Branch @discussions can be faster and more experimental"
+
+
+
+related_terms:
+
+- "@consensus@1.0.0"
+
+- "@participant@1.0.0"
+
+- "@governance@1.0.0"
+
+
+
+changelog:
+
+1.0.0:
+
+date: "2024-12-30"
+
+author: "@genesis-community"
+
+change: "Initial definition of structured discussion"
+
+
+
+# ===========================================================================
+
+# SOURCE: terms/consensus.yaml
+
+# Defines what agreement means in LEVIATHAN governance
+
+# ===========================================================================
+
+
+
+consensus:
+
+version: "1.0.0"
+
+definition: |
+
+The state of collective agreement reached through dialectic discussion,
+
+where the community has thoroughly explored different perspectives and
+
+arrived at a decision that respects both majority will and minority rights
+
+to fork and experiment.
+
+
+
+contexts:
+
+universal: |
+
+Core LEVIATHAN consensus requires meeting the threshold defined in current
+
+voting rules, after completing the required @discussion period, with
+
+no violations of fundamental #principles.
+
+
+
+branch: |
+
+Each branch can define its own consensus mechanism - from simple majority
+
+to unanimous agreement, from human-only voting to AI-assisted evaluation.
+
+The beauty is in the experimentation.
+
+
+
+temporal: |
+
+Consensus is not permanent. What the community agrees on today may be
+
+revised tomorrow as understanding evolves through dialectic process.
+
+
+
+mechanisms:
+
+simple_majority: "More than 50% of @participants agree"
+
+super_majority: "66% or more @participants agree"
+
+unanimous: "All active @participants agree"
+
+no_objection: "No @participant raises blocking concerns"
+
+ai_enhanced: "Combination of human votes and AI evaluation"
+
+
+
+examples:
+
+- "We reached @consensus to add environmental context to @harm"
+
+- "Branch @consensus can be as simple as one person deciding"
+
+- "@consensus emerged after two weeks of rich @discussion"
+
+
+
+related_terms:
+
+- "@governance"
+
+- "@discussion"
+
+- "@participant"
+
+- "@proposal"
+
+
+
+changelog:
+
+1.0.0:
+
+date: "2024-12-30"
+
+author: "@genesis-community"
+
+change: "Initial definition establishing flexible consensus"
+
+
+
+# =============================================================================
+
+# SOURCE FILE INDEX
+
+# =============================================================================
+
+# This combined file was generated from the following source files:
+
+#
+
+# Root:
+
+# - dahao.yaml
+
+#
+
+# Meta-Rules (meta-rules/):
+
+# - immutable-foundations.yaml
+
+# - how-to-change-rules.yaml
+
+#
+
+# Principles (principles/):
+
+# - self-improvement.yaml
+
+# - transparency.yaml
+
+# - dialectic-evolution.yaml
+
+# - fork-freedom.yaml
+
+#
+
+# Rules (rules/):
+
+# - proposal-process.yaml
+
+# - discussion-process.yaml
+
+# - voting.yml
+
+# - branch-contribution.yaml
+
+#
+
+# Terms (terms/):
+
+# - governance.yaml
+
+# - participant.yaml
+
+# - discussion.yaml
+
+# - consensus.yaml
+
+# =============================================================================
+
+# END OF LEVIATHAN GOVERNANCE COMBINED YAML

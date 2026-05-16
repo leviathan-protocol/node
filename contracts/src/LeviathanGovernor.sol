@@ -9,8 +9,8 @@ import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFractio
 import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
 /**
- * @title DAHAOGovernor
- * @dev Governance contract for DAHAO with meta-transaction support.
+ * @title LeviathanGovernor
+ * @dev Governance contract for Leviathan with meta-transaction support.
  *
  * Features:
  * - GovernorSettings: Configurable voting delay, period, and proposal threshold
@@ -19,10 +19,10 @@ import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
  * - GovernorVotesQuorumFraction: Quorum as percentage of total supply
  * - ERC2771Context: Meta-transactions for gasless voting
  *
- * Gasless Voting Flow (via DAHAO Observer Mode):
+ * Gasless Voting Flow (via Leviathan Observer Mode):
  * 1. User signs voting intent (proposal_id, support, reasoning_hash)
- * 2. DAHAO Node validates signature and reasoning consistency
- * 3. Node submits meta-transaction via DAHAOForwarder
+ * 2. Leviathan Node validates signature and reasoning consistency
+ * 3. Node submits meta-transaction via LeviathanForwarder
  * 4. Forwarder calls castVoteWithReasoningHash() with user as msg.sender
  *
  * Configuration:
@@ -31,7 +31,7 @@ import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
  * - Proposal Threshold: 0 (anyone with tokens can propose)
  * - Quorum: 4% of total supply
  */
-contract DAHAOGovernor is
+contract LeviathanGovernor is
     Governor,
     GovernorSettings,
     GovernorCountingSimple,
@@ -60,7 +60,7 @@ contract DAHAOGovernor is
         IVotes _token,
         address _trustedForwarder
     )
-        Governor("DAHAOGovernor")
+        Governor("LeviathanGovernor")
         GovernorSettings(
             1 days,    // Voting delay: 1 day
             1 weeks,   // Voting period: 1 week
@@ -80,7 +80,7 @@ contract DAHAOGovernor is
      * This enables:
      * 1. On-chain proof that reasoning was provided
      * 2. Off-chain retrieval and verification of reasoning
-     * 3. Semantic validation by DAHAO nodes before execution
+     * 3. Semantic validation by Leviathan nodes before execution
      *
      * @param proposalId The ID of the proposal
      * @param support The vote type (0=Against, 1=For, 2=Abstain)

@@ -1,4 +1,4 @@
-"""DAHAO Sidecar - Autonomous governance voting agent.
+"""Leviathan Sidecar - Autonomous governance voting agent.
 
 Two modes of operation:
 - **Decider Mode** (default): Autonomous polling loop that makes voting decisions
@@ -23,7 +23,7 @@ from modes import run_decider_mode, run_observer_mode
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="DAHAO Sidecar - Autonomous governance voting agent",
+        description="Leviathan Sidecar - Autonomous governance voting agent",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -138,14 +138,14 @@ def setup_logging(level: str, agent_name: str | None = None):
 
 
 def main():
-    """Main entry point for the DAHAO sidecar."""
+    """Main entry point for the Leviathan sidecar."""
     args = parse_args()
 
     # Set up logging (with agent name for decider mode)
     agent_name = args.name if args.mode == "decider" else None
     logger = setup_logging(args.log_level, agent_name)
 
-    logger.info(f"DAHAO Sidecar starting in {args.mode.upper()} mode")
+    logger.info(f"Leviathan Sidecar starting in {args.mode.upper()} mode")
 
     # Load configuration
     try:

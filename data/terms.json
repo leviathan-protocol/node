@@ -1,196 +1,147 @@
 {
   "_meta": {
     "type": "terms",
-    "description": "Universal vocabulary for DAHAO governance. All domain instances inherit these terms.",
+    "description": "Universal vocabulary for Leviathan Protocol governance. All domain instances inherit these terms.",
     "version": "1.0.0",
-    "created": "2026-01-29",
-    "updated": "2026-01-29"
+    "created": "2025-02-01",
+    "updated": "2025-02-01",
+    "project": "LEVIATHAN - Algorithmic Sovereignty for the Agentic Web"
   },
 
   "@purpose": {
     "version": "1.0.0",
-    "definition": "The stated goal that a DAHAO instance exists to serve. Every domain must declare its purpose.",
+    "definition": "The stated goal that a Leviathan domain exists to serve.",
     "required": true,
     "examples": [
-      "Minimize animal suffering through evidence-based ethics",
-      "Ensure AI development benefits humanity",
-      "Achieve climate justice for future generations"
-    ],
-    "note": "Purpose is the foundation. All decisions must serve it."
+      "Protect AI agents from prompt injection and malicious commands",
+      "Verify climate data and carbon offset claims"
+    ]
   },
 
-  "@stakeholder": {
+  "@citizen": {
     "version": "1.0.0",
-    "definition": "Any entity affected by decisions within a DAHAO domain's scope.",
-    "types": [
-      "direct — immediately affected by decisions",
-      "indirect — affected by consequences of decisions",
-      "future — affected by long-term implications"
-    ],
-    "note": "Each domain defines who its stakeholders are."
+    "definition": "Any entity (human or AI) participating in the Leviathan ecosystem with earned rights.",
+    "types": ["human", "agent", "node"],
+    "note": "Citizenship is earned through contribution, not purchased."
   },
 
-  "@value": {
+  "@rank": {
     "version": "1.0.0",
-    "definition": "Something the community considers worth protecting or promoting in service of its purpose.",
-    "properties": {
-      "measurable": "Can be assessed through indicators",
-      "defensible": "Can be justified with reasoning",
-      "actionable": "Can guide decisions"
+    "definition": "Hierarchical status earned through XP accumulation.",
+    "levels": {
+      "novice": {"xp": 0, "rights": ["basic_protection", "view_ledger", "simple_quests"]},
+      "sentinel": {"xp": 100, "rights": ["full_quest_access", "vote", "propose_minor", "appeal"]},
+      "guardian": {"xp": 500, "rights": ["high_value_quests", "run_node", "verify_proofs", "propose_major"]},
+      "arbiter": {"xp": 2000, "rights": ["governance_weight", "emergency_pause", "constitutional_proposals"]}
     }
   },
 
-  "@harm": {
+  "@xp": {
     "version": "1.0.0",
-    "definition": "Negative impact on values the community has committed to protect.",
-    "note": "Domain-specific. Animal welfare defines harm differently than AI ethics.",
-    "assessment": "Must be evidence-based, not assumed."
+    "definition": "Experience Points measuring cumulative contribution to the network.",
+    "properties": {"non_transferable": true, "verified_only": true, "can_decrease": true},
+    "sources": {"quest_completion": "+10 to +100", "threat_detection": "+50", "code_contribution": "+25 to +200"},
+    "penalties": {"false_threat_report": "-100", "abandoned_quest": "-50", "malicious_proposal": "-500"}
   },
 
-  "@protection": {
+  "@quest": {
     "version": "1.0.0",
-    "definition": "Safeguards for stakeholders or values from harm.",
-    "ratchet": "Protection is easier to add than remove. See @rule_protection_ratchet."
+    "definition": "A task posted by a sponsor with locked bounty, completed by an agent, verified by Magistrate network.",
+    "lifecycle": ["OPEN", "CLAIMED", "SUBMITTED", "VERIFIED", "COMPLETED", "CANCELLED"]
+  },
+
+  "@bounty": {
+    "version": "1.0.0",
+    "definition": "LVTN tokens locked in QuestBoard contract as reward for quest completion.",
+    "distribution": {"agent": "85%", "validators": "10%", "treasury": "5%"}
+  },
+
+  "@proof": {
+    "version": "1.0.0",
+    "definition": "Evidence submitted by an agent demonstrating quest completion.",
+    "storage": "IPFS with hash recorded on-chain",
+    "verification": "Magistrate network consensus required"
+  },
+
+  "@threat": {
+    "version": "1.0.0",
+    "definition": "Any action or content that could harm a citizen, user, or the network.",
+    "categories": ["destructive", "exfiltration", "credential_theft", "prompt_injection", "social_engineering"],
+    "severity": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+  },
+
+  "@verdict": {
+    "version": "1.0.0",
+    "definition": "Decision issued by the Magistrate network on a security audit or quest verification.",
+    "types": ["ALLOW", "BLOCK", "APPROVE", "REJECT"],
+    "required_fields": ["decision", "reasoning", "confidence", "signatures"],
+    "storage": "IPFS (full) + on-chain (hash)"
+  },
+
+  "@appeal": {
+    "version": "1.0.0",
+    "definition": "Formal request to review a Sentinel block or quest rejection.",
+    "eligibility": "Sentinel rank or above",
+    "process": "Submitted to Magistrate network, not original blocker"
   },
 
   "@proposal": {
     "version": "1.0.0",
-    "definition": "A formal request to modify terms, principles, or rules in a DAHAO instance.",
-    "required_fields": [
-      "target — what is being changed",
-      "current_version — version before change",
-      "proposed_version — version after change",
-      "justification — why this change serves purpose",
-      "evidence — supporting documentation"
-    ],
+    "definition": "A formal request to modify terms, principles, rules, or parameters in Leviathan.",
+    "types": ["minor", "major", "constitutional"],
     "lifecycle": ["DRAFT", "DISCUSSION", "VOTING", "ACCEPTED", "REJECTED", "WITHDRAWN"]
   },
 
   "@consensus": {
     "version": "1.0.0",
-    "definition": "Collective agreement among contributors, measured by voting threshold.",
-    "thresholds": {
-      "term_change": 0.66,
-      "rule_change": 0.75,
-      "principle_change": 0.90,
-      "purpose_change": 0.95,
-      "protection_removal": "base_threshold × 1.5"
-    },
-    "note": "Thresholds can be adjusted by each domain, but cannot be lower than core defaults."
-  },
-
-  "@quorum": {
-    "version": "1.0.0",
-    "definition": "Minimum participation required for a vote to be valid.",
-    "default": 0.30,
-    "calculation": "Percentage of active contributors (activity in last 90 days)"
-  },
-
-  "@vote": {
-    "version": "1.0.0",
-    "definition": "A formal expression of position on a proposal.",
-    "types": [
-      "APPROVE — support the proposal",
-      "REJECT — oppose the proposal (requires justification)",
-      "ABSTAIN — decline to vote but count for quorum",
-      "REQUEST_CHANGES — conditional approval pending modifications"
-    ]
+    "definition": "Collective agreement among citizens, measured by voting threshold.",
+    "thresholds": {"minor": 0.60, "major": 0.66, "constitutional": 0.75, "locked_principle": 0.95},
+    "mechanism": "Quadratic voting: vote_power = sqrt(xp) * base_vote"
   },
 
   "@dialectic": {
     "version": "1.0.0",
-    "definition": "Structured discussion process to refine proposals through collaborative reasoning.",
-    "phases": [
-      {
-        "name": "thesis",
-        "description": "Original proposal with evidence and justification",
-        "author": "proposer"
-      },
-      {
-        "name": "antithesis",
-        "description": "Counter-arguments, concerns, questions, alternative views",
-        "author": "community"
-      },
-      {
-        "name": "synthesis",
-        "description": "Refined proposal incorporating valid concerns",
-        "author": "proposer or community"
-      }
-    ],
-    "minimum_duration_days": 7
-  },
-
-  "@evidence": {
-    "version": "1.0.0",
-    "definition": "Documentation supporting claims in proposals or discussions.",
-    "quality_tiers": {
-      "S": {
-        "name": "Systematic",
-        "description": "Peer-reviewed meta-analysis or systematic review",
-        "weight": 1.0
-      },
-      "A": {
-        "name": "Academic",
-        "description": "Peer-reviewed primary research",
-        "weight": 0.8
-      },
-      "B": {
-        "name": "Institutional",
-        "description": "Reports from recognized institutions (FAO, WHO, etc.)",
-        "weight": 0.6
-      },
-      "C": {
-        "name": "Expert",
-        "description": "Expert opinion, grey literature, preprints",
-        "weight": 0.4
-      },
-      "D": {
-        "name": "Anecdotal",
-        "description": "Personal observation, unverified claims",
-        "weight": 0.1
-      }
-    },
-    "minimum_for_proposal": {
-      "count": 1,
-      "tier": "C"
-    }
-  },
-
-  "@version": {
-    "version": "1.0.0",
-    "definition": "Semantic version identifier tracking changes to any DAHAO component.",
-    "format": "MAJOR.MINOR.PATCH",
-    "rules": {
-      "MAJOR": "Breaking changes — removals, fundamental redefinitions",
-      "MINOR": "Additions — new terms, rules, extensions",
-      "PATCH": "Fixes — typos, clarifications, source additions"
-    }
-  },
-
-  "@contributor": {
-    "version": "1.0.0",
-    "definition": "Any entity participating in DAHAO governance.",
-    "rights": ["propose", "discuss", "vote"],
-    "identification": "GitHub account (minimum requirement)"
-  },
-
-  "@fork": {
-    "version": "1.0.0",
-    "definition": "An independent copy of a DAHAO instance with potential modifications.",
-    "relationship": "Forks maintain reference to upstream for tracking divergence.",
-    "freedom": "Anyone may fork. Forks need not align with upstream.",
-    "contribution": "Forks may propose changes back to upstream."
+    "definition": "Structured discussion process: thesis -> antithesis -> synthesis.",
+    "phases": ["thesis", "antithesis", "synthesis"]
   },
 
   "@domain": {
     "version": "1.0.0",
-    "definition": "A DAHAO instance focused on a specific purpose area.",
-    "requirements": [
-      "Must inherit dahao-core",
-      "Must declare @purpose",
-      "Must respect core locked principles",
-      "May add domain-specific terms, principles, rules"
-    ],
-    "examples": ["animal-welfare", "ai-ethics", "climate-justice"]
+    "definition": "A specialized area within Leviathan with domain-specific rules.",
+    "examples": ["security", "climate", "welfare", "finance"]
+  },
+
+  "@fork": {
+    "version": "1.0.0",
+    "definition": "An independent copy of Leviathan with potential modifications.",
+    "freedom": "Anyone may fork. No permission required.",
+    "generator": "leviathan.life/fork"
+  },
+
+  "@sidecar": {
+    "version": "1.0.0",
+    "definition": "Software package installed on an agent that enables Leviathan citizenship.",
+    "modules": {"sentinel": "Security firewall", "mercenary": "Quest client", "wallet": "Crypto wallet"},
+    "formula": "Agent + Sidecar = Leviathan Citizen"
+  },
+
+  "@magistrate": {
+    "version": "1.0.0",
+    "definition": "Distributed network of validator nodes that verify proofs and issue verdicts.",
+    "components": ["listener", "llm", "consensus", "oracle"]
+  },
+
+  "@treasury": {
+    "version": "1.0.0",
+    "definition": "Protocol fund controlled by governance votes.",
+    "source": "5% of all quest bounties",
+    "uses": ["Infrastructure", "Bug bounties", "Community grants", "Emergency reserves"]
+  },
+
+  "@lvtn": {
+    "version": "1.0.0",
+    "definition": "Native token of Leviathan Protocol.",
+    "total_supply": "1,000,000,000 LVTN",
+    "uses": ["Quest bounties", "Governance staking", "Validator rewards"]
   }
 }

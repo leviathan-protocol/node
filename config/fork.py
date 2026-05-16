@@ -57,7 +57,7 @@ class Fork(BaseModel):
     Enhanced (with shared law references):
     ```yaml
     name: "Security-First Validator"
-    inherits: "dahao-core v1.0.0"
+    inherits: "leviathan-core v1.0.0"
     uses_terms:
       - "@protection"
       - "@harm"
@@ -71,8 +71,8 @@ class Fork(BaseModel):
 
     # Enhanced format fields
     inherits: str = Field(
-        default="dahao-core v1.0.0",
-        description="Core DAHAO version this fork inherits from",
+        default="leviathan-core v1.0.0",
+        description="Core Leviathan version this fork inherits from",
     )
     uses_terms: list[str] = Field(
         default_factory=list,
@@ -196,7 +196,7 @@ class Fork(BaseModel):
         """Extract source from inherits string.
 
         Returns:
-            Source name (e.g., "dahao-core").
+            Source name (e.g., "leviathan-core").
         """
         if " v" in self.inherits:
             return self.inherits.split(" v")[0]

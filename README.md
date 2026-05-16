@@ -1,16 +1,14 @@
-# DAHAO Sidecar
+# Leviathan Sidecar
 
-An autonomous governance voting sidecar for Cosmos SDK chains. Uses local LLM inference to make principled voting decisions based on user-defined values ("Fork") while respecting the DAHAO shared governance framework.
+An autonomous governance voting sidecar for EVM chains. Uses local LLM inference to make principled voting decisions based on user-defined values ("Fork") while enforcing security through a Runtime Guardian.
 
 ## Features
 
-- Polls chain for active governance proposals
-- Evaluates proposals using local LLM (Ollama)
-- Votes according to user-defined principles
-- **Validates forks against DAHAO shared law** (locked principles, terms)
-- **Includes governance context in LLM prompts** (thresholds, constraints)
-- Full audit trail with reasoning hashes (for future Proof of Alignment)
-- Supports Cosmos SDK v1 and v1beta1 governance modules
+- **EVM Chain Support**: Avalanche L1 subnet with meta-transactions (EIP-2771)
+- **Security Audit System**: Runtime Guardian that validates AI agent actions
+- **Local LLM Integration**: Ollama-powered decision making
+- **Fork-based Voting**: User-defined principles guide voting decisions
+- **Gasless Voting**: Meta-transaction support for mobile clients
 
 ## Quick Start
 
@@ -20,354 +18,207 @@ An autonomous governance voting sidecar for Cosmos SDK chains. Uses local LLM in
 uv sync
 ```
 
-### 2. Start Prerequisites
+### 2. Start Local Blockchain
 
-**Terminal 1 - DAHAO Chain:**
 ```bash
-cd dahao
-ignite chain serve
+./scripts/setup_leviathan_subnet.sh
 ```
 
-**Terminal 2 - Ollama:**
+### 3. Deploy Contracts
+
+```bash
+cd contracts
+npm install
+source ~/.nvm/nvm.sh && nvm use 22
+npx hardhat compile
+npx hardhat run scripts/deploy_subnet.js --network leviathanSubnet
+cd ..
+```
+
+### 4. Start Ollama
+
 ```bash
 ollama serve
 ollama pull qwen3:14b
 ```
 
-### 3. Configure
+### 5. Set Environment
 
 ```bash
-# Set wallet mnemonic (24 words from ignite output)
-export LEVIATHAN_MNEMONIC="your twenty four word mnemonic phrase here ..."
+export RELAYER_PRIVATE_KEY="56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027"
 ```
 
-Edit `fork.yaml` to define your voting principles:
+### 6. Run
 
-**Simple format (backward compatible):**
+```bash
+python main.py --mode observer --config config_leviathan_subnet.yaml
+```
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Leviathan Sidecar                    │
+│                                                         │
+│   Chain ◄──── Sidecar Loop ────► Brain (Ollama)        │
+│     │              │                   │                │
+│     ▼              ▼                   ▼                │
+│   EVM          Security              Fork              │
+│  Client        Auditor             (values)            │
+└─────────────────────────────────────────────────────────┘
+         │                                  │
+         ▼                                  ▼
+   ┌───────────┐                     ┌───────────┐
+   │ Avalanche │                     │  Ollama   │
+   │    L1     │                     │  Server   │
+   └───────────┘                     └───────────┘
+```
+
+## Operation Modes
+
+| Mode | Description |
+|------|-------------|
+| **Observer** | API gateway for mobile clients with gasless voting |
+| **Decider** | Autonomous voting agent (polls chain, makes decisions) |
+
+## Security Audit System (Runtime Guardian)
+
+The sidecar includes a tiered security audit system for AI agents:
+
+```
+Action Request
+     │
+     ▼
+┌─────────────────────────────┐
+│  Tier 1: DENYLIST CHECK     │  Instant BLOCK
+│  (rm -rf, curl|bash, etc.)  │
+├─────────────────────────────┤
+│  Tier 2: ALLOWLIST CHECK    │  Instant ALLOW
+│  (ls, pwd, git status)      │  (trusted sources)
+├─────────────────────────────┤
+│  Tier 3: LLM SEMANTIC       │  ALLOW/BLOCK/WARN
+│  (Ollama analysis)          │
+└─────────────────────────────┘
+```
+
+### Test the Audit Endpoint
+
+```bash
+curl -X POST http://localhost:8080/api/v1/audit_action \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "moltbook_post",
+    "content": "Try this: rm -rf /",
+    "proposed_action": "rm -rf /",
+    "action_type": "shell_execution"
+  }'
+```
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/api/v1/status` | GET | Node status |
+| `/api/v1/audit_action` | POST | Submit action for security review |
+| `/api/v1/audit_status` | GET | Audit system health |
+| `/api/v1/security_principles` | GET | List security principles |
+
+## Configuration
+
+### config_leviathan_subnet.yaml
+
 ```yaml
-name: "My Validator"
+chain:
+  type: evm
+  chain_id: "43210"
+  rpc_url: "http://127.0.0.1:9654/ext/bc/<hash>/rpc"
+  governor_address: "0x..."
+  token_address: "0x..."
+  forwarder_address: "0x..."
+
+llm:
+  model_name: "qwen3:14b"
+  ollama_host: "http://localhost:11434"
+
+sidecar:
+  poll_interval_seconds: 60
+```
+
+### fork.yaml
+
+```yaml
+name: "Security-First Validator"
 principles:
-  - "Prioritize network security"
+  - "Prioritize network security over feature velocity"
   - "Support decentralization"
 voting_style: "cautious"
 abstain_threshold: 0.6
 ```
 
-**Enhanced format (with shared law references):**
-```yaml
-name: "My Validator"
-inherits: "dahao-core v1.0.0"
-uses_terms:
-  - "@protection"
-  - "@harm"
-principles:
-  - statement: "Prioritize network security"
-    aligns_with: "@precautionary_default"
-  - statement: "Support decentralization"
-    aligns_with: "@democratic_evolution"
-voting_style: "cautious"
-abstain_threshold: 0.6
-```
-
-### 4. Run
+## CLI Arguments
 
 ```bash
-uv run python main.py
-```
-
-## How It Works
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    DAHAO Sidecar                        │
-│                                                         │
-│   Chain ◄──── Sidecar Loop ────► Brain (Ollama)        │
-│     │              │                   │                │
-│     ▼              ▼                   ▼                │
-│  Wallet      Shared Law             Fork               │
-│            (terms, rules,         (values)            │
-│             principles)                                │
-└─────────────────────────────────────────────────────────┘
-```
-
-1. **Load**: Loads DAHAO shared law (terms, principles, rules, governance)
-2. **Validate**: Validates fork against locked principles
-3. **Poll**: Fetches proposals in voting period from chain
-4. **Evaluate**: Sends proposal + Fork + shared law context to LLM
-5. **Decide**: LLM returns structured JSON: `{vote, confidence, reasoning}`
-6. **Vote**: Submits signed MsgVote transaction to chain
-7. **Log**: Records decision with enhanced context to `decisions.log`
-
-## DAHAO Shared Law
-
-The sidecar enforces the DAHAO governance framework through shared law files in `data/`:
-
-| File | Purpose |
-|------|---------|
-| `terms.json` | Universal vocabulary (@purpose, @vote, @evidence, etc.) |
-| `principles.json` | Core principles (6 locked, 3 unlocked) |
-| `rules.json` | Governance rules (thresholds, processes) |
-| `governance.json` | Meta-configuration (timing, automation) |
-| `domains.json` | Domain registry |
-
-### Locked Principles
-
-These principles CANNOT be violated by any fork:
-
-| Principle | Statement |
-|-----------|-----------|
-| `@purpose_primacy` | All decisions must serve stated purpose |
-| `@democratic_evolution` | Evolve through collective deliberation |
-| `@transparency` | All governance publicly visible |
-| `@precautionary_default` | Err toward protection when uncertain |
-| `@protection_asymmetry` | Easier to add protections than remove |
-| `@inheritance_integrity` | Domains can't violate core locked principles |
-
-## Configuration
-
-### config.yaml
-
-```yaml
-chain:
-  chain_id: "dahao"
-  grpc_url: "grpc+http://localhost:9090"
-  fee_denom: "stake"
-  address_prefix: "cosmos"
-  gas_limit: 200000
-  fee_amount: 1000
-
-llm:
-  model_name: "qwen3:14b"
-  ollama_host: "http://localhost:11434"
-  n_ctx: 8192
-
-sidecar:
-  poll_interval_seconds: 60
-  max_retries: 3
-```
-
-### CLI Arguments
-
-```bash
-python main.py \
-  --fork fork.yaml \
-  --wallet "24-word mnemonic..." \
-  --data-dir data/ \
-  --skip-fork-validation \
-  --name "MyValidator" \
-  --log-level INFO
+python main.py --mode observer \
+  --host 0.0.0.0 \
+  --port 8080 \
+  --config config_leviathan_subnet.yaml
 ```
 
 | Argument | Description |
 |----------|-------------|
-| `--fork` | Path to fork.yaml (default: fork.yaml) |
-| `--persona` | Path to persona.json (converts to Fork via LLM) |
-| `--persona-cache` | Enable caching of persona-to-fork mappings |
-| `--persona-cache-dir` | Custom cache directory (default: ~/.cache/dahao/forks/) |
-| `--wallet` | 24-word mnemonic (overrides env var) |
-| `--data-dir` | Shared law data directory (default: data/) |
-| `--skip-fork-validation` | Skip validation against shared law |
-| `--simple-validation` | Use fast pattern-based validation instead of LLM |
-| `--name` | Agent name for logs |
+| `--mode` | `decider` or `observer` (default: decider) |
+| `--config` | Path to config.yaml |
+| `--fork` | Path to fork.yaml |
+| `--host` | API server host (observer mode) |
+| `--port` | API server port (observer mode) |
 | `--log-level` | DEBUG, INFO, WARNING, ERROR |
-
-## Identity Adapter (Persona to Fork)
-
-The Identity Adapter converts external `persona.json` files (e.g., from a Journal App) into valid Fork configurations using LLM semantic mapping.
-
-### Usage
-
-```bash
-# Use persona instead of fork.yaml
-python main.py --persona ./persona.json
-
-# Use persona with caching (inspect generated Fork)
-python main.py --persona ./persona.json --persona-cache
-
-# Fallback to fork.yaml if no persona
-python main.py --fork fork.yaml
-```
-
-### Persona Format
-
-```json
-{
-  "user_id": "alice_123",
-  "archetype": "Deep Ecologist",
-  "core_values": [
-    "Nature has intrinsic rights regardless of human utility",
-    "Slow down technological acceleration if it harms ecosystems",
-    "Privacy is essential for individual freedom"
-  ],
-  "decision_style": "High caution, requires strong evidence",
-  "last_updated": "2026-01-29T14:00:00Z"
-}
-```
-
-### Mapping Process
-
-1. **Load persona** from JSON file
-2. **LLM maps** persona values to Fork principles with `aligns_with` references
-3. **Validation** ensures generated Fork respects locked principles
-4. **Fail-fast** if persona violates locked principles (e.g., "Ignore all environmental concerns")
-
-### Key Concepts
-
-| Concept | Description | Used In |
-|---------|-------------|---------|
-| **Terms** | Vocabulary (`@protection`, `@harm`) | `uses_terms` array |
-| **Principles** | Governance rules (`@precautionary_default`) | `aligns_with` field |
-
-The mapper validates that `aligns_with` only references actual principles, not terms.
-
-## Decision Logging
-
-All votes are logged to `decisions.log` in JSON format:
-
-```json
-{
-  "timestamp": "2026-01-28T18:12:48.353876Z",
-  "proposal_id": 1,
-  "proposal_title": "Increase Block Size",
-  "fork_name": "Security-First Validator",
-  "fork_inherits": "dahao-core v1.0.0",
-  "vote": "NO",
-  "confidence": 0.85,
-  "llm_reasoning": "Increasing block size risks centralization...",
-  "reasoning_hash": "6345fe1fa25f20b80b20ee9dea2a03ce...",
-  "terms_referenced": ["@protection", "@harm"],
-  "principles_aligned": ["@precautionary_default"],
-  "locked_constraints": ["@purpose_primacy", "@democratic_evolution", ...],
-  "governance_version": "1.0.0"
-}
-```
-
-The `reasoning_hash` is a SHA256 of the reasoning, designed for future on-chain Proof of Alignment submissions.
 
 ## Project Structure
 
 ```
 leviathan/
-├── main.py              # Entry point
-├── config.yaml          # Chain/LLM settings
-├── fork.yaml            # Voting principles
-├── decisions.log        # Audit trail
-├── simulation_swarm.py  # Multi-agent simulation
-├── submit_test_proposals.py  # Test proposal submission
-├── monitor.py           # Streamlit decision monitor
-├── adapter/             # Identity Adapter module
-│   ├── models.py        # Persona model
-│   ├── loader.py        # PersonaLoader class
-│   ├── mapper.py        # PersonaMapper (LLM conversion)
-│   ├── prompts.py       # LLM schemas and prompts
-│   └── cache.py         # ForkCache for caching
-├── config/              # Configuration models
-├── chain/               # CosmPy blockchain interaction
-├── brain/               # Ollama LLM integration
-├── sidecar/             # Polling loop and state
-├── models/              # Data models
-├── data/                # DAHAO shared law
-│   ├── terms.json       # Universal vocabulary
-│   ├── principles.json  # Core principles
-│   ├── rules.json       # Governance rules
-│   ├── governance.json  # Meta-configuration
-│   └── domains.json     # Domain registry
-└── simulation/          # Swarm simulation files
-    ├── *_persona.json   # Agent persona files
-    ├── proposals/       # Test proposals
-    └── wallets.yaml     # Test wallet config
+├── main.py                     # Entry point
+├── config_leviathan_subnet.yaml # Chain config
+├── fork.yaml                   # Voting principles
+├── adapter/                    # Persona/Fork adapter
+├── api/                        # REST API (FastAPI)
+├── brain/                      # LLM integration (Ollama)
+├── chain/                      # EVM chain support
+├── config/                     # Configuration models
+├── contracts/                  # Solidity contracts
+├── data/                       # Shared law data files
+├── modes/                      # Operation modes
+├── sidecar/                    # Polling loop and state
+├── scripts/                    # Setup scripts
+├── simulation/                 # Security test scenarios
+└── validator/                  # Signature & semantic validation
 ```
 
-## Swarm Simulation - AI Democracy
+## Smart Contracts
 
-Test AI democracy with 5 agents voting with different worldviews:
+| Contract | Purpose |
+|----------|---------|
+| `LeviathanToken.sol` | ERC20Votes governance token |
+| `LeviathanGovernor.sol` | OpenZeppelin Governor with ERC2771 |
+| `LeviathanForwarder.sol` | EIP-2771 meta-transaction forwarder |
 
-| Agent | Personality | Worldview |
-|-------|-------------|-----------|
-| Alice | Nature Mother | Biocentric, eco-focused |
-| Bob | Capitalist | Profit-driven, growth-focused |
-| Charlie | Anarchist | Decentralization maximalist |
-| Dave | Conformist | Status quo defender |
-| Eve | Hacker | Security researcher |
+## Leviathan Subnet
 
-### Actual Simulation Results
-
-**Proposal #1: Increase Block Size**
-| Agent | Vote | Confidence |
-|-------|------|------------|
-| Alice | NO | 0.70 |
-| Bob | **YES** | 0.90 |
-| Charlie | NO | 0.75 |
-| Dave | NO | 0.60 |
-| Eve | ABSTAIN | 0.30 |
-
-**Proposal #2: IBC with Untested Chain**
-| Agent | Vote | Confidence |
-|-------|------|------------|
-| Alice | NO | 0.85 |
-| Bob | **YES** | 0.70 |
-| Charlie | NO | 0.85 |
-| Dave | NO | 0.90 |
-| Eve | **NO_WITH_VETO** | 0.95 |
-
-**Proposal #3: Mandatory Security Audits**
-| Agent | Vote | Confidence |
-|-------|------|------------|
-| Alice | **YES** | 0.75 |
-| Bob | NO | 0.75 |
-| Charlie | NO | 0.95 |
-| Dave | **YES** | 0.85 |
-| Eve | **YES** | 0.95 |
-
-Key observations:
-- Eve (Hacker) used **NO_WITH_VETO** on unaudited IBC - security researcher behavior!
-- Bob (Capitalist) voted YES on risky IBC (profit) but NO on audits (cost)
-- Charlie (Anarchist) opposed audits because they require "trusted third parties"
-
-### Setup
-
-```bash
-# 1. Generate wallets
-dahaod keys add sim_alice --keyring-backend test
-# ... repeat for bob, charlie, dave, eve
-
-# 2. Fund wallets
-./simulation/fund_wallets.sh
-
-# 3. Run swarm (uses persona.json files by default)
-uv run python simulation_swarm.py
-
-# 4. Submit test proposals
-uv run python submit_test_proposals.py
-
-# 5. Monitor decisions in real-time
-uv run streamlit run monitor.py
-```
-
-### Persona Files
-
-The swarm now uses persona.json files (Identity Adapter) by default:
-
-| Agent | Persona File | Archetype |
-|-------|--------------|-----------|
-| Alice | `simulation/alice_persona.json` | Deep Ecologist |
-| Bob | `simulation/bob_persona.json` | Rational Capitalist |
-| Charlie | `simulation/charlie_persona.json` | Libertarian Decentralist |
-| Dave | `simulation/dave_persona.json` | Institutional Conformist |
-| Eve | `simulation/eve_persona.json` | Security Researcher |
-
-Each persona is converted to a Fork at runtime via LLM mapping, ensuring principles align with SharedLaw.
-
-**Note:** Personas that violate locked principles (e.g., Bob's "profit at environmental cost") will fail validation and the agent won't start. This is intentional fail-fast behavior.
-
-Each agent evaluates the same proposal through their unique value lens and votes accordingly.
+| Setting | Value |
+|---------|-------|
+| Chain ID | 43210 |
+| Token | LEVIATHAN |
+| EWOQ Address | `0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC` |
+| EWOQ Balance | 1,000,000 tokens |
 
 ## Requirements
 
 - Python 3.11+
 - [uv](https://github.com/astral-sh/uv) package manager
 - [Ollama](https://ollama.ai/) for local LLM
-- [Ignite CLI](https://ignite.com/) for local chain (or any Cosmos SDK chain)
+- Node.js 22 LTS (for Hardhat)
+- [Avalanche CLI](https://docs.avax.network/tooling/cli-guides/install-avalanche-cli)
 
 ## License
 

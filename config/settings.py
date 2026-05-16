@@ -18,7 +18,7 @@ class ChainConfig(BaseModel):
     type: Literal["cosmos", "evm"] = "cosmos"
 
     # Common fields
-    chain_id: str = "dahao"
+    chain_id: str = "leviathan"
     gas_limit: int = 200000
 
     # Cosmos-specific fields

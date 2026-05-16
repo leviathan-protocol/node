@@ -3,7 +3,7 @@
 Implements a search path for persona files:
 1. Explicit path from CLI argument
 2. ./persona.json in current directory
-3. ~/.config/dahao/persona.json for user default
+3. ~/.config/leviathan/persona.json for user default
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ class PersonaLoader:
     Searches multiple locations for persona.json files:
     1. Explicit path provided via CLI
     2. ./persona.json in current working directory
-    3. ~/.config/dahao/persona.json for user default
+    3. ~/.config/leviathan/persona.json for user default
 
     Usage:
         # With explicit path
@@ -48,7 +48,7 @@ class PersonaLoader:
 
     DEFAULT_LOCATIONS = [
         Path("./persona.json"),
-        Path.home() / ".config" / "dahao" / "persona.json",
+        Path.home() / ".config" / "leviathan" / "persona.json",
     ]
 
     def __init__(self, explicit_path: str | Path | None = None):
@@ -66,7 +66,7 @@ class PersonaLoader:
         Searches in order:
         1. Explicit path (if provided)
         2. ./persona.json
-        3. ~/.config/dahao/persona.json
+        3. ~/.config/leviathan/persona.json
 
         Returns:
             Path to the found persona file, or None if not found.

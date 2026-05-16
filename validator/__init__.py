@@ -1,4 +1,4 @@
-"""Validators for DAHAO Sidecar Observer Mode.
+"""Validators for Leviathan Sidecar Observer Mode.
 
 Provides validation for:
 - Intent signatures (ECDSA secp256k1)

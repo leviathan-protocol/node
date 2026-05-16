@@ -1,7 +1,7 @@
-"""DAHAO shared law data module.
+"""Leviathan shared law data module.
 
 This module provides access to the shared law data structures that all
-DAHAO instances inherit: terms, principles, rules, and governance config.
+Leviathan instances inherit: terms, principles, rules, and governance config.
 """
 
 from .loader import SharedLaw, SharedLawError, SharedLawLoadError

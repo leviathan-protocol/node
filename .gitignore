@@ -19,3 +19,6 @@ decisions.log
 
 # Large model files
 *.gguf
+
+# macOS
+.DS_Store

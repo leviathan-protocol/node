@@ -1,7 +1,7 @@
 """PersonaMapper for converting Persona to Fork configurations.
 
 Uses LLM to semantically map external persona values to valid Fork
-configurations that respect the DAHAO SharedLaw governance framework.
+configurations that respect the Leviathan SharedLaw governance framework.
 """
 
 from __future__ import annotations
@@ -204,7 +204,7 @@ class PersonaMapper:
 
         return Fork(
             name=result.get("name", "Generated Fork"),
-            inherits=result.get("inherits", "dahao-core v1.0.0"),
+            inherits=result.get("inherits", "leviathan-core v1.0.0"),
             uses_terms=result.get("uses_terms", []),
             principles=principles,
             voting_style=result.get("voting_style", "balanced"),

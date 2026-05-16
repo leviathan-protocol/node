@@ -1,10 +1,8 @@
-"""FastAPI application for DAHAO Sidecar Observer Mode.
+"""FastAPI application for Leviathan Sidecar Observer Mode.
 
-Provides REST API endpoints for mobile clients to:
-- Pair with the node (invite link flow)
-- Register after Authz grant
-- Fetch active proposals
-- Submit signed voting intents (Gasless Voting via Authz)
+Provides REST API endpoints for:
+- Node status and health checks
+- Security audit for AI agent actions (Runtime Guardian)
 """
 
 from __future__ import annotations
@@ -42,7 +40,7 @@ app_state = AppState()
 async def lifespan(app: FastAPI):
     """Lifespan context manager for startup/shutdown events."""
     # Startup
-    logger.info("Starting DAHAO Sidecar API (Observer Mode)")
+    logger.info("Starting Leviathan Sidecar API (Observer Mode)")
     logger.info(f"CORS origins: {app.state.cors_origins}")
 
     # Initialize shared resources here (chain client, LLM, etc.)
@@ -51,7 +49,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
-    logger.info("Shutting down DAHAO Sidecar API")
+    logger.info("Shutting down Leviathan Sidecar API")
     # Cleanup resources if needed
     app_state.sessions.clear()
     logger.info("Cleared active sessions")
@@ -82,8 +80,8 @@ def create_app(
         ]
 
     app = FastAPI(
-        title="DAHAO Sidecar API",
-        description="Observer Mode API for gasless voting via Cosmos Authz",
+        title="Leviathan Sidecar API",
+        description="Observer Mode API for security auditing and status monitoring",
         version="2.0.0",
         lifespan=lifespan,
     )
@@ -140,12 +138,9 @@ async def generic_error_handler(request: Request, exc: Exception) -> JSONRespons
 
 def _register_routes(app: FastAPI):
     """Register API route handlers."""
-    from api.routes import pair, proposals, status, vote, audit
+    from api.routes import audit, status
 
-    app.include_router(pair.router, prefix="/api/v1", tags=["connection"])
     app.include_router(status.router, prefix="/api/v1", tags=["status"])
-    app.include_router(vote.router, prefix="/api/v1", tags=["voting"])
-    app.include_router(proposals.router, prefix="/api/v1", tags=["proposals"])
     app.include_router(audit.router, prefix="/api/v1", tags=["security"])
 
     # Health check at root

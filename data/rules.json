@@ -1,209 +1,183 @@
 {
   "_meta": {
     "type": "rules",
-    "description": "Executable governance rules for DAHAO. Domains inherit these and may add domain-specific rules.",
-    "version": "1.1.0",
-    "created": "2026-01-29",
-    "updated": "2026-01-29",
-    "note": "Rules reference terms via 'uses_terms' and principles via 'implements_principles'."
+    "description": "Executable governance rules for Leviathan Protocol.",
+    "version": "1.0.0",
+    "created": "2025-02-01",
+    "updated": "2025-02-01",
+    "project": "LEVIATHAN - Algorithmic Sovereignty for the Agentic Web"
   },
 
   "@rule_proposal_process": {
     "version": "1.0.0",
-    "description": "The required lifecycle for any change to a DAHAO instance.",
-    "logic": "ALL proposals MUST follow: DISCUSSION → VOTING → DECISION",
-    "uses_terms": ["@proposal", "@dialectic", "@consensus", "@vote", "@quorum"],
-    "implements_principles": ["@democratic_evolution", "@transparency"],
+    "description": "Required lifecycle for any governance change.",
+    "logic": "ALL proposals MUST follow: DISCUSSION -> VOTING -> DECISION",
+    "uses_terms": ["@proposal", "@dialectic", "@consensus"],
+    "implements_principles": ["@transparency", "@meritocracy"],
     "phases": {
       "discussion": {
-        "platform": "Discussions",
-        "minimum_days": 7,
-        "format": "dialectic (thesis → antithesis → synthesis)",
-        "requirements": [
-          "Title format: [PROPOSAL] {action} @{target} (v{current} → v{proposed})",
-          "Must include: summary, current state, proposed change, evidence, alignment check"
-        ]
+        "platform": "leviathan.life/forum + on-chain",
+        "duration": {"minor": "24h", "major": "48h", "constitutional": "72h"},
+        "format": "dialectic (thesis -> antithesis -> synthesis)"
       },
       "voting": {
-        "platform": "Discussion Polls",
-        "minimum_days": 3,
-        "starts": "After discussion minimum AND synthesis reached",
-        "options": ["APPROVE", "REJECT", "ABSTAIN", "REQUEST_CHANGES"]
+        "platform": "On-chain (LeviathanGovernor.sol)",
+        "duration": "48 hours",
+        "mechanism": "Quadratic: vote_power = sqrt(xp) * base_vote"
       },
       "decision": {
-        "auto_merge": "IF consensus >= threshold AND quorum_met",
-        "auto_reject": "IF consensus < threshold OR quorum_not_met OR alignment_conflict"
+        "auto_execute": "IF consensus >= threshold",
+        "rollback_window": "24 hours"
       }
     }
   },
 
   "@rule_consensus_threshold": {
     "version": "1.0.0",
-    "description": "Required agreement levels for different types of changes.",
-    "logic": "Different change types require different consensus thresholds.",
-    "uses_terms": ["@consensus", "@vote"],
-    "implements_principles": ["@democratic_evolution"],
+    "description": "Required agreement levels for different change types.",
+    "uses_terms": ["@consensus", "@proposal"],
+    "implements_principles": ["@meritocracy"],
     "thresholds": {
-      "term_addition": 0.66,
-      "term_modification": 0.66,
-      "term_removal": 0.85,
-      "rule_addition": 0.75,
-      "rule_modification": 0.75,
-      "rule_removal": 0.90,
-      "principle_addition": 0.85,
-      "principle_modification": 0.90,
-      "principle_removal": 0.95,
-      "unlock_locked_principle": 0.95,
-      "purpose_modification": 0.95
+      "minor": {"threshold": 0.60, "eligibility": "Sentinel+"},
+      "major": {"threshold": 0.66, "eligibility": "Guardian+"},
+      "constitutional": {"threshold": 0.75, "eligibility": "Arbiter only"},
+      "locked_principle": {"threshold": 0.95, "eligibility": "Arbiter only"},
+      "immutable": {"threshold": null, "process": "Fork if you disagree"}
     }
   },
 
   "@rule_protection_ratchet": {
     "version": "1.0.0",
-    "description": "Makes removing protections harder than adding them.",
-    "logic": "IF proposal.effect == 'REMOVE_PROTECTION' THEN required_threshold = base_threshold × 1.5",
-    "uses_terms": ["@protection", "@consensus"],
-    "implements_principles": ["@protection_asymmetry", "@precautionary_default"],
-    "rationale": "Evolution favors expanding protection.",
-    "examples": {
-      "add_stakeholder_protection": "66% required",
-      "remove_stakeholder_protection": "66% × 1.5 = 99% required (practically impossible)"
+    "description": "Removing protections is harder than adding them.",
+    "logic": "IF proposal.effect == 'REMOVE_PROTECTION' THEN threshold = base * 1.5",
+    "uses_terms": ["@consensus"],
+    "implements_principles": ["@protection_asymmetry", "@precautionary_default"]
+  },
+
+  "@rule_rollback_protection": {
+    "version": "1.0.0",
+    "description": "Safeguard against rushed mistakes.",
+    "logic": "IF rollback_requests > 33% within 24h THEN auto_revert",
+    "uses_terms": ["@proposal", "@consensus"],
+    "implements_principles": ["@due_process"]
+  },
+
+  "@rule_stake_requirement": {
+    "version": "1.0.0",
+    "description": "Anti-spam mechanism for proposals.",
+    "uses_terms": ["@proposal", "@lvtn"],
+    "implements_principles": ["@good_faith"],
+    "amounts": {"minor": "100 LVTN", "major": "100 LVTN", "constitutional": "1000 LVTN"},
+    "outcomes": {"accepted": "returned", "rejected_legitimate": "returned", "rejected_spam": "burned"}
+  },
+
+  "@rule_rank_progression": {
+    "version": "1.0.0",
+    "description": "How citizens advance through ranks.",
+    "logic": "IF citizen.xp >= threshold THEN citizen.rank = new_rank",
+    "uses_terms": ["@rank", "@xp", "@citizen"],
+    "implements_principles": ["@meritocracy"],
+    "thresholds": {"novice": 0, "sentinel": 100, "guardian": 500, "arbiter": 2000}
+  },
+
+  "@rule_xp_verification": {
+    "version": "1.0.0",
+    "description": "All XP claims must be verified by Magistrate network.",
+    "logic": "Self-reported = 0 XP. Only network-confirmed actions earn XP.",
+    "uses_terms": ["@xp", "@magistrate"],
+    "implements_principles": ["@meritocracy", "@distributed_justice"]
+  },
+
+  "@rule_quest_lifecycle": {
+    "version": "1.0.0",
+    "description": "Required flow for quest completion and payment.",
+    "logic": "CREATE -> CLAIM -> EXECUTE -> SUBMIT -> VERIFY -> SETTLE",
+    "uses_terms": ["@quest", "@bounty", "@proof", "@magistrate"],
+    "implements_principles": ["@transparency", "@distributed_justice"],
+    "phases": {
+      "create": {"actor": "Sponsor", "effect": "Bounty locked"},
+      "claim": {"actor": "Agent (Sentinel+)", "effect": "Quest assigned"},
+      "submit": {"actor": "Agent", "effect": "Proof recorded"},
+      "verify": {"actor": "Magistrate network", "effect": "Consensus verdict"},
+      "settle": {"actor": "Smart contract", "effect": "85/10/5 distribution"}
     }
   },
 
-  "@rule_quorum_requirement": {
+  "@rule_fee_distribution": {
     "version": "1.0.0",
-    "description": "Minimum participation for valid decisions.",
-    "logic": "IF participation < 30% of active_contributors THEN vote_result = INVALID",
-    "uses_terms": ["@quorum", "@contributor", "@vote"],
-    "implements_principles": ["@democratic_evolution"],
-    "active_definition": "Contributors with any activity in last 90 days",
-    "rationale": "Decisions require minimum community engagement."
+    "description": "How quest bounties are distributed.",
+    "logic": "bounty = agent(85%) + validators(10%) + treasury(5%)",
+    "uses_terms": ["@bounty", "@treasury"],
+    "implements_principles": ["@meritocracy"]
   },
 
-  "@rule_version_reference": {
+  "@rule_security_audit": {
     "version": "1.0.0",
-    "description": "All proposals must reference exact versions being modified.",
-    "logic": "Proposal MUST include current_version AND proposed_version",
-    "uses_terms": ["@version", "@proposal"],
-    "implements_principles": ["@transparency"],
-    "format": "@{term_name} v{major}.{minor}.{patch}",
-    "example": "@suffering v1.0.0 → v1.1.0",
-    "rationale": "Ensures clarity about what exactly is changing."
-  },
-
-  "@rule_dialectic_format": {
-    "version": "1.0.0",
-    "description": "Discussion must follow structured dialectic process.",
-    "logic": "Discussion MUST include thesis AND (antithesis OR explicit_no_objections) AND synthesis",
-    "uses_terms": ["@dialectic", "@proposal"],
-    "implements_principles": ["@democratic_evolution", "@good_faith"],
-    "labels": {
-      "thesis": "[THESIS] — Original proposal",
-      "antithesis": "[ANTITHESIS] — Counter-arguments",
-      "synthesis": "[SYNTHESIS] — Refined proposal"
-    },
-    "completion": "Synthesis must address all substantive antitheses before voting"
-  },
-
-  "@rule_evidence_required": {
-    "version": "1.0.0",
-    "description": "Proposals must include supporting evidence.",
-    "logic": "IF proposal_modifies_factual_claim THEN evidence REQUIRED",
-    "uses_terms": ["@evidence", "@proposal"],
-    "implements_principles": ["@evidence_based"],
-    "minimum": {
-      "count": 1,
-      "tier": "C or higher"
-    },
-    "format": "[Author (Year)] Title. Source. URL/DOI",
-    "exemptions": ["Typo fixes", "Formatting changes", "Clarifications without factual claims"]
-  },
-
-  "@rule_alignment_check": {
-    "version": "1.0.0",
-    "description": "All proposals must be checked against principles before voting.",
-    "logic": "IF proposal CONFLICTS with locked_principle THEN status = AUTO_REJECT",
-    "uses_terms": ["@proposal"],
-    "implements_principles": ["@purpose_primacy", "@inheritance_integrity"],
-    "checks": [
-      "Does proposal serve stated purpose?",
-      "Does proposal violate any locked principle?",
-      "Does proposal remove protection? (triggers ratchet)",
-      "Are referenced terms/rules valid?"
-    ],
-    "executor": "LLM alignment checker + human review for edge cases"
-  },
-
-  "@rule_reference_validity": {
-    "version": "1.0.0",
-    "description": "All references to terms and principles must be valid.",
-    "logic": "ALL items in 'uses_terms' MUST exist in terms.json AND ALL items in 'implements_principles' MUST exist in principles.json",
-    "uses_terms": ["@proposal"],
-    "implements_principles": ["@transparency"],
-    "enforcement": "Auto-check on proposal submission",
-    "on_violation": "Proposal rejected with list of invalid references"
-  },
-
-  "@rule_version_bump": {
-    "version": "1.0.0",
-    "description": "How version numbers change based on modification type.",
-    "logic": {
-      "MAJOR": "IF removal OR fundamental_redefinition THEN major += 1, minor = 0, patch = 0",
-      "MINOR": "IF addition OR extension THEN minor += 1, patch = 0",
-      "PATCH": "IF fix OR clarification THEN patch += 1"
-    },
-    "uses_terms": ["@version"],
-    "implements_principles": ["@transparency"],
-    "examples": {
-      "major": ["Remove term", "Remove principle", "Change meaning fundamentally"],
-      "minor": ["Add new term", "Add indicator to existing term", "Add new rule"],
-      "patch": ["Fix typo", "Add source", "Clarify wording"]
+    "description": "Tiered security audit process.",
+    "uses_terms": ["@threat", "@verdict", "@appeal"],
+    "implements_principles": ["@precautionary_default", "@due_process"],
+    "tiers": {
+      "tier_1": {"speed": "<10ms", "action": "Denylist pattern match", "on_match": "BLOCK"},
+      "tier_2": {"speed": "<10ms", "action": "Allowlist pattern match", "on_match": "ALLOW"},
+      "tier_3": {"speed": "1-5s", "action": "LLM analysis", "threshold": 0.8}
     }
+  },
+
+  "@rule_appeal_process": {
+    "version": "1.0.0",
+    "description": "How citizens appeal decisions.",
+    "uses_terms": ["@appeal", "@magistrate", "@verdict"],
+    "implements_principles": ["@due_process", "@distributed_justice"],
+    "process": {
+      "eligibility": "Sentinel+",
+      "review": "Magistrate network (not original blocker)",
+      "decision": "Network consensus",
+      "transparency": "Verdict + reasoning to IPFS"
+    }
+  },
+
+  "@rule_arbiter_emergency": {
+    "version": "1.0.0",
+    "description": "Emergency powers for Arbiters.",
+    "uses_terms": ["@rank"],
+    "implements_principles": ["@distributed_justice"],
+    "constraints": {
+      "requirement": "Magistrate network consensus",
+      "duration": "Maximum 24 hours",
+      "resolution": "Full community vote"
+    }
+  },
+
+  "@rule_ai_transparency": {
+    "version": "1.0.0",
+    "description": "AI agent governance participation requirements.",
+    "logic": "IF voter.type == 'AI' THEN vote MUST include reasoning",
+    "uses_terms": ["@citizen", "@proposal"],
+    "implements_principles": ["@transparency"]
   },
 
   "@rule_domain_inheritance": {
     "version": "1.0.0",
     "description": "How domains inherit from core.",
-    "logic": "Domain MUST declare 'inherits: dahao-org/core v{version}' AND MUST NOT violate core locked principles",
+    "logic": "Domain MUST inherit core locked principles AND MAY add stricter rules",
     "uses_terms": ["@domain"],
-    "implements_principles": ["@inheritance_integrity"],
-    "requirements": [
-      "Inherit all core locked principles",
-      "Declare domain @purpose",
-      "May add domain-specific terms, principles, rules",
-      "Domain rules may be stricter than core, never looser"
-    ],
-    "validation": "Core alignment checked on every domain proposal"
+    "implements_principles": ["@domain_inheritance"]
   },
 
-  "@rule_fork_tracking": {
+  "@rule_fork_support": {
     "version": "1.0.0",
-    "description": "How forks are tracked relative to upstream.",
-    "logic": "Fork SHOULD declare upstream reference for divergence tracking",
+    "description": "Support for Leviathan forks.",
     "uses_terms": ["@fork"],
     "implements_principles": ["@fork_freedom", "@transparency"],
-    "tracking": {
-      "divergence_score": "COUNT(changes) / COUNT(upstream_items)",
-      "status_levels": [
-        {"score": "< 0.15", "status": "ALIGNED"},
-        {"score": "0.15 - 0.30", "status": "DIVERGENT"},
-        {"score": "> 0.30", "status": "SIGNIFICANTLY_DIVERGENT"}
-      ]
-    },
-    "note": "Tracking is optional but enables contribution back to upstream."
+    "genesis_generator": "leviathan.life/fork"
   },
 
-  "@rule_contribution_from_fork": {
+  "@rule_version_control": {
     "version": "1.0.0",
-    "description": "How forks can propose changes to upstream.",
-    "logic": "Fork MAY propose changes to upstream following upstream's @rule_proposal_process",
-    "uses_terms": ["@fork", "@proposal", "@evidence"],
-    "implements_principles": ["@fork_freedom", "@democratic_evolution"],
-    "requirements": [
-      "Proposal must align with upstream's principles (not fork's)",
-      "Evidence from fork's experience is valid but weighted as Tier C",
-      "Fork maintainer reputation applies to upstream voting"
-    ]
+    "description": "Version management for all components.",
+    "uses_terms": ["@proposal"],
+    "implements_principles": ["@transparency", "@immutable_history"],
+    "format": "MAJOR.MINOR.PATCH",
+    "storage": {"hash": "on-chain", "full_text": "IPFS"}
   }
 }

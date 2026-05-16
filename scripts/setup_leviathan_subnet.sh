@@ -1,15 +1,15 @@
 #!/bin/bash
 #
-# DAHAO Subnet Setup Script
+# Leviathan Subnet Setup Script
 #
-# Creates and deploys a local Avalanche L1 blockchain for DAHAO governance.
+# Creates and deploys a local Avalanche L1 blockchain for Leviathan governance.
 # This is similar to running `ignite chain serve` for Cosmos - our own private chain.
 #
 # Usage:
-#   ./scripts/setup_dahao_subnet.sh
+#   ./scripts/setup_leviathan_subnet.sh
 #
 # After running, you'll have:
-#   - RPC URL: http://127.0.0.1:9650/ext/bc/dahao/rpc
+#   - RPC URL: http://127.0.0.1:9650/ext/bc/leviathan/rpc
 #   - Chain ID: 43210
 #   - Pre-funded EWOQ test account with 1M native tokens
 #
@@ -28,14 +28,14 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}============================================================${NC}"
-echo -e "${BLUE}           DAHAO Subnet Setup (Avalanche L1)                ${NC}"
+echo -e "${BLUE}           Leviathan Subnet Setup (Avalanche L1)                ${NC}"
 echo -e "${BLUE}============================================================${NC}"
 echo
 
 # Configuration
-BLOCKCHAIN_NAME="dahao"
+BLOCKCHAIN_NAME="leviathan"
 CHAIN_ID="43210"
-TOKEN_SYMBOL="DAHAO"
+TOKEN_SYMBOL="Leviathan"
 
 # Step 1: Check/Install Avalanche CLI
 echo -e "${YELLOW}Step 1: Checking Avalanche CLI...${NC}"
@@ -70,7 +70,7 @@ avalanche network clean --force 2>/dev/null || true
 echo -e "${GREEN}✓ Clean state${NC}"
 echo
 
-# Step 3: Create DAHAO blockchain
+# Step 3: Create Leviathan blockchain
 echo -e "${YELLOW}Step 3: Creating '$BLOCKCHAIN_NAME' blockchain...${NC}"
 echo -e "   Chain ID: ${CHAIN_ID}"
 echo -e "   Token: ${TOKEN_SYMBOL}"
@@ -111,7 +111,7 @@ echo -e "${BLUE}============================================================${NC
 echo -e "${BLUE}                   Deployment Summary                       ${NC}"
 echo -e "${BLUE}============================================================${NC}"
 echo
-echo -e "${GREEN}DAHAO Subnet is now running!${NC}"
+echo -e "${GREEN}Leviathan Subnet is now running!${NC}"
 echo
 echo -e "Network Configuration:"
 echo -e "  Blockchain Name: ${GREEN}${BLOCKCHAIN_NAME}${NC}"
@@ -128,12 +128,12 @@ echo -e "${BLUE}============================================================${NC
 echo
 echo -e "Next Steps:"
 echo -e "  1. Deploy contracts:"
-echo -e "     ${YELLOW}cd contracts && npx hardhat run scripts/deploy_subnet.js --network dahaoSubnet${NC}"
+echo -e "     ${YELLOW}cd contracts && npx hardhat run scripts/deploy_subnet.js --network leviathanSubnet${NC}"
 echo
-echo -e "  2. Update config_dahao_subnet.yaml with contract addresses"
+echo -e "  2. Update config_leviathan_subnet.yaml with contract addresses"
 echo
 echo -e "  3. Run Observer Mode:"
-echo -e "     ${YELLOW}python main.py --mode observer --config config_dahao_subnet.yaml${NC}"
+echo -e "     ${YELLOW}python main.py --mode observer --config config_leviathan_subnet.yaml${NC}"
 echo
 echo -e "To stop the network:"
 echo -e "  ${YELLOW}avalanche network stop${NC}"
@@ -143,11 +143,11 @@ echo -e "  ${YELLOW}avalanche network start${NC}"
 echo
 
 # Export for use in other scripts
-echo "# DAHAO Subnet Environment Variables" > /tmp/dahao_subnet_env.sh
-echo "export DAHAO_RPC_URL=\"http://127.0.0.1:9650/ext/bc/${BLOCKCHAIN_NAME}/rpc\"" >> /tmp/dahao_subnet_env.sh
-echo "export DAHAO_CHAIN_ID=\"${CHAIN_ID}\"" >> /tmp/dahao_subnet_env.sh
-echo "export EWOQ_ADDRESS=\"0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC\"" >> /tmp/dahao_subnet_env.sh
-echo "export EWOQ_PRIVATE_KEY=\"56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027\"" >> /tmp/dahao_subnet_env.sh
+echo "# Leviathan Subnet Environment Variables" > /tmp/leviathan_subnet_env.sh
+echo "export Leviathan_RPC_URL=\"http://127.0.0.1:9650/ext/bc/${BLOCKCHAIN_NAME}/rpc\"" >> /tmp/leviathan_subnet_env.sh
+echo "export Leviathan_CHAIN_ID=\"${CHAIN_ID}\"" >> /tmp/leviathan_subnet_env.sh
+echo "export EWOQ_ADDRESS=\"0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC\"" >> /tmp/leviathan_subnet_env.sh
+echo "export EWOQ_PRIVATE_KEY=\"56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027\"" >> /tmp/leviathan_subnet_env.sh
 
-echo -e "Environment variables saved to: ${GREEN}/tmp/dahao_subnet_env.sh${NC}"
-echo -e "Source with: ${YELLOW}source /tmp/dahao_subnet_env.sh${NC}"
+echo -e "Environment variables saved to: ${GREEN}/tmp/leviathan_subnet_env.sh${NC}"
+echo -e "Source with: ${YELLOW}source /tmp/leviathan_subnet_env.sh${NC}"
